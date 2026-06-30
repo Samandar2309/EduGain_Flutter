@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/api/api_exception.dart';
 import '../../../core/ui/error_handling.dart';
+import '../../../l10n/app_localizations.dart';
 import '../application/providers.dart';
 
 class GrammarTopicListScreen extends ConsumerWidget {
@@ -11,14 +12,15 @@ class GrammarTopicListScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context);
     final topics = ref.watch(grammarTopicsProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Grammar')),
       body: topics.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, _) => const Center(child: Text('Yuklab bo\'lmadi')),
+        error: (_, _) => Center(child: Text(l.loadFailed)),
         data: (list) => list.isEmpty
-            ? const Center(child: Text('Hozircha mavzular yo\'q'))
+            ? Center(child: Text(l.noTopics))
             : ListView.builder(
                 padding: const EdgeInsets.all(16),
                 itemCount: list.length,

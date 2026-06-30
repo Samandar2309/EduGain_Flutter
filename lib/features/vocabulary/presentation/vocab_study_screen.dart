@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/api/api_exception.dart';
 import '../../../core/ui/error_handling.dart';
+import '../../../l10n/app_localizations.dart';
 import '../application/providers.dart';
 import '../domain/models.dart';
 
@@ -16,14 +17,15 @@ class VocabStudyScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context);
     final detail = ref.watch(vocabSetDetailProvider(set.id));
     return Scaffold(
       appBar: AppBar(title: Text(set.title)),
       body: detail.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, _) => const Center(child: Text('Yuklab bo\'lmadi')),
+        error: (_, _) => Center(child: Text(l.loadFailed)),
         data: (d) => d.items.isEmpty
-            ? const Center(child: Text('So\'zlar yo\'q'))
+            ? Center(child: Text(l.noWords))
             : _Flashcards(setId: set.id, items: d.items),
       ),
     );
@@ -59,6 +61,7 @@ class _FlashcardsState extends ConsumerState<_Flashcards> {
   }
 
   Future<void> _finish() async {
+    final l = AppLocalizations.of(context);
     setState(() => _submitting = true);
     try {
       final learned = await ref
@@ -68,12 +71,12 @@ class _FlashcardsState extends ConsumerState<_Flashcards> {
       await showDialog<void>(
         context: context,
         builder: (ctx) => AlertDialog(
-          title: const Text('Tabriklaymiz! 🎉'),
-          content: Text('${widget.items.length} ta so\'zdan $learned tasini bildingiz.'),
+          title: Text(l.congrats),
+          content: Text(l.vocabResult(learned, widget.items.length)),
           actions: [
             FilledButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Yopish'),
+              child: Text(l.close),
             ),
           ],
         ),
@@ -90,6 +93,7 @@ class _FlashcardsState extends ConsumerState<_Flashcards> {
   Widget build(BuildContext context) {
     final item = widget.items[_index];
     final theme = Theme.of(context);
+    final l = AppLocalizations.of(context);
     return Column(
       children: [
         Padding(
@@ -127,7 +131,7 @@ class _FlashcardsState extends ConsumerState<_Flashcards> {
           Padding(
             padding: const EdgeInsets.all(16),
             child: Text(
-              'Ko\'rish uchun kartani bosing',
+              l.tapCardToFlip,
               style: theme.textTheme.bodySmall,
             ),
           ),
@@ -140,7 +144,7 @@ class _FlashcardsState extends ConsumerState<_Flashcards> {
                   child: OutlinedButton.icon(
                     onPressed: _submitting ? null : () => _answer(false),
                     icon: const Icon(Icons.close_rounded),
-                    label: const Text('Bilmadim'),
+                    label: Text(l.dontKnow),
                   ),
                 ),
                 const SizedBox(width: 12),
@@ -148,7 +152,7 @@ class _FlashcardsState extends ConsumerState<_Flashcards> {
                   child: FilledButton.icon(
                     onPressed: _submitting ? null : () => _answer(true),
                     icon: const Icon(Icons.check_rounded),
-                    label: const Text('Bildim'),
+                    label: Text(l.know),
                   ),
                 ),
               ],

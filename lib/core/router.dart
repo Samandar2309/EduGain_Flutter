@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../features/auth/application/auth_controller.dart';
+import '../features/auth/presentation/name_screen.dart';
 import '../features/auth/presentation/otp_screen.dart';
 import '../features/auth/presentation/phone_screen.dart';
 import '../features/auth/presentation/splash_screen.dart';
@@ -13,8 +14,9 @@ import '../features/home/presentation/main_shell.dart';
 import '../features/placement/presentation/placement_screen.dart';
 import '../features/profile/presentation/profile_screen.dart';
 import '../features/speaking/domain/models.dart';
-import '../features/speaking/presentation/scenario_list_screen.dart';
 import '../features/speaking/presentation/speaking_chat_screen.dart';
+import '../features/speaking/presentation/speaking_home_screen.dart';
+import '../features/speaking/presentation/track_detail_screen.dart';
 import '../features/subscriptions/presentation/plans_screen.dart';
 import '../features/vocabulary/domain/models.dart';
 import '../features/vocabulary/presentation/review_screen.dart';
@@ -33,7 +35,8 @@ final routerProvider = Provider<GoRouter>((ref) {
     initialLocation: '/splash',
     refreshListenable: refresh,
     redirect: (context, state) {
-      final status = ref.read(authControllerProvider).status;
+      final auth = ref.read(authControllerProvider);
+      final status = auth.status;
       final loc = state.matchedLocation;
 
       if (status == AuthStatus.unknown) {
@@ -42,8 +45,15 @@ final routerProvider = Provider<GoRouter>((ref) {
       if (status == AuthStatus.unauthenticated) {
         return loc.startsWith('/login') ? null : '/login';
       }
-      // authenticated
-      final atGate = loc == '/splash' || loc.startsWith('/login');
+      // authenticated — but a brand-new user must set their name first.
+      final needsName = (auth.user?.fullName ?? '').trim().isEmpty;
+      if (needsName) {
+        return loc == '/onboarding/name' ? null : '/onboarding/name';
+      }
+      // has a name: keep them out of the gates and the name step.
+      final atGate = loc == '/splash' ||
+          loc.startsWith('/login') ||
+          loc == '/onboarding/name';
       return atGate ? '/home' : null;
     },
     routes: [
@@ -58,6 +68,10 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
         ],
       ),
+      GoRoute(
+        path: '/onboarding/name',
+        builder: (_, _) => const NameScreen(),
+      ),
       GoRoute(path: '/home', builder: (_, _) => const MainShell()),
       GoRoute(path: '/placement', builder: (_, _) => const PlacementScreen()),
       GoRoute(path: '/review', builder: (_, _) => const ReviewScreen()),
@@ -65,12 +79,17 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/profile', builder: (_, _) => const ProfileScreen()),
       GoRoute(
         path: '/speaking',
-        builder: (_, _) => const ScenarioListScreen(),
+        builder: (_, _) => const SpeakingHomeScreen(),
         routes: [
+          GoRoute(
+            path: 'track',
+            builder: (_, state) =>
+                TrackDetailScreen(track: state.extra as TrackSummary),
+          ),
           GoRoute(
             path: 'chat',
             builder: (_, state) =>
-                SpeakingChatScreen(started: state.extra as StartedSession),
+                SpeakingChatScreen(launch: state.extra as SpeakingLaunch),
           ),
         ],
       ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/ui/tokens.dart';
+import '../../../l10n/app_localizations.dart';
 
 /// Branded splash shown while the auth status is resolving.
 class SplashScreen extends StatelessWidget {
@@ -8,6 +9,7 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Scaffold(
       body: DecoratedBox(
         decoration: const BoxDecoration(gradient: AppGradients.brand),
@@ -39,7 +41,7 @@ class SplashScreen extends StatelessWidget {
               ),
               const SizedBox(height: AppSpace.sm),
               Text(
-                'Sun\'iy intellekt bilan ingliz tili',
+                l.appTagline,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: Colors.white.withValues(alpha: 0.85),
                 ),

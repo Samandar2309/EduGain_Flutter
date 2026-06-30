@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/api/api_exception.dart';
 import '../../../core/ui/error_handling.dart';
+import '../../../l10n/app_localizations.dart';
 import '../application/providers.dart';
 
 class VocabSetListScreen extends ConsumerWidget {
@@ -11,14 +12,15 @@ class VocabSetListScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context);
     final sets = ref.watch(vocabSetsProvider);
     return Scaffold(
       appBar: AppBar(title: const Text('Vocabulary')),
       body: sets.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, _) => const Center(child: Text('Yuklab bo\'lmadi')),
+        error: (_, _) => Center(child: Text(l.loadFailed)),
         data: (list) => list.isEmpty
-            ? const Center(child: Text('Hozircha to\'plamlar yo\'q'))
+            ? Center(child: Text(l.noSets))
             : ListView.builder(
                 padding: const EdgeInsets.all(16),
                 itemCount: list.length,

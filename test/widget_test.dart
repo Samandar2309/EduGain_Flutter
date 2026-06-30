@@ -1,5 +1,6 @@
 import 'package:edugain/features/auth/domain/models.dart';
 import 'package:edugain/features/auth/presentation/splash_screen.dart';
+import 'package:edugain/l10n/app_localizations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -31,7 +32,13 @@ void main() {
   });
 
   testWidgets('SplashScreen renders the brand', (tester) async {
-    await tester.pumpWidget(const MaterialApp(home: SplashScreen()));
+    await tester.pumpWidget(
+      const MaterialApp(
+        localizationsDelegates: AppLocalizations.localizationsDelegates,
+        supportedLocales: AppLocalizations.supportedLocales,
+        home: SplashScreen(),
+      ),
+    );
     expect(find.text('EduGain'), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
   });

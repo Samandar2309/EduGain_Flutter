@@ -24,7 +24,11 @@ SpeakingEvent? parseSseEvent(String block) {
   }
 
   return switch (name) {
+    'transcript' => TranscriptEvent(payload['text'] as String? ?? ''),
     'chunk' => ChunkEvent(payload['text'] as String? ?? ''),
+    'coaching' => CoachingEvent(
+      Coaching.fromJson(payload['coaching'] as Map<String, dynamic>),
+    ),
     'done' => DoneEvent(
       SpeakingSession.fromJson(payload['session'] as Map<String, dynamic>),
     ),

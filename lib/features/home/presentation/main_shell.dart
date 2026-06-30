@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/ui/components.dart';
 import '../../../core/ui/tokens.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../profile/presentation/profile_screen.dart';
 import 'home_screen.dart';
 
@@ -22,26 +23,27 @@ class _MainShellState extends State<MainShell> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Scaffold(
       body: IndexedStack(index: _index, children: _tabs),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _index,
         onDestinationSelected: (i) => setState(() => _index = i),
-        destinations: const [
+        destinations: [
           NavigationDestination(
-            icon: Icon(Icons.home_outlined),
-            selectedIcon: Icon(Icons.home_rounded),
-            label: 'Asosiy',
+            icon: const Icon(Icons.home_outlined),
+            selectedIcon: const Icon(Icons.home_rounded),
+            label: l.navHome,
           ),
           NavigationDestination(
-            icon: Icon(Icons.menu_book_outlined),
-            selectedIcon: Icon(Icons.menu_book_rounded),
-            label: 'Darslar',
+            icon: const Icon(Icons.menu_book_outlined),
+            selectedIcon: const Icon(Icons.menu_book_rounded),
+            label: l.navLessons,
           ),
           NavigationDestination(
-            icon: Icon(Icons.person_outline_rounded),
-            selectedIcon: Icon(Icons.person_rounded),
-            label: 'Profil',
+            icon: const Icon(Icons.person_outline_rounded),
+            selectedIcon: const Icon(Icons.person_rounded),
+            label: l.navProfile,
           ),
         ],
       ),
@@ -56,6 +58,7 @@ class LessonsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l = AppLocalizations.of(context);
     return ListView(
       padding: const EdgeInsets.fromLTRB(AppSpace.xl, 0, AppSpace.xl, 100),
       children: [
@@ -63,14 +66,14 @@ class LessonsTab extends StatelessWidget {
           bottom: false,
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: AppSpace.lg),
-            child: Text('Darslar', style: theme.textTheme.headlineSmall),
+            child: Text(l.lessonsTitle, style: theme.textTheme.headlineSmall),
           ),
         ),
         _LessonCard(
           icon: Icons.record_voice_over_rounded,
           color: AppColors.speaking,
           title: 'Speaking',
-          subtitle: 'AI bilan jonli suhbat orqali gapirishni mashq qiling',
+          subtitle: l.lessonSpeakingSubtitle,
           onTap: () => context.push('/speaking'),
         ),
         const SizedBox(height: AppSpace.md),
@@ -78,7 +81,7 @@ class LessonsTab extends StatelessWidget {
           icon: Icons.style_rounded,
           color: AppColors.vocabulary,
           title: 'Vocabulary',
-          subtitle: 'Fleshkartalar bilan so\'z boyligini oshiring',
+          subtitle: l.lessonVocabSubtitle,
           onTap: () => context.push('/vocabulary'),
         ),
         const SizedBox(height: AppSpace.md),
@@ -86,15 +89,15 @@ class LessonsTab extends StatelessWidget {
           icon: Icons.menu_book_rounded,
           color: AppColors.grammar,
           title: 'Grammar',
-          subtitle: 'Qoidalar va mashqlar bilan grammatikani mustahkamlang',
+          subtitle: l.lessonGrammarSubtitle,
           onTap: () => context.push('/grammar'),
         ),
         const SizedBox(height: AppSpace.md),
         _LessonCard(
           icon: Icons.assignment_turned_in_rounded,
           color: AppColors.placement,
-          title: 'Daraja testi',
-          subtitle: 'CEFR darajangizni aniqlang',
+          title: l.lessonPlacementTitle,
+          subtitle: l.lessonPlacementSubtitle,
           onTap: () => context.push('/placement'),
         ),
       ],

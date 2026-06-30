@@ -24,6 +24,33 @@ void main() {
       expect(session.turnsLeft, 3);
     });
 
+    test('parses a coaching event', () {
+      final event = parseSseEvent(
+        'event: coaching\n'
+        'data: {"coaching": {"understood": "I understood you.", '
+        '"has_errors": true, "correction": "I went to the market yesterday.", '
+        '"natural_version": "", "grammar_point": "Past Simple", '
+        '"vocabulary": ["groceries", "cashier"], "pronunciation": ["yesterday"], '
+        '"error_tags": ["past_simple"], "emotion": "encouraging"}}',
+      );
+      expect(event, isA<CoachingEvent>());
+      final c = (event! as CoachingEvent).coaching;
+      expect(c.correction, 'I went to the market yesterday.');
+      expect(c.grammarPoint, 'Past Simple');
+      expect(c.vocabulary, ['groceries', 'cashier']);
+      expect(c.errorTags, ['past_simple']);
+      expect(c.emotion, 'encouraging');
+      expect(c.hasErrors, isTrue);
+    });
+
+    test('parses a transcript event (audio turn)', () {
+      final event = parseSseEvent(
+        'event: transcript\ndata: {"text": "table for two"}',
+      );
+      expect(event, isA<TranscriptEvent>());
+      expect((event! as TranscriptEvent).text, 'table for two');
+    });
+
     test('parses an error event', () {
       final event = parseSseEvent(
         'event: error\ndata: {"code": "AI_UNAVAILABLE", "message": "down"}',

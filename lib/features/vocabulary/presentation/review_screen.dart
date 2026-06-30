@@ -7,6 +7,7 @@ import '../../../core/providers.dart';
 import '../../../core/ui/components.dart';
 import '../../../core/ui/error_handling.dart';
 import '../../../core/ui/tokens.dart';
+import '../../../l10n/app_localizations.dart';
 import '../application/providers.dart';
 import '../domain/models.dart';
 
@@ -17,12 +18,13 @@ class ReviewScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context);
     final due = ref.watch(reviewDueProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Takrorlash')),
+      appBar: AppBar(title: Text(l.reviewTitle)),
       body: due.when(
         loading: () => const AppLoader(),
-        error: (_, _) => const Center(child: Text('Yuklab bo\'lmadi')),
+        error: (_, _) => Center(child: Text(l.loadFailed)),
         data: (items) => items.isEmpty
             ? const _AllDone()
             : _ReviewSession(items: items),
@@ -37,6 +39,7 @@ class _AllDone extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l = AppLocalizations.of(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(AppSpace.xxxl),
@@ -58,13 +61,13 @@ class _AllDone extends StatelessWidget {
             ),
             const SizedBox(height: AppSpace.xl),
             Text(
-              'Hammasi takrorlangan! 🎉',
+              l.allReviewed,
               style: theme.textTheme.titleLarge,
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: AppSpace.sm),
             Text(
-              'Hozircha takrorlash uchun so\'z yo\'q.\nYangi so\'zlarni o\'rganishda davom eting.',
+              l.noReviewWords,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
@@ -73,7 +76,7 @@ class _AllDone extends StatelessWidget {
             const SizedBox(height: AppSpace.xxl),
             FilledButton(
               onPressed: () => context.go('/vocabulary'),
-              child: const Text('So\'z to\'plamlari'),
+              child: Text(l.wordSets),
             ),
           ],
         ),
@@ -109,6 +112,7 @@ class _ReviewSessionState extends ConsumerState<_ReviewSession> {
   }
 
   Future<void> _finish() async {
+    final l = AppLocalizations.of(context);
     setState(() => _submitting = true);
     try {
       final res = await ref
@@ -124,14 +128,12 @@ class _ReviewSessionState extends ConsumerState<_ReviewSession> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(AppRadius.lg),
           ),
-          title: const Text('Ajoyib ish! 🎉'),
-          content: Text(
-            '${res.reviewed} ta so\'zdan ${res.correct} tasini esladingiz.',
-          ),
+          title: Text(l.greatJob),
+          content: Text(l.reviewResult(res.correct, res.reviewed)),
           actions: [
             FilledButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Yopish'),
+              child: Text(l.close),
             ),
           ],
         ),
@@ -148,6 +150,7 @@ class _ReviewSessionState extends ConsumerState<_ReviewSession> {
   Widget build(BuildContext context) {
     final item = widget.items[_index];
     final theme = Theme.of(context);
+    final l = AppLocalizations.of(context);
     return SafeArea(
       child: Padding(
         padding: const EdgeInsets.all(AppSpace.xl),
@@ -196,7 +199,7 @@ class _ReviewSessionState extends ConsumerState<_ReviewSession> {
             const SizedBox(height: AppSpace.lg),
             if (!_showBack)
               Text(
-                'Ma\'nosini ko\'rish uchun kartani bosing',
+                l.tapToSeeMeaning,
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
@@ -208,7 +211,7 @@ class _ReviewSessionState extends ConsumerState<_ReviewSession> {
                     child: OutlinedButton.icon(
                       onPressed: _submitting ? null : () => _answer(false),
                       icon: const Icon(Icons.refresh_rounded, size: 20),
-                      label: const Text('Eslay olmadim'),
+                      label: Text(l.couldntRecall),
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppColors.danger,
                         side: const BorderSide(color: AppColors.danger),
@@ -220,7 +223,7 @@ class _ReviewSessionState extends ConsumerState<_ReviewSession> {
                     child: FilledButton.icon(
                       onPressed: _submitting ? null : () => _answer(true),
                       icon: const Icon(Icons.check_rounded, size: 20),
-                      label: const Text('Esladim'),
+                      label: Text(l.recalled),
                     ),
                   ),
                 ],

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:dio/dio.dart';
 
@@ -125,7 +126,41 @@ class ApiClient {
       throw _toApiException(e);
     }
     if (resp.statusCode == 200) return resp.data!.stream;
+    return _throwStreamError(resp);
+  }
 
+  /// Like [postStream] but uploads a file as multipart form-data (audio
+  /// Speaking). The reply still streams back as SSE; pre-stream errors (422
+  /// empty/silent audio, 402 paywall, ...) arrive as JSON and are thrown.
+  Future<Stream<List<int>>> postMultipartStream(
+    String path, {
+    required String filePath,
+    required String filename,
+    String field = 'audio',
+  }) async {
+    final form = FormData.fromMap({
+      field: await MultipartFile.fromFile(filePath, filename: filename),
+    });
+    final Response<ResponseBody> resp;
+    try {
+      resp = await _dio.post<ResponseBody>(
+        path,
+        data: form,
+        options: Options(
+          responseType: ResponseType.stream,
+          headers: {'Accept': 'text/event-stream'},
+          validateStatus: (_) => true,
+        ),
+      );
+    } on DioException catch (e) {
+      throw _toApiException(e);
+    }
+    if (resp.statusCode == 200) return resp.data!.stream;
+    return _throwStreamError(resp);
+  }
+
+  /// Drain a non-200 streamed response body and throw it as an [ApiException].
+  Future<Never> _throwStreamError(Response<ResponseBody> resp) async {
     final bytes = await resp.data!.stream.fold<List<int>>(
       <int>[],
       (acc, chunk) => acc..addAll(chunk),
@@ -141,6 +176,22 @@ class ApiClient {
 
   Future<Map<String, dynamic>> put(String path, {Object? body}) =>
       _send(() => _dio.put<dynamic>(path, data: body));
+
+  /// POST returning a raw binary body (e.g. TTS audio), not the JSON envelope.
+  /// Goes through the same Dio (so the 401-refresh-and-retry interceptor still
+  /// applies). Error responses surface as [ApiException].
+  Future<Uint8List> postBytes(String path, {Object? body}) async {
+    try {
+      final resp = await _dio.post<List<int>>(
+        path,
+        data: body,
+        options: Options(responseType: ResponseType.bytes),
+      );
+      return Uint8List.fromList(resp.data ?? const <int>[]);
+    } on DioException catch (e) {
+      throw _toApiException(e);
+    }
+  }
 
   Future<Map<String, dynamic>> _send(
     Future<Response<dynamic>> Function() call,

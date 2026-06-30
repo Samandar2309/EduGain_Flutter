@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/api/api_exception.dart';
 import '../../../core/providers.dart';
 import '../../../core/ui/tokens.dart';
+import '../../../l10n/app_localizations.dart';
 
 /// Step 2 — enter the 6-digit code; on success the auth status flips to
 /// authenticated and the router moves to /home.
@@ -57,7 +58,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
   Future<void> _verify() async {
     final code = _controller.text.trim();
     if (code.length != 6) {
-      _snack('6 xonali kodni kiriting');
+      _snack(AppLocalizations.of(context).otpEnter6);
       return;
     }
     FocusScope.of(context).unfocus();
@@ -77,10 +78,11 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
 
   Future<void> _resend() async {
     if (_resendIn > 0) return;
+    final resent = AppLocalizations.of(context).otpResent;
     try {
       await ref.read(authRepositoryProvider).requestOtp(widget.phone);
       _startCooldown();
-      _snack('Yangi kod yuborildi');
+      _snack(resent);
     } on ApiException catch (e) {
       _snack(e.message);
     }
@@ -94,6 +96,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(leading: const BackButton()),
       body: SafeArea(
@@ -116,23 +119,12 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                 ),
               ),
               const SizedBox(height: AppSpace.xl),
-              Text('Tasdiqlash kodi', style: theme.textTheme.headlineSmall),
+              Text(l.otpTitle, style: theme.textTheme.headlineSmall),
               const SizedBox(height: AppSpace.sm),
-              Text.rich(
-                TextSpan(
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                  children: [
-                    const TextSpan(text: 'Kod yuborildi: '),
-                    TextSpan(
-                      text: widget.phone,
-                      style: const TextStyle(
-                        color: AppColors.ink,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ],
+              Text(
+                l.otpSentTo(widget.phone),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
                 ),
               ),
               const SizedBox(height: AppSpace.xxxl),
@@ -157,20 +149,22 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
                           color: Colors.white,
                         ),
                       )
-                    : const Text('Tasdiqlash'),
+                    : Text(l.verify),
               ),
               const SizedBox(height: AppSpace.lg),
               Center(
                 child: _resendIn > 0
                     ? Text(
-                        'Qayta yuborish — 0:${_resendIn.toString().padLeft(2, '0')}',
+                        l.resendCountdown(
+                          '0:${_resendIn.toString().padLeft(2, '0')}',
+                        ),
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: AppColors.inkFaint,
                         ),
                       )
                     : TextButton(
                         onPressed: _resend,
-                        child: const Text('Kodni qayta yuborish'),
+                        child: Text(l.resendCode),
                       ),
               ),
             ],

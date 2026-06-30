@@ -30,6 +30,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  # Localization: English / Russian / Uzbek (gen-l10n from lib/l10n/*.arb)
+  flutter_localizations:
+    sdk: flutter
+  intl: any
 
   cupertino_icons: ^1.0.8
 
@@ -46,6 +50,20 @@ dependencies:
   google_sign_in: ^7.2.0
   # Premium typography (Inter) — fetched & cached at runtime
   google_fonts: ^6.2.1
+  # Audio Speaking
+  record: ^6.2.1 # mic capture (mono 16 kHz AAC)
+  permission_handler: ^12.0.3 # mic permission flow
+  path_provider: ^2.1.5 # temp dir for the recorded clip / TTS playback
+  # Spoken AI replies: server-rendered TTS audio (Groq) played back per sentence.
+  # Replaced flutter_tts (on-device) — voices now come from the backend so they
+  # are identical on every device, which on-device engines can't guarantee.
+  just_audio: ^0.10.5
+  # Persist the learner's chosen voice across sessions.
+  shared_preferences: ^2.5.5
+  # Real 3D tutor avatar: a three.js scene (assets/avatar3d/) renders a rigged
+  # Ready Player Me model with live viseme lip-sync, hosted in a transparent
+  # WebView over the scenario backdrop.
+  webview_flutter: ^4.10.0
 
 dev_dependencies:
   flutter_test:
@@ -64,10 +82,23 @@ dev_dependencies:
 # The following section is specific to Flutter packages.
 flutter:
 
+  # Generate the localization classes (AppLocalizations) from lib/l10n/*.arb.
+  generate: true
+
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+  # Realistic per-scenario avatar + background renders (optional — the app
+  # falls back to the procedural avatar / gradient when a file is absent).
+  # See assets/avatars/README.md and assets/backgrounds/README.md.
+  assets:
+    - assets/avatars/
+    - assets/backgrounds/
+    # Real-time 3D avatar engine (three.js + GLTFLoader) and rigged models.
+    - assets/avatar3d/
+    - assets/avatar3d/models/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

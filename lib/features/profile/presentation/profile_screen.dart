@@ -4,20 +4,23 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/api/api_exception.dart';
+import '../../../core/locale_controller.dart';
 import '../../../core/providers.dart';
 import '../../../core/ui/error_handling.dart';
+import '../../../core/ui/language_picker.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../gamification/application/providers.dart';
 import '../../gamification/domain/models.dart';
 import '../../subscriptions/application/providers.dart';
 
+// Product-name XP sources stay as-is; 'streak' / 'daily_goal' are localized in
+// [_XpTile] (they have a translatable label).
 const _xpSourceLabels = {
   'speaking': 'Speaking',
   'writing': 'Writing',
   'vocab': 'Vocabulary',
   'grammar': 'Grammar',
   'listening': 'Listening',
-  'streak': 'Streak bonus',
-  'daily_goal': 'Kunlik maqsad',
 };
 
 const _tierLabels = {'free': 'Free', 'entry': 'Entry', 'main': 'Main', 'pro': 'Pro'};
@@ -32,6 +35,7 @@ class ProfileScreen extends ConsumerWidget {
     final history = ref.watch(xpHistoryProvider);
     final subscription = ref.watch(mySubscriptionProvider);
     final theme = Theme.of(context);
+    final l = AppLocalizations.of(context);
 
     if (user == null) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
@@ -39,11 +43,11 @@ class ProfileScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profil'),
+        title: Text(l.profileTitle),
         actions: [
           IconButton(
             icon: const Icon(Icons.logout_rounded),
-            tooltip: 'Chiqish',
+            tooltip: l.logout,
             onPressed: () => ref.read(authControllerProvider.notifier).logout(),
           ),
         ],
@@ -77,7 +81,7 @@ class ProfileScreen extends ConsumerWidget {
                       Padding(
                         padding: const EdgeInsets.only(top: 4),
                         child: Chip(
-                          label: Text('Daraja: ${user.cefrLevel}'),
+                          label: Text(l.levelLabel(user.cefrLevel!)),
                           visualDensity: VisualDensity.compact,
                         ),
                       ),
@@ -112,7 +116,7 @@ class ProfileScreen extends ConsumerWidget {
           Card(
             child: ListTile(
               leading: const Icon(Icons.workspace_premium_rounded),
-              title: const Text('Obuna'),
+              title: Text(l.subscription),
               subtitle: Text(
                 subscription.maybeWhen(
                   data: (s) => _tierLabels[s.tier] ?? s.tier,
@@ -123,11 +127,29 @@ class ProfileScreen extends ConsumerWidget {
               onTap: () => context.push('/subscriptions'),
             ),
           ),
+          const SizedBox(height: 8),
+
+          // ── language ──────────────────────────────────────────────────
+          Card(
+            child: ListTile(
+              leading: const Icon(Icons.translate_rounded),
+              title: Text(l.languageTitle),
+              subtitle: Text(
+                (AppLanguage.fromCode(
+                          ref.watch(localeProvider)?.languageCode,
+                        ) ??
+                        AppLanguage.uzbek)
+                    .endonym,
+              ),
+              trailing: const Icon(Icons.chevron_right_rounded),
+              onTap: () => showLanguagePicker(context),
+            ),
+          ),
           const SizedBox(height: 24),
 
           // ── XP history ────────────────────────────────────────────────
           Text(
-            'XP tarixi',
+            l.xpHistory,
             style: theme.textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
             ),
@@ -136,9 +158,9 @@ class ProfileScreen extends ConsumerWidget {
           history.when(
             loading: () =>
                 const Center(child: Padding(padding: EdgeInsets.all(16), child: CircularProgressIndicator())),
-            error: (_, _) => const Text('Tarixni yuklab bo\'lmadi'),
+            error: (_, _) => Text(l.xpHistoryError),
             data: (events) => events.isEmpty
-                ? const Text('Hali XP yo\'q — mashqni boshlang!')
+                ? Text(l.noXpYet)
                 : Column(children: events.map(_XpTile.new).toList()),
           ),
         ],
@@ -147,24 +169,25 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   Future<void> _editName(BuildContext context, WidgetRef ref, String current) async {
+    final l = AppLocalizations.of(context);
     final controller = TextEditingController(text: current);
     final name = await showDialog<String>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Ismni o\'zgartirish'),
+        title: Text(l.editNameTitle),
         content: TextField(
           controller: controller,
           autofocus: true,
-          decoration: const InputDecoration(hintText: 'Ismingiz'),
+          decoration: InputDecoration(hintText: l.nameLabel),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Bekor'),
+            child: Text(l.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, controller.text.trim()),
-            child: const Text('Saqlash'),
+            child: Text(l.save),
           ),
         ],
       ),
@@ -178,27 +201,28 @@ class ProfileScreen extends ConsumerWidget {
   }
 
   Future<void> _editGoal(BuildContext context, WidgetRef ref, int current) async {
+    final l = AppLocalizations.of(context);
     final controller = TextEditingController(text: current.toString());
     final value = await showDialog<int>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Kunlik maqsad (XP)'),
+        title: Text(l.dailyGoalTitle),
         content: TextField(
           controller: controller,
           autofocus: true,
           keyboardType: TextInputType.number,
           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-          decoration: const InputDecoration(hintText: 'Masalan: 50'),
+          decoration: InputDecoration(hintText: l.dailyGoalHint),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Bekor'),
+            child: Text(l.cancel),
           ),
           FilledButton(
             onPressed: () =>
                 Navigator.pop(ctx, int.tryParse(controller.text.trim())),
-            child: const Text('Saqlash'),
+            child: Text(l.save),
           ),
         ],
       ),
@@ -222,6 +246,7 @@ class _GamificationCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l = AppLocalizations.of(context);
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -230,8 +255,8 @@ class _GamificationCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _Stat(icon: Icons.bolt_rounded, value: '${profile.xp}', label: 'XP'),
-                _Stat(icon: Icons.military_tech_rounded, value: '${profile.level}', label: 'Daraja'),
+                _Stat(icon: Icons.bolt_rounded, value: '${profile.xp}', label: l.statXp),
+                _Stat(icon: Icons.military_tech_rounded, value: '${profile.level}', label: l.statLevel),
                 _Stat(
                   icon: Icons.local_fire_department_rounded,
                   value: '${profile.streak}',
@@ -246,7 +271,7 @@ class _GamificationCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Kunlik maqsad', style: theme.textTheme.bodyMedium),
+                      Text(l.dailyGoalLabel, style: theme.textTheme.bodyMedium),
                       const SizedBox(height: 6),
                       LinearProgressIndicator(
                         value: profile.goalRatio,
@@ -305,10 +330,16 @@ class _XpTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final label = switch (event.source) {
+      'daily_goal' => l.xpSourceDailyGoal,
+      'streak' => l.xpSourceStreak,
+      _ => _xpSourceLabels[event.source] ?? event.source,
+    };
     return ListTile(
       dense: true,
       leading: const Icon(Icons.bolt_rounded),
-      title: Text(_xpSourceLabels[event.source] ?? event.source),
+      title: Text(label),
       subtitle: Text(event.createdAt.split('T').first),
       trailing: Text(
         '+${event.amount}',

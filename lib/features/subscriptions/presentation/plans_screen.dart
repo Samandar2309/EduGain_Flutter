@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../../core/api/api_exception.dart';
 import '../../../core/format.dart';
 import '../../../core/ui/error_handling.dart';
+import '../../../l10n/app_localizations.dart';
 import '../application/providers.dart';
 import '../domain/models.dart';
 
@@ -21,6 +22,7 @@ class _PlansScreenState extends ConsumerState<PlansScreen> {
   bool _busy = false;
 
   Future<void> _buy(Plan plan) async {
+    final l = AppLocalizations.of(context);
     final provider = await showModalBottomSheet<String>(
       context: context,
       showDragHandle: true,
@@ -28,9 +30,9 @@ class _PlansScreenState extends ConsumerState<PlansScreen> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Padding(
-              padding: EdgeInsets.all(16),
-              child: Text("To'lov usulini tanlang"),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Text(l.choosePayment),
             ),
             ListTile(
               leading: const Icon(Icons.account_balance_wallet_rounded),
@@ -52,6 +54,7 @@ class _PlansScreenState extends ConsumerState<PlansScreen> {
   }
 
   Future<void> _checkout(Plan plan, String provider) async {
+    final l = AppLocalizations.of(context);
     setState(() => _busy = true);
     try {
       final checkout = await ref
@@ -66,7 +69,7 @@ class _PlansScreenState extends ConsumerState<PlansScreen> {
         await _awaitPayment();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("To'lov sahifasini ochib bo'lmadi")),
+          SnackBar(content: Text(l.paymentPageError)),
         );
       }
     } on ApiException catch (e) {
@@ -77,20 +80,19 @@ class _PlansScreenState extends ConsumerState<PlansScreen> {
   }
 
   Future<void> _awaitPayment() {
+    final l = AppLocalizations.of(context);
     return showDialog<void>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text("To'lovni yakunlang"),
-        content: const Text(
-          "To'lovni brauzerda yakunlang. So'ng holatni tekshiring.",
-        ),
+        title: Text(l.finishPaymentTitle),
+        content: Text(l.finishPaymentBody),
         actions: [
           FilledButton(
             onPressed: () {
               ref.invalidate(mySubscriptionProvider);
               Navigator.pop(ctx);
             },
-            child: const Text('Tekshirish'),
+            child: Text(l.check),
           ),
         ],
       ),
@@ -98,21 +100,20 @@ class _PlansScreenState extends ConsumerState<PlansScreen> {
   }
 
   Future<void> _cancel() async {
+    final l = AppLocalizations.of(context);
     final confirm = await showDialog<bool>(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Obunani bekor qilish'),
-        content: const Text(
-          'Imtiyozlar muddat oxirigacha saqlanadi. Davom etasizmi?',
-        ),
+        title: Text(l.cancelSubscriptionTitle),
+        content: Text(l.cancelSubscriptionBody),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Yo\'q'),
+            child: Text(l.no),
           ),
           FilledButton(
             onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Ha'),
+            child: Text(l.yes),
           ),
         ],
       ),
@@ -137,7 +138,8 @@ class _PlansScreenState extends ConsumerState<PlansScreen> {
         children: [
           plans.when(
             loading: () => const Center(child: CircularProgressIndicator()),
-            error: (_, _) => const Center(child: Text('Yuklab bo\'lmadi')),
+            error: (_, _) =>
+                Center(child: Text(AppLocalizations.of(context).loadFailed)),
             data: (list) => ListView(
               padding: const EdgeInsets.all(16),
               children: [
@@ -175,6 +177,7 @@ class _CurrentPlan extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l = AppLocalizations.of(context);
     return Card(
       color: theme.colorScheme.surfaceContainerHighest,
       child: Padding(
@@ -185,7 +188,7 @@ class _CurrentPlan extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Joriy tarif', style: theme.textTheme.bodySmall),
+                  Text(l.currentPlan, style: theme.textTheme.bodySmall),
                   const SizedBox(height: 4),
                   Text(
                     _tierNames[subscription.tier] ?? subscription.tier,
@@ -195,14 +198,14 @@ class _CurrentPlan extends StatelessWidget {
                   ),
                   if (subscription.expiresAt != null)
                     Text(
-                      'Amal qiladi: ${subscription.expiresAt!.split('T').first}',
+                      l.validUntil(subscription.expiresAt!.split('T').first),
                       style: theme.textTheme.bodySmall,
                     ),
                 ],
               ),
             ),
             if (subscription.isPaid && subscription.isActive)
-              TextButton(onPressed: onCancel, child: const Text('Bekor qilish')),
+              TextButton(onPressed: onCancel, child: Text(l.cancelAction)),
           ],
         ),
       ),
@@ -219,6 +222,7 @@ class _PlanCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l = AppLocalizations.of(context);
     return Card(
       margin: const EdgeInsets.only(bottom: 12),
       child: Padding(
@@ -234,7 +238,7 @@ class _PlanCard extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              '${formatUzs(plan.priceUzs)} / oy',
+              l.pricePerMonth(formatUzs(plan.priceUzs)),
               style: theme.textTheme.titleMedium?.copyWith(
                 color: theme.colorScheme.primary,
               ),
@@ -255,7 +259,7 @@ class _PlanCard extends StatelessWidget {
             const SizedBox(height: 14),
             FilledButton(
               onPressed: onBuy,
-              child: const Text('Tanlash'),
+              child: Text(l.choosePlan),
             ),
           ],
         ),

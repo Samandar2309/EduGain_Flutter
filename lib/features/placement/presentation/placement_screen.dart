@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/api/api_exception.dart';
 import '../../../core/providers.dart';
 import '../../../core/ui/error_handling.dart';
+import '../../../l10n/app_localizations.dart';
 import '../application/providers.dart';
 import '../domain/models.dart';
 
@@ -15,14 +16,15 @@ class PlacementScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context);
     final test = ref.watch(placementTestProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Daraja testi')),
+      appBar: AppBar(title: Text(l.placementTestTitle)),
       body: test.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, _) => const Center(child: Text('Yuklab bo\'lmadi')),
+        error: (_, _) => Center(child: Text(l.loadFailed)),
         data: (questions) => questions.isEmpty
-            ? const Center(child: Text('Savollar topilmadi'))
+            ? Center(child: Text(l.noQuestions))
             : _Wizard(questions: questions),
       ),
     );
@@ -102,11 +104,12 @@ class _WizardState extends ConsumerState<_Wizard> {
   }
 
   Future<void> _showResult(PlacementResult result) {
+    final l = AppLocalizations.of(context);
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (ctx) => AlertDialog(
-        title: const Text('Natija tayyor 🎯'),
+        title: Text(l.resultReady),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -118,13 +121,13 @@ class _WizardState extends ConsumerState<_Wizard> {
               ),
             ),
             const SizedBox(height: 8),
-            const Text('Sizning ingliz tili darajangiz'),
+            Text(l.yourEnglishLevel),
           ],
         ),
         actions: [
           FilledButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Boshlash'),
+            child: Text(l.startAction),
           ),
         ],
       ),
@@ -135,6 +138,7 @@ class _WizardState extends ConsumerState<_Wizard> {
   Widget build(BuildContext context) {
     final q = widget.questions[_index];
     final theme = Theme.of(context);
+    final l = AppLocalizations.of(context);
     return Column(
       children: [
         Padding(
@@ -182,7 +186,7 @@ class _WizardState extends ConsumerState<_Wizard> {
                 TextField(
                   controller: _controllers[q.id],
                   onChanged: (_) => setState(() {}),
-                  decoration: const InputDecoration(hintText: 'Javobingiz'),
+                  decoration: InputDecoration(hintText: l.yourAnswer),
                 ),
             ],
           ),
@@ -197,7 +201,7 @@ class _WizardState extends ConsumerState<_Wizard> {
                     width: 22,
                     child: CircularProgressIndicator(strokeWidth: 2.4),
                   )
-                : Text(_isLast ? 'Yakunlash' : 'Keyingi'),
+                : Text(_isLast ? l.finishAction : l.nextAction),
           ),
         ),
       ],

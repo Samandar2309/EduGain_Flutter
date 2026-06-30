@@ -5,9 +5,12 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/api/api_exception.dart';
 import '../../../core/config.dart';
+import '../../../core/locale_controller.dart';
 import '../../../core/providers.dart';
 import '../../../core/ui/components.dart';
+import '../../../core/ui/language_picker.dart';
 import '../../../core/ui/tokens.dart';
+import '../../../l10n/app_localizations.dart';
 
 /// Step 1 of passwordless login — enter the phone number, get an OTP.
 class PhoneScreen extends ConsumerStatefulWidget {
@@ -30,7 +33,7 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
   Future<void> _submit() async {
     final phone = _controller.text.trim();
     if (!AppConfig.phonePattern.hasMatch(phone)) {
-      _snack('Telefon raqamini to\'g\'ri kiriting (+998XXXXXXXXX)');
+      _snack(AppLocalizations.of(context).phoneInvalid);
       return;
     }
     setState(() => _loading = true);
@@ -69,10 +72,11 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l = AppLocalizations.of(context);
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(24, 40, 24, 24),
+          padding: const EdgeInsets.fromLTRB(24, 12, 24, 24),
           child: ConstrainedBox(
             constraints: BoxConstraints(
               minHeight: MediaQuery.sizeOf(context).height - 100,
@@ -80,17 +84,30 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                const SizedBox(height: 24),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: TextButton.icon(
+                    onPressed: () => showLanguagePicker(context),
+                    icon: const Icon(Icons.translate_rounded, size: 20),
+                    label: Text(
+                      AppLanguage.fromCode(
+                            Localizations.localeOf(context).languageCode,
+                          )?.endonym ??
+                          l.languageTitle,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 8),
                 const Center(child: AppLogo(size: 76)),
                 const SizedBox(height: AppSpace.xxl),
                 Text(
-                  'Xush kelibsiz 👋',
+                  l.welcomeTitle,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.headlineMedium,
                 ),
                 const SizedBox(height: AppSpace.sm),
                 Text(
-                  'Davom etish uchun telefon raqamingizni kiriting',
+                  l.phoneSubtitle,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.bodyMedium?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
@@ -98,7 +115,7 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
                 ),
                 const SizedBox(height: AppSpace.xxxl),
                 Text(
-                  'Telefon raqam',
+                  l.phoneLabel,
                   style: theme.textTheme.labelLarge?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -124,9 +141,7 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
                 const SizedBox(height: AppSpace.xl),
                 FilledButton(
                   onPressed: _loading ? null : _submit,
-                  child: _loading
-                      ? const _BtnSpinner()
-                      : const Text('Kod yuborish'),
+                  child: _loading ? const _BtnSpinner() : Text(l.sendCode),
                 ),
                 const SizedBox(height: AppSpace.xl),
                 Row(
@@ -135,7 +150,7 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 14),
                       child: Text(
-                        'yoki',
+                        l.dividerOr,
                         style: theme.textTheme.bodySmall?.copyWith(
                           color: theme.colorScheme.onSurfaceVariant,
                         ),
@@ -148,12 +163,11 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
                 OutlinedButton.icon(
                   onPressed: _loading ? null : _google,
                   icon: const Icon(Icons.account_circle_rounded, size: 22),
-                  label: const Text('Google bilan kirish'),
+                  label: Text(l.googleSignIn),
                 ),
                 const SizedBox(height: AppSpace.xxl),
                 Text(
-                  'Davom etish orqali siz Foydalanish shartlari va '
-                  'Maxfiylik siyosatiga rozilik bildirasiz',
+                  l.termsNotice,
                   textAlign: TextAlign.center,
                   style: theme.textTheme.labelSmall?.copyWith(
                     color: AppColors.inkFaint,

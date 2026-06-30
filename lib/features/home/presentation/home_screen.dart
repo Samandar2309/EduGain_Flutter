@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/providers.dart';
 import '../../../core/ui/components.dart';
 import '../../../core/ui/tokens.dart';
+import '../../../l10n/app_localizations.dart';
 import '../../auth/domain/models.dart';
 import '../../vocabulary/application/providers.dart';
 
@@ -18,6 +19,7 @@ class HomeTab extends ConsumerWidget {
     final user = ref.watch(authControllerProvider).user;
     if (user == null) return const AppLoader();
 
+    final l = AppLocalizations.of(context);
     final dueCount = ref.watch(reviewDueProvider).asData?.value.length ?? 0;
 
     return ListView(
@@ -46,12 +48,12 @@ class HomeTab extends ConsumerWidget {
               ],
               const _FeaturedCard(),
               const SizedBox(height: AppSpace.xxl),
-              const SectionHeader(title: 'Modullar'),
+              SectionHeader(title: l.modules),
               _ModuleCard(
                 icon: Icons.record_voice_over_rounded,
                 color: AppColors.speaking,
                 title: 'Speaking',
-                subtitle: 'AI bilan jonli suhbat',
+                subtitle: l.moduleSpeakingSubtitle,
                 onTap: () => context.push('/speaking'),
               ),
               const SizedBox(height: AppSpace.md),
@@ -59,7 +61,7 @@ class HomeTab extends ConsumerWidget {
                 icon: Icons.style_rounded,
                 color: AppColors.vocabulary,
                 title: 'Vocabulary',
-                subtitle: 'So\'z boyligini oshiring',
+                subtitle: l.moduleVocabSubtitle,
                 onTap: () => context.push('/vocabulary'),
               ),
               const SizedBox(height: AppSpace.md),
@@ -67,7 +69,7 @@ class HomeTab extends ConsumerWidget {
                 icon: Icons.menu_book_rounded,
                 color: AppColors.grammar,
                 title: 'Grammar',
-                subtitle: 'Grammatikani mashq qiling',
+                subtitle: l.moduleGrammarSubtitle,
                 onTap: () => context.push('/grammar'),
               ),
             ],
@@ -85,6 +87,7 @@ class _Hero extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l = AppLocalizations.of(context);
     return GradientHeader(
       padding: const EdgeInsets.fromLTRB(
         AppSpace.xl,
@@ -102,7 +105,7 @@ class _Hero extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Salom, ${user.displayName} 👋',
+                      l.greeting(user.displayName),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: theme.textTheme.headlineSmall?.copyWith(
@@ -112,8 +115,8 @@ class _Hero extends StatelessWidget {
                     const SizedBox(height: 4),
                     Text(
                       user.cefrLevel != null
-                          ? 'Daraja: ${user.cefrLevel}'
-                          : 'Keling, bugun ham o\'rganamiz!',
+                          ? l.levelLabel(user.cefrLevel!)
+                          : l.letsLearnToday,
                       style: theme.textTheme.bodyMedium?.copyWith(
                         color: Colors.white.withValues(alpha: 0.9),
                       ),
@@ -198,6 +201,7 @@ class _StatsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return AppCard(
       padding: const EdgeInsets.symmetric(vertical: AppSpace.lg),
       child: Row(
@@ -206,21 +210,21 @@ class _StatsCard extends StatelessWidget {
             icon: Icons.bolt_rounded,
             color: AppColors.xp,
             value: '${user.currentXp}',
-            label: 'XP',
+            label: l.statXp,
           ),
           const _StatDivider(),
           _Stat(
             icon: Icons.military_tech_rounded,
             color: AppColors.brand,
             value: '${user.level}',
-            label: 'Daraja',
+            label: l.statLevel,
           ),
           const _StatDivider(),
           _Stat(
             icon: Icons.local_fire_department_rounded,
             color: AppColors.streak,
             value: '${user.streakCount}',
-            label: 'Kun',
+            label: l.statDay,
           ),
         ],
       ),
@@ -282,6 +286,7 @@ class _PlacementBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l = AppLocalizations.of(context);
     return AppCard(
       onTap: () => context.push('/placement'),
       color: AppColors.placement.withValues(alpha: 0.08),
@@ -298,14 +303,14 @@ class _PlacementBanner extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Darajangizni aniqlang',
+                  l.placementTitle,
                   style: theme.textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.w800,
                   ),
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  'Qisqa test — tajriba sizga moslashadi',
+                  l.placementSubtitle,
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: theme.colorScheme.onSurfaceVariant,
                   ),
@@ -327,6 +332,7 @@ class _ReviewNudge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return GestureDetector(
       onTap: () => context.push('/review'),
       child: Container(
@@ -356,9 +362,9 @@ class _ReviewNudge extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Takrorlash vaqti',
-                    style: TextStyle(
+                  Text(
+                    l.reviewTime,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 16,
                       fontWeight: FontWeight.w800,
@@ -366,7 +372,7 @@ class _ReviewNudge extends StatelessWidget {
                   ),
                   const SizedBox(height: 2),
                   Text(
-                    '$count ta so\'z sizni kutmoqda',
+                    l.wordsWaiting(count),
                     style: TextStyle(
                       color: Colors.white.withValues(alpha: 0.9),
                       fontSize: 13,
@@ -389,6 +395,7 @@ class _FeaturedCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return GestureDetector(
       onTap: () => context.push('/speaking'),
       child: Container(
@@ -413,9 +420,9 @@ class _FeaturedCard extends StatelessWidget {
                       color: Colors.white.withValues(alpha: 0.22),
                       borderRadius: BorderRadius.circular(AppRadius.pill),
                     ),
-                    child: const Text(
-                      'TAVSIYA',
-                      style: TextStyle(
+                    child: Text(
+                      l.featuredBadge,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 10,
                         fontWeight: FontWeight.w800,
@@ -424,9 +431,9 @@ class _FeaturedCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: AppSpace.md),
-                  const Text(
-                    'AI bilan suhbatni\nboshlang',
-                    style: TextStyle(
+                  Text(
+                    l.featuredTitle,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 19,
                       height: 1.2,
@@ -435,7 +442,7 @@ class _FeaturedCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 4),
                   Text(
-                    'Haqiqiy suhbatda mashq qiling',
+                    l.featuredSubtitle,
                     style: TextStyle(
                       color: Colors.white.withValues(alpha: 0.85),
                       fontSize: 13,

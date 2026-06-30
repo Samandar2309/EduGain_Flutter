@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+<style>
+  html, body { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: transparent; }
+  #c { display: block; width: 100%; height: 100%; touch-action: none; }
+</style>
+<script src="three.min.js"></script>
+<script src="GLTFLoader.js"></script>
+</head>
+<body>
+<canvas id="c"></canvas>
+<script>
+"use strict";
+
+// ── Flutter <-> JS bridge ───────────────────────────────────────────────────
+function toFlutter(msg) {
+  try { if (window.Bridge) window.Bridge.postMessage(JSON.stringify(msg)); } catch (e) {}
+}
+
+const AV = (function () {
+  let renderer, scene, camera, root, headBone, glowSprite;
+  let headY = 1.5;
+  // 'portrait' = small framed bust (the home/legacy stage); 'full' = the avatar
+  // fills the whole screen, head in the upper third with chest + shoulders, so
+  // it reads as a person standing in front of you (the immersive chat).
+  let view = 'portrait';
+  // All morph-capable meshes + a name -> [{mesh, index}] map so a blendshape can
+  // be driven across head, teeth and eyes at once (RPM splits them per mesh).
+  const morphIndex = {};
+
+  // Animation state ----------------------------------------------------------
+  let level = 0;            // target mouth openness, fed live from TTS amplitude
+  let smooth = 0;           // eased openness actually applied to the mouth
+  let state = 'idle';
+  let emotion = 'neutral';
+  let blinkTimer = 1.5, blinkT = -1;   // schedule + in-progress blink phase
+  let saccadeTimer = 1.0;              // random eye micro-movements
+  let lookX = 0, lookY = 0, lookTX = 0, lookTY = 0;
+  let t = 0;
+
+  // Frame pacing — the core jank cure. Every rendered frame forces an expensive
+  // WebView->Flutter texture copy + composite on Android, so the lever that
+  // matters is *how many frames we actually draw*. We pace adaptively:
+  //   • talking → 30fps, so the lips read perfectly smooth while it speaks;
+  //   • idle / listening / thinking → ~16fps, plenty for breathing, blinks and
+  //     eye saccades, and it ~halves the compositing cost for the bulk of a
+  //     session (the user is listening or talking far more than the avatar is).
+  // We also skip the draw entirely once an idle frame has nothing left moving
+  // (mouth closed, no blink, eyes settled) beyond the slow breathing sway, so a
+  // truly still avatar stops hammering the compositor.
+  const TALK_FRAME_MS  = 1000 / 30;   // lips moving — needs to be smooth
+  const IDLE_FRAME_MS  = 1000 / 16;   // blinking / saccades / settling
+  const STILL_FRAME_MS = 1000 / 10;   // only the slow breathing sway is left
+  let lastNow = 0;
+
+  // base64 model assembly ----------------------------------------------------
+  let chunks = [];
+
+  function setMorph(name, value) {
+    const list = morphIndex[name];
+    if (!list) return;
+    for (let i = 0; i < list.length; i++) {
+      list[i].mesh.morphTargetInfluences[list[i].index] = value;
+    }
+  }
+
+  function lerp(a, b, k) { return a + (b - a) * k; }
+
+  function indexMorphs(obj) {
+    obj.traverse(function (o) {
+      if (o.isMesh && o.morphTargetDictionary && o.morphTargetInfluences) {
+        const dict = o.morphTargetDictionary;
+        for (const name in dict) {
+          (morphIndex[name] || (morphIndex[name] = [])).push({ mesh: o, index: dict[name] });
+        }
+      }
+      if (o.isBone && (o.name === 'Head' || o.name.endsWith('Head'))) headBone = o;
+    });
+  }
+
+  function frameHead() {
+    let y = 1.58;
+    if (headBone) {
+      const v = new THREE.Vector3();
+      headBone.getWorldPosition(v);
+      y = v.y - 0.02;
+    }
+    headY = y;
+    if (view === 'full') {
+      // Full-bleed hero (img_2): frame the whole head plus the torso down to the
+      // waist, like a person standing in front of you. The lens is 20° so we sit
+      // well back (z≈2.3, ~0.8m of vertical) and aim below the head so the face
+      // rides the upper third — headroom up top for the speech bubble, the lower
+      // screen for the figure to fill.
+      camera.position.set(0, y - 0.10, 2.30);
+      camera.lookAt(0, y - 0.16, 0);
+    } else {
+      camera.position.set(0, y, 0.74);
+      camera.lookAt(0, y, 0);
+    }
+    if (glowSprite) glowSprite.position.set(0, y - 0.02, -0.45);
+  }
+
+  function buildScene() {
+    const canvas = document.getElementById('c');
+    renderer = new THREE.WebGLRenderer({
+      canvas: canvas,
+      antialias: false,            // off: cheap, and the model is small on screen
+      alpha: true,
+      powerPreference: 'high-performance',
+      stencil: false,
+      depth: true,
+    });
+    renderer.setClearColor(0x000000, 0);
+    // Crisp the face: the per-frame *texture copy* that drives the jank is fixed
+    // by the WebView surface size, not this backing resolution, so a higher ratio
+    // sharpens the small portrait at near-zero compositing cost. Capped at 2.0 so
+    // the GPU fill stays cheap on low-end phones.
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2.0));
+    renderer.outputEncoding = THREE.sRGBEncoding;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.06;
+    renderer.physicallyCorrectLights = true;
+    resize();
+
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(20, 1, 0.1, 100);
+
+    // Trimmed, premium lighting: a soft ambient + a key + a warm rim. (Dropping
+    // the 4th fill light shaves per-pixel cost with no visible loss at this size.)
+    const hemi = new THREE.HemisphereLight(0xffffff, 0x2a2f3a, 1.35);
+    scene.add(hemi);
+    const key = new THREE.DirectionalLight(0xffffff, 2.5);
+    key.position.set(0.7, 1.8, 1.4);
+    scene.add(key);
+    const rim = new THREE.DirectionalLight(0xffe6c0, 1.3);
+    rim.position.set(-0.6, 1.7, -1.6);
+    scene.add(rim);
+
+    window.addEventListener('resize', resize);
+    requestAnimationFrame(loop);
+  }
+
+  function resize() {
+    const w = window.innerWidth, h = window.innerHeight;
+    if (renderer) renderer.setSize(w, h, false);
+    if (camera) { camera.aspect = w / h; camera.updateProjectionMatrix(); }
+  }
+
+  // ── themed background (the avatar's stage) ────────────────────────────────
+  function gradientTexture(top, bottom) {
+    const c = document.createElement('canvas');
+    c.width = 8; c.height = 256;
+    const x = c.getContext('2d');
+    const g = x.createLinearGradient(0, 0, 0, 256);
+    g.addColorStop(0, top);
+    g.addColorStop(1, bottom);
+    x.fillStyle = g; x.fillRect(0, 0, 8, 256);
+    const tex = new THREE.CanvasTexture(c);
+    tex.encoding = THREE.sRGBEncoding;
+    return tex;
+  }
+
+  function glowTexture(color) {
+    const c = document.createElement('canvas');
+    c.width = 256; c.height = 256;
+    const x = c.getContext('2d');
+    const g = x.createRadialGradient(128, 128, 0, 128, 128, 128);
+    g.addColorStop(0, color);
+    g.addColorStop(0.5, color);
+    g.addColorStop(1, 'rgba(0,0,0,0)');
+    x.globalAlpha = 0.55;
+    x.fillStyle = g; x.fillRect(0, 0, 256, 256);
+    const tex = new THREE.CanvasTexture(c);
+    tex.encoding = THREE.sRGBEncoding;
+    return tex;
+  }
+
+  function setBackground(top, bottom, accent) {
+    if (!scene) return;
+    scene.background = gradientTexture(top, bottom);
+    const map = glowTexture(accent);
+    if (!glowSprite) {
+      const mat = new THREE.SpriteMaterial({
+        map: map, blending: THREE.AdditiveBlending,
+        depthWrite: false, depthTest: false, transparent: true, opacity: 0.6,
+      });
+      glowSprite = new THREE.Sprite(mat);
+      glowSprite.scale.set(1.25, 1.25, 1);
+      glowSprite.position.set(0, headY - 0.02, -0.45);
+      scene.add(glowSprite);
+    } else {
+      glowSprite.material.map = map;
+      glowSprite.material.needsUpdate = true;
+    }
+  }
+
+  // ── lip-sync: turn the voice into a believable mouth shape ────────────────
+  function driveMouth(dt) {
+    const speaking = (state === 'talking');
+    const amp = Math.min(Math.max(level, 0), 1);
+    let target;
+    if (speaking) {
+      const osc = (0.42 + 0.32 * Math.sin(t * 10.5)) *
+                  (0.55 + 0.45 * Math.sin(t * 6.7 + 1.1));
+      target = Math.min(1, Math.max(amp * 1.35, osc));
+    } else {
+      target = amp;
+    }
+    const k = target > smooth ? 1 - Math.pow(0.0008, dt) : 1 - Math.pow(0.012, dt);
+    smooth = lerp(smooth, target, Math.min(k, 1));
+
+    if (smooth < 0.02 && !speaking) {
+      setMorph('jawOpen', 0);
+      setMorph('viseme_aa', 0); setMorph('viseme_O', 0);
+      setMorph('viseme_I', 0);  setMorph('viseme_U', 0);
+      setMorph('viseme_E', 0);  setMorph('viseme_FF', 0);
+      setMorph('viseme_PP', 0);
+      return;
+    }
+    const wide  = 0.5 + 0.5 * Math.sin(t * 9.0);
+    const round = 0.5 + 0.5 * Math.sin(t * 6.3 + 1.7);
+    const front = 0.5 + 0.5 * Math.sin(t * 11.0 + 0.5);
+
+    setMorph('jawOpen', smooth * 0.95);
+    setMorph('viseme_aa', smooth * (0.50 + 0.45 * wide));
+    setMorph('viseme_O',  smooth * 0.45 * round);
+    setMorph('viseme_U',  smooth * 0.24 * round);
+    setMorph('viseme_I',  smooth * 0.30 * front);
+    setMorph('viseme_E',  smooth * 0.24 * (1 - round));
+    setMorph('viseme_FF', smooth * 0.14 * (1 - wide));
+    setMorph('viseme_PP', 0);
+  }
+
+  function driveBlink(dt) {
+    blinkTimer -= dt;
+    if (blinkT < 0 && blinkTimer <= 0) { blinkT = 0; }
+    if (blinkT >= 0) {
+      blinkT += dt;
+      const p = blinkT / 0.15;            // ~150ms blink: 0->1->0
+      const v = p < 0.5 ? (p / 0.5) : (1 - (p - 0.5) / 0.5);
+      const e = Math.max(0, Math.min(1, v));
+      setMorph('eyeBlinkLeft', e);
+      setMorph('eyeBlinkRight', e);
+      if (blinkT >= 0.15) { blinkT = -1; blinkTimer = 2.4 + Math.random() * 3.4; }
+    }
+  }
+
+  // Subtle, lifelike eye micro-movements (saccades) toward where the learner is.
+  function driveEyes(dt) {
+    saccadeTimer -= dt;
+    if (saccadeTimer <= 0) {
+      lookTX = (Math.random() - 0.5) * 0.5;
+      lookTY = (Math.random() - 0.5) * 0.3;
+      saccadeTimer = 1.2 + Math.random() * 2.6;
+    }
+    lookX = lerp(lookX, lookTX, Math.min(1, dt * 8));
+    lookY = lerp(lookY, lookTY, Math.min(1, dt * 8));
+    setMorph('eyeLookOutLeft',  Math.max(0,  lookX));
+    setMorph('eyeLookInRight',  Math.max(0,  lookX));
+    setMorph('eyeLookInLeft',   Math.max(0, -lookX));
+    setMorph('eyeLookOutRight', Math.max(0, -lookX));
+    setMorph('eyeLookUpLeft',   Math.max(0,  lookY));
+    setMorph('eyeLookUpRight',  Math.max(0,  lookY));
+    setMorph('eyeLookDownLeft', Math.max(0, -lookY));
+    setMorph('eyeLookDownRight',Math.max(0, -lookY));
+  }
+
+  function driveEmotion(dt) {
+    let smile = 0, brow = 0;
+    if (emotion === 'happy') { smile = 0.34; brow = 0.10; }
+    else if (emotion === 'curious' || state === 'listening') { smile = 0.12; brow = 0.30; }
+    else if (emotion === 'thinking' || state === 'thinking') { smile = 0.05; brow = 0.16; }
+    else if (emotion === 'sad') { smile = 0.0; brow = 0.22; }
+    else { smile = 0.10; brow = 0.06; }
+    const talk = state === 'talking' ? 0.5 : 1.0;
+    ease('mouthSmileLeft', smile * talk, dt, 6);
+    ease('mouthSmileRight', smile * talk, dt, 6);
+    ease('browInnerUp', brow, dt, 5);
+  }
+
+  const _eased = {};
+  function ease(name, target, dt, speed) {
+    const cur = _eased[name] || 0;
+    const v = lerp(cur, target, Math.min(1, dt * speed));
+    _eased[name] = v;
+    setMorph(name, v);
+  }
+
+  function driveHead(dt) {
+    if (!headBone) return;
+    const amp = state === 'talking' ? 1.0 : (state === 'listening' ? 0.5 : 0.35);
+    const nodTalk = state === 'talking' ? smooth * 0.05 : 0;
+    headBone.rotation.x = Math.sin(t * 1.1) * 0.025 * amp - nodTalk;
+    headBone.rotation.y = Math.sin(t * 0.7 + 0.4) * 0.05 * amp;
+    headBone.rotation.z = (state === 'listening' ? 0.06 : 0) + Math.sin(t * 0.5) * 0.012 * amp;
+    // Gentle breathing so the figure never looks frozen.
+    if (root) root.position.y = Math.sin(t * 0.85) * 0.004;
+  }
+
+  function loop(now) {
+    requestAnimationFrame(loop);
+    if (!renderer || !scene) return;
+    if (lastNow === 0) lastNow = now;
+
+    // Pick this frame's budget from how alive the face is right now. Talking is
+    // the only thing that needs 30fps; a blink, an unsettled saccade or a mouth
+    // still closing keeps the 16fps cadence; otherwise we coast at 10fps and let
+    // only the breathing sway play — each step down is a direct cut in the
+    // per-frame WebView texture copy that drives the jank.
+    const talking = (state === 'talking');
+    const busy = talking || blinkT >= 0 || smooth > 0.02 ||
+                 Math.abs(lookX - lookTX) > 0.002 ||
+                 Math.abs(lookY - lookTY) > 0.002;
+    const frameMs = talking ? TALK_FRAME_MS : (busy ? IDLE_FRAME_MS : STILL_FRAME_MS);
+    if (now - lastNow < frameMs) return;
+
+    const dt = Math.min((now - lastNow) / 1000, 0.1);
+    lastNow = now;
+    t += dt;
+    if (root) {
+      driveMouth(dt);
+      driveBlink(dt);
+      driveEyes(dt);
+      driveEmotion(dt);
+      driveHead(dt);
+    }
+    renderer.render(scene, camera);
+  }
+
+  // ── model loading from chunked base64 ─────────────────────────────────────
+  function onModel(buffer) {
+    const loader = new THREE.GLTFLoader();
+    loader.parse(buffer, '', function (gltf) {
+      root = gltf.scene;
+      root.traverse(function (o) {
+        if (o.isMesh) {
+          o.frustumCulled = false;
+          // Skip skinning/drawing parts that are off-camera in a head-and-
+          // shoulders portrait (saves real CPU/GPU on a phone).
+          if (/Bottom|Footwear|Shoe|Leg/i.test(o.name)) o.visible = false;
+        }
+      });
+      indexMorphs(root);
+      scene.add(root);
+      frameHead();
+      toFlutter({ type: 'ready' });
+    }, function (err) {
+      toFlutter({ type: 'error', message: 'parse:' + (err && err.message ? err.message : err) });
+    });
+  }
+
+  return {
+    init: function () {
+      try { buildScene(); toFlutter({ type: 'need-model' }); }
+      catch (e) { toFlutter({ type: 'error', message: 'init:' + e.message }); }
+    },
+    feedChunk: function (b64) { chunks.push(b64); },
+    feedDone: function () {
+      try {
+        const b64 = chunks.join('');
+        chunks = [];
+        const bin = atob(b64);
+        const len = bin.length;
+        const bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) bytes[i] = bin.charCodeAt(i);
+        onModel(bytes.buffer);
+      } catch (e) {
+        toFlutter({ type: 'error', message: 'decode:' + e.message });
+      }
+    },
+    setLevel: function (x) { level = +x || 0; },
+    // 'full' fills the screen (bigger surface → trim the pixel ratio so the GPU
+    // fill stays cheap; the Flutter side also renders the WebView below native
+    // size, so a high ratio would be wasted anyway). 'portrait' keeps the crisp
+    // small bust.
+    setView: function (mode) {
+      view = (mode === 'full') ? 'full' : 'portrait';
+      if (renderer) {
+        const cap = view === 'full' ? 1.5 : 2.0;
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, cap));
+        resize();
+      }
+      if (camera && root) frameHead();
+    },
+    setState: function (s) { state = String(s || 'idle'); },
+    setEmotion: function (e) { emotion = String(e || 'neutral'); },
+    setBackground: function (top, bottom, accent) {
+      try { setBackground(top, bottom, accent); } catch (e) {}
+    }
+  };
+})();
+
+window.AV = AV;
+window.addEventListener('load', function () { AV.init(); });
+</script>
+</body>
+</html>

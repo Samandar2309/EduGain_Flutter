@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/api/api_exception.dart';
 import '../../../core/ui/error_handling.dart';
+import '../../../l10n/app_localizations.dart';
 import '../application/providers.dart';
 import '../domain/models.dart';
 
@@ -18,7 +19,8 @@ class GrammarTopicScreen extends ConsumerWidget {
       appBar: AppBar(title: Text(topic.title)),
       body: detail.when(
         loading: () => const Center(child: CircularProgressIndicator()),
-        error: (_, _) => const Center(child: Text('Yuklab bo\'lmadi')),
+        error: (_, _) =>
+            Center(child: Text(AppLocalizations.of(context).loadFailed)),
         data: (d) => _ExerciseForm(topicId: topic.id, detail: d),
       ),
     );
@@ -69,7 +71,7 @@ class _ExerciseFormState extends ConsumerState<_ExerciseForm> {
     }
     if (answers.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Kamida bitta javob bering')),
+        SnackBar(content: Text(AppLocalizations.of(context).atLeastOneAnswer)),
       );
       return;
     }
@@ -93,6 +95,7 @@ class _ExerciseFormState extends ConsumerState<_ExerciseForm> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l = AppLocalizations.of(context);
     final exercises = widget.detail.exercises;
     return ListView(
       padding: const EdgeInsets.all(16),
@@ -123,7 +126,7 @@ class _ExerciseFormState extends ConsumerState<_ExerciseForm> {
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Text(
-                'Natija: $_score / ${exercises.length}',
+                l.grammarScore(_score, exercises.length),
                 textAlign: TextAlign.center,
                 style: theme.textTheme.titleLarge?.copyWith(
                   fontWeight: FontWeight.bold,
@@ -140,7 +143,7 @@ class _ExerciseFormState extends ConsumerState<_ExerciseForm> {
                     width: 22,
                     child: CircularProgressIndicator(strokeWidth: 2.4),
                   )
-                : const Text('Tekshirish'),
+                : Text(l.check),
           ),
       ],
     );
@@ -216,7 +219,9 @@ class _ExerciseCard extends StatelessWidget {
               TextField(
                 controller: controller,
                 enabled: !locked,
-                decoration: const InputDecoration(hintText: 'Javobingiz'),
+                decoration: InputDecoration(
+                  hintText: AppLocalizations.of(context).yourAnswer,
+                ),
               ),
             if (result != null && result!.explanation.isNotEmpty) ...[
               const SizedBox(height: 10),
