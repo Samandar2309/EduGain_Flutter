@@ -33,7 +33,7 @@ class _VoicePickerSheetState extends ConsumerState<_VoicePickerSheet> {
       "Hi! I'm your speaking partner. Let's practise English together.";
 
   // Own preview player so it never collides with the live chat's TtsService.
-  final AudioPlayback _preview = JustAudioPlayback();
+  final AudioPlayback _preview = createAudioPlayback();
   String? _previewingId; // voice currently being previewed (spinner)
   bool _closed = false;
 

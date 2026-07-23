@@ -2,11 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/api/api_exception.dart';
+import '../../../core/ui/components.dart';
 import '../../../core/ui/error_handling.dart';
+import '../../../core/ui/tokens.dart';
 import '../../../l10n/app_localizations.dart';
 import '../application/providers.dart';
 import '../domain/models.dart';
 
+/// One grammar topic: the rule explained in a highlighted card, exercises as
+/// clean cards that grade in place (green/red border + explanation), then a
+/// score panel with a ring.
 class GrammarTopicScreen extends ConsumerWidget {
   const GrammarTopicScreen({required this.topic, super.key});
 
@@ -16,9 +21,13 @@ class GrammarTopicScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final detail = ref.watch(grammarTopicDetailProvider(topic.id));
     return Scaffold(
-      appBar: AppBar(title: Text(topic.title)),
+      backgroundColor: AppColors.canvas,
+      appBar: AppBar(
+        title: Text(topic.title),
+        backgroundColor: AppColors.canvas,
+      ),
       body: detail.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const AppLoader(),
         error: (_, _) =>
             Center(child: Text(AppLocalizations.of(context).loadFailed)),
         data: (d) => _ExerciseForm(topicId: topic.id, detail: d),
@@ -94,21 +103,20 @@ class _ExerciseFormState extends ConsumerState<_ExerciseForm> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final l = AppLocalizations.of(context);
     final exercises = widget.detail.exercises;
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(
+        AppSpace.lg,
+        AppSpace.sm,
+        AppSpace.lg,
+        AppSpace.xxl,
+      ),
       children: [
-        if (widget.detail.topic.explanationMd.isNotEmpty)
-          Card(
-            color: theme.colorScheme.secondaryContainer,
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Text(widget.detail.topic.explanationMd),
-            ),
-          ),
-        const SizedBox(height: 8),
+        if (widget.detail.topic.explanationMd.isNotEmpty) ...[
+          _RuleCard(text: widget.detail.topic.explanationMd),
+          const SizedBox(height: AppSpace.lg),
+        ],
         ...exercises.map(
           (ex) => _ExerciseCard(
             exercise: ex,
@@ -119,24 +127,13 @@ class _ExerciseFormState extends ConsumerState<_ExerciseForm> {
             onSelect: (v) => setState(() => _selected[ex.id] = v),
           ),
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: AppSpace.sm),
         if (_checked)
-          Card(
-            color: theme.colorScheme.primaryContainer,
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Text(
-                l.grammarScore(_score, exercises.length),
-                textAlign: TextAlign.center,
-                style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
-          )
+          _ScorePanel(score: _score, total: exercises.length)
         else
           FilledButton(
             onPressed: _submitting ? null : _check,
+            style: FilledButton.styleFrom(minimumSize: const Size(0, 54)),
             child: _submitting
                 ? const SizedBox(
                     height: 22,
@@ -146,6 +143,82 @@ class _ExerciseFormState extends ConsumerState<_ExerciseForm> {
                 : Text(l.check),
           ),
       ],
+    );
+  }
+}
+
+/// The rule, framed as a highlighted "lesson note" with the module accent.
+class _RuleCard extends StatelessWidget {
+  const _RuleCard({required this.text});
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(AppSpace.lg),
+      decoration: BoxDecoration(
+        color: AppColors.grammar.withValues(alpha: 0.07),
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        border: Border.all(color: AppColors.grammar.withValues(alpha: 0.25)),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const IconChip(
+            icon: Icons.menu_book_rounded,
+            color: AppColors.grammar,
+            size: 38,
+            iconSize: 19,
+          ),
+          const SizedBox(width: AppSpace.md),
+          Expanded(
+            child: Text(text, style: const TextStyle(height: 1.5)),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ScorePanel extends StatelessWidget {
+  const _ScorePanel({required this.score, required this.total});
+
+  final int score;
+  final int total;
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final ratio = total == 0 ? 0.0 : score / total;
+    final color = ratio >= 0.75
+        ? AppColors.success
+        : ratio >= 0.5
+            ? AppColors.warning
+            : AppColors.danger;
+    return AppCard(
+      child: Row(
+        children: [
+          ProgressRing(
+            progress: ratio,
+            size: 64,
+            stroke: 8,
+            color: color,
+            trackColor: AppColors.canvasAlt,
+            center: Icon(
+              ratio >= 0.5 ? Icons.emoji_events_rounded : Icons.refresh_rounded,
+              color: color,
+              size: 24,
+            ),
+          ),
+          const SizedBox(width: AppSpace.lg),
+          Expanded(
+            child: Text(
+              l.grammarScore(score, total),
+              style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 17),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -172,17 +245,13 @@ class _ExerciseCard extends StatelessWidget {
     final theme = Theme.of(context);
     final correct = result?.correct;
     final borderColor = correct == null
-        ? Colors.transparent
-        : (correct ? Colors.green : theme.colorScheme.error);
+        ? AppColors.line
+        : (correct ? AppColors.success : AppColors.danger);
 
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(18),
-        side: BorderSide(color: borderColor, width: 1.5),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: AppSpace.md),
+      child: AppCard(
+        border: Border.all(color: borderColor, width: correct == null ? 1 : 1.5),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -191,29 +260,41 @@ class _ExerciseCard extends StatelessWidget {
                 Expanded(
                   child: Text(
                     exercise.prompt,
-                    style: const TextStyle(fontWeight: FontWeight.w600),
+                    style: const TextStyle(
+                      fontWeight: FontWeight.w700,
+                      fontSize: 14.5,
+                      height: 1.35,
+                    ),
                   ),
                 ),
                 if (correct != null)
                   Icon(
                     correct ? Icons.check_circle_rounded : Icons.cancel_rounded,
-                    color: correct ? Colors.green : theme.colorScheme.error,
+                    color: correct ? AppColors.success : AppColors.danger,
                   ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: AppSpace.md),
             if (exercise.isMcq)
               Wrap(
-                spacing: 8,
-                children: exercise.options
-                    .map(
-                      (opt) => ChoiceChip(
-                        label: Text(opt),
-                        selected: selected == opt,
-                        onSelected: locked ? null : (_) => onSelect(opt),
-                      ),
-                    )
-                    .toList(),
+                spacing: AppSpace.sm,
+                runSpacing: AppSpace.sm,
+                children: exercise.options.map((opt) {
+                  final isSelected = selected == opt;
+                  return ChoiceChip(
+                    label: Text(opt),
+                    selected: isSelected,
+                    onSelected: locked ? null : (_) => onSelect(opt),
+                    selectedColor: AppColors.grammar.withValues(alpha: 0.15),
+                    labelStyle: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: isSelected ? AppColors.grammar : AppColors.ink,
+                    ),
+                    side: BorderSide(
+                      color: isSelected ? AppColors.grammar : AppColors.line,
+                    ),
+                  );
+                }).toList(),
               )
             else
               TextField(
@@ -224,11 +305,19 @@ class _ExerciseCard extends StatelessWidget {
                 ),
               ),
             if (result != null && result!.explanation.isNotEmpty) ...[
-              const SizedBox(height: 10),
-              Text(
-                result!.explanation,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
+              const SizedBox(height: AppSpace.md),
+              Container(
+                padding: const EdgeInsets.all(AppSpace.md),
+                decoration: BoxDecoration(
+                  color: AppColors.canvas,
+                  borderRadius: BorderRadius.circular(AppRadius.sm),
+                ),
+                child: Text(
+                  result!.explanation,
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: AppColors.inkSoft,
+                    height: 1.4,
+                  ),
                 ),
               ),
             ],

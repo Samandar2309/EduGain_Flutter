@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'avatar/vector_hero.dart';
+
 /// A scenario's immersive look — a dark gradient pair, a vivid accent (used for
 /// the avatar glow, status dot and header) and a faint background icon. Pure
 /// colour + icon, so every scenario feels distinct with zero image assets.
@@ -24,19 +26,29 @@ class ScenarioBackdrop {
   final IconData icon;
 
   String get avatarAsset => 'assets/avatars/$key.png';
-  String get avatarTalkAsset => 'assets/avatars/${key}_talk.png';
   String get backgroundAsset => 'assets/backgrounds/$key.jpg';
 
-  /// The rigged 3D model (a Ready Player Me GLB with viseme + ARKit blendshapes)
-  /// rendered by the live avatar engine. Per-scenario casting is a pure data
-  /// change — drop `assets/avatar3d/models/<key>.glb` in and add the key here.
-  /// Every scenario shares the proven talking model until its own art lands.
-  String get model3dAsset =>
-      'assets/avatar3d/models/${_modelByKey[key] ?? 'brunette'}.glb';
-}
+  /// Only cleanly-framed character renders may be the hero — the other files
+  /// under assets/avatars/ are cropped UI screenshots that would read as
+  /// broken art. Everything else uses the brand character so the hero is
+  /// always flawless and consistent; add keys here as clean art lands.
+  static const Set<String> _cleanPortraits = {'default'};
 
-/// Scenario key -> bundled model file (without extension). Extend freely.
-const Map<String, String> _modelByKey = {};
+  /// The 2.5D hero render for this scenario (legacy photo path — kept for the
+  /// probe in older callers; the shipping hero is the code-drawn [VectorHero]).
+  String get portraitAsset =>
+      'assets/avatars/${_cleanPortraits.contains(key) ? key : 'default'}.png';
+
+  /// The scenario costume for the from-scratch vector hero — the same tutor
+  /// character, dressed for the topic.
+  HeroOutfit get heroOutfit => switch (key) {
+    'coffee' || 'restaurant' => HeroOutfit.barista,
+    'doctor' => HeroOutfit.doctor,
+    'interview' || 'business' || 'bank' => HeroOutfit.business,
+    'daily' => HeroOutfit.casual,
+    _ => HeroOutfit.concierge,
+  };
+}
 
 class _Theme {
   const _Theme(this.keywords, this.backdrop);

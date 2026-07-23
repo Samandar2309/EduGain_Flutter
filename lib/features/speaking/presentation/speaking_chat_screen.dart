@@ -15,8 +15,8 @@ import '../application/providers.dart';
 import '../data/audio_recorder.dart';
 import '../data/tts_service.dart';
 import '../domain/models.dart';
+import 'avatar/avatar_stage.dart';
 import 'avatar/avatar_state.dart';
-import 'avatar/edu_gain_avatar_25d.dart';
 import 'feedback_view.dart';
 import 'scenario_theme.dart';
 import 'voice_picker_sheet.dart';
@@ -136,6 +136,9 @@ class _SpeakingChatScreenState extends ConsumerState<SpeakingChatScreen> {
 
   // ── turns ──────────────────────────────────────────────────────────────
   Future<void> _toggleMic() async {
+    // A real user gesture: let web playback satisfy the browser's autoplay
+    // policy now, so the AI's spoken replies are never silently blocked.
+    unawaited(_tts.prime());
     if (_busy || _tts.speaking.value) return;
     if (_recording) {
       await _stopAndSend();
@@ -175,7 +178,7 @@ class _SpeakingChatScreenState extends ConsumerState<SpeakingChatScreen> {
     await _runTurn(
       () => ref
           .read(speakingRepositoryProvider)
-          .streamAudioReply(_session.id, clip!.path, clip.filename),
+          .streamAudioReply(_session.id, clip!.bytes, clip.filename),
     );
   }
 
@@ -331,7 +334,7 @@ class _SpeakingChatScreenState extends ConsumerState<SpeakingChatScreen> {
             // 1 ─ the scenario scene, then the full-screen avatar standing in it.
             Positioned.fill(child: _background(accent)),
             Positioned.fill(
-              child: EduGainAvatar25D(
+              child: AvatarStage(
                 backdrop: _backdrop,
                 emotion: _emotion,
                 state: _avatarState,

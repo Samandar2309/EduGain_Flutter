@@ -3,8 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/theme.dart';
+import '../../../core/ui/components.dart';
 import '../../../core/ui/glass.dart';
 import '../../../core/ui/tokens.dart';
+import '../../../l10n/app_localizations.dart';
 import '../application/providers.dart';
 import '../domain/models.dart';
 import 'lesson_launch.dart';
@@ -57,7 +59,10 @@ class _SpeakingHomeScreenState extends ConsumerState<SpeakingHomeScreen> {
                   onRetry: () => ref.invalidate(speakingHomeProvider),
                 ),
                 data: (data) => RefreshIndicator(
-                  onRefresh: () async => ref.invalidate(speakingHomeProvider),
+                  onRefresh: () async {
+                    ref.invalidate(speakingHomeProvider);
+                    ref.invalidate(speakingQuotaProvider);
+                  },
                   child: _HomeBody(
                     home: data,
                     onLaunch: _launch,
@@ -100,8 +105,14 @@ class _HomeBody extends StatelessWidget {
       children: [
         _TopBar(level: home.cefrLevel),
         const SizedBox(height: 6),
+        // Two ways to speak: the AI tutor (this page) or live with people.
+        const _ModeSwitchRow(),
+        const SizedBox(height: 14),
         // 1 · Continue Learning — the single most important element.
         _ContinueHero(home: home, onLaunch: onLaunch, onOpenTrack: onOpenTrack),
+        const SizedBox(height: 14),
+        // Today's minutes — the tier made visible. Hidden while loading/failed.
+        const _QuotaCard(),
         const SizedBox(height: 22),
         // 2 · Daily mission.
         if (mission != null) ...[
@@ -151,6 +162,107 @@ class _HomeBody extends StatelessWidget {
           total: home.lessonsTotal,
         ),
       ],
+    );
+  }
+}
+
+/// The two speaking modes, side by side: the AI tutor (this page — active)
+/// and live conversations with real people (the peer hub).
+class _ModeSwitchRow extends StatelessWidget {
+  const _ModeSwitchRow();
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: _ModeCard(
+            icon: Icons.smart_toy_rounded,
+            title: 'AI tutor',
+            subtitle: 'Shaxsiy o‘qituvchi',
+            active: true,
+            onTap: null, // already here
+          ),
+        ),
+        const SizedBox(width: AppSpace.md),
+        Expanded(
+          child: _ModeCard(
+            icon: Icons.record_voice_over_rounded,
+            title: 'Jonli suhbat',
+            subtitle: 'Odamlar bilan',
+            active: false,
+            onTap: () => context.push('/peer'),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ModeCard extends StatelessWidget {
+  const _ModeCard({
+    required this.icon,
+    required this.title,
+    required this.subtitle,
+    required this.active,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String title;
+  final String subtitle;
+  final bool active;
+  final VoidCallback? onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    const accent = AppColors.speaking;
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.symmetric(
+              horizontal: AppSpace.lg, vertical: AppSpace.md),
+          decoration: BoxDecoration(
+            gradient: active ? AppGradients.accent(accent) : null,
+            color: active ? null : AppColors.surface,
+            borderRadius: BorderRadius.circular(AppRadius.md),
+            border: active ? null : Border.all(color: AppColors.line),
+          ),
+          child: Row(
+            children: [
+              Icon(icon, color: active ? Colors.white : accent, size: 22),
+              const SizedBox(width: AppSpace.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        color: active ? Colors.white : AppColors.ink,
+                        fontSize: 13.5,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        color: active ? Colors.white70 : AppColors.inkSoft,
+                        fontSize: 11,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
@@ -447,6 +559,102 @@ class _HeroButton extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+// ── Today's speaking minutes (the tier, made visible) ────────────────────────
+class _QuotaCard extends ConsumerWidget {
+  const _QuotaCard();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final quota = ref.watch(speakingQuotaProvider);
+    // No skeleton, no error card: the ring appears when it's known and the
+    // home never jumps around because of it.
+    final q = quota.valueOrNull;
+    if (q == null || q.secondsLimit <= 0) return const SizedBox.shrink();
+
+    final l = AppLocalizations.of(context);
+    final ratio = q.remainingRatio;
+    final ringColor = q.isExhausted
+        ? AppColors.danger
+        : ratio <= 0.25
+            ? AppColors.warning
+            : AppColors.brand;
+
+    return GlassPanel(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpace.lg,
+        vertical: AppSpace.md,
+      ),
+      child: Row(
+        children: [
+          ProgressRing(
+            progress: ratio,
+            size: 52,
+            stroke: 6,
+            color: ringColor,
+            trackColor: Colors.white.withValues(alpha: 0.14),
+            center: Text(
+              '${q.minutesRemaining}',
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.w800,
+                fontSize: 16,
+                height: 1,
+              ),
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l.quotaTitle,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w700,
+                    fontSize: 14,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  q.isExhausted
+                      ? l.quotaExhausted
+                      : l.quotaUsedOf(q.minutesUsed, q.minutesLimit),
+                  style: TextStyle(
+                    color: q.isExhausted ? AppColors.warning : Colors.white60,
+                    fontSize: 12.5,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          if (q.isExhausted) ...[
+            const SizedBox(width: 8),
+            TextButton(
+              onPressed: () => context.push('/subscriptions'),
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.white,
+                backgroundColor: Colors.white.withValues(alpha: 0.12),
+                padding: const EdgeInsets.symmetric(horizontal: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(AppRadius.pill),
+                ),
+              ),
+              child: Text(
+                l.quotaUpgrade,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 12.5,
+                ),
+              ),
+            ),
+          ],
+        ],
       ),
     );
   }

@@ -4,13 +4,16 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/api/api_exception.dart';
 import '../../../core/providers.dart';
+import '../../../core/ui/components.dart';
 import '../../../core/ui/error_handling.dart';
+import '../../../core/ui/tokens.dart';
 import '../../../l10n/app_localizations.dart';
 import '../application/providers.dart';
 import '../domain/models.dart';
 
 /// CEFR placement test — a short wizard that sets the learner's level so the
-/// whole app (AI prompts, content) adapts.
+/// whole app (AI prompts, content) adapts. One question per screen, options as
+/// tappable cards, and a celebratory level reveal at the end.
 class PlacementScreen extends ConsumerWidget {
   const PlacementScreen({super.key});
 
@@ -19,9 +22,13 @@ class PlacementScreen extends ConsumerWidget {
     final l = AppLocalizations.of(context);
     final test = ref.watch(placementTestProvider);
     return Scaffold(
-      appBar: AppBar(title: Text(l.placementTestTitle)),
+      backgroundColor: AppColors.canvas,
+      appBar: AppBar(
+        title: Text(l.placementTestTitle),
+        backgroundColor: AppColors.canvas,
+      ),
       body: test.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const AppLoader(),
         error: (_, _) => Center(child: Text(l.loadFailed)),
         data: (questions) => questions.isEmpty
             ? Center(child: Text(l.noQuestions))
@@ -108,28 +115,56 @@ class _WizardState extends ConsumerState<_Wizard> {
     return showDialog<void>(
       context: context,
       barrierDismissible: false,
-      builder: (ctx) => AlertDialog(
-        title: Text(l.resultReady),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(
-              result.resultCefr ?? '—',
-              style: Theme.of(ctx).textTheme.displaySmall?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: Theme.of(ctx).colorScheme.primary,
-              ),
-            ),
-            const SizedBox(height: 8),
-            Text(l.yourEnglishLevel),
-          ],
+      builder: (ctx) => Dialog(
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.xl),
         ),
-        actions: [
-          FilledButton(
-            onPressed: () => Navigator.pop(ctx),
-            child: Text(l.startAction),
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpace.xxl),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                l.resultReady,
+                style: Theme.of(ctx).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: AppSpace.xl),
+              Container(
+                width: 116,
+                height: 116,
+                decoration: BoxDecoration(
+                  gradient: AppGradients.brand,
+                  shape: BoxShape.circle,
+                  boxShadow: AppShadow.glow(AppColors.brand),
+                ),
+                child: Center(
+                  child: Text(
+                    result.resultCefr ?? '—',
+                    style: Theme.of(ctx).textTheme.displaySmall?.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: AppSpace.lg),
+              Text(
+                l.yourEnglishLevel,
+                style: const TextStyle(color: AppColors.inkSoft),
+              ),
+              const SizedBox(height: AppSpace.xl),
+              SizedBox(
+                width: double.infinity,
+                child: FilledButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  child: Text(l.startAction),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -142,42 +177,56 @@ class _WizardState extends ConsumerState<_Wizard> {
     return Column(
       children: [
         Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpace.lg,
+            AppSpace.md,
+            AppSpace.lg,
+            0,
+          ),
+          child: Row(
             children: [
-              LinearProgressIndicator(
-                value: (_index + 1) / widget.questions.length,
-                borderRadius: BorderRadius.circular(8),
-                minHeight: 8,
+              Expanded(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(AppRadius.pill),
+                  child: LinearProgressIndicator(
+                    value: (_index + 1) / widget.questions.length,
+                    minHeight: 8,
+                    backgroundColor: AppColors.canvasAlt,
+                    color: AppColors.placement,
+                  ),
+                ),
               ),
-              const SizedBox(height: 8),
+              const SizedBox(width: AppSpace.md),
               Text(
                 '${_index + 1} / ${widget.questions.length}',
-                style: theme.textTheme.bodySmall,
+                style: const TextStyle(
+                  fontWeight: FontWeight.w700,
+                  fontSize: 12.5,
+                  color: AppColors.inkSoft,
+                ),
               ),
             ],
           ),
         ),
         Expanded(
           child: ListView(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
+            padding: const EdgeInsets.all(AppSpace.xl),
             children: [
               Text(
                 q.prompt,
                 style: theme.textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w800,
+                  height: 1.3,
                 ),
               ),
-              const SizedBox(height: 24),
+              const SizedBox(height: AppSpace.xxl),
               if (q.isMcq)
                 ...q.options.map(
-                  (opt) => Card(
-                    margin: const EdgeInsets.only(bottom: 10),
-                    color: _mcq[q.id] == opt
-                        ? theme.colorScheme.primaryContainer
-                        : null,
-                    child: ListTile(
-                      title: Text(opt),
+                  (opt) => Padding(
+                    padding: const EdgeInsets.only(bottom: AppSpace.md),
+                    child: _OptionCard(
+                      text: opt,
+                      selected: _mcq[q.id] == opt,
                       onTap: () => setState(() => _mcq[q.id] = opt),
                     ),
                   ),
@@ -191,20 +240,106 @@ class _WizardState extends ConsumerState<_Wizard> {
             ],
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.all(16),
-          child: FilledButton(
-            onPressed: (_isAnswered && !_submitting) ? _next : null,
-            child: _submitting
-                ? const SizedBox(
-                    height: 22,
-                    width: 22,
-                    child: CircularProgressIndicator(strokeWidth: 2.4),
-                  )
-                : Text(_isLast ? l.finishAction : l.nextAction),
+        SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.all(AppSpace.lg),
+            child: SizedBox(
+              width: double.infinity,
+              child: FilledButton(
+                onPressed: (_isAnswered && !_submitting) ? _next : null,
+                style: FilledButton.styleFrom(minimumSize: const Size(0, 54)),
+                child: _submitting
+                    ? const SizedBox(
+                        height: 22,
+                        width: 22,
+                        child: CircularProgressIndicator(strokeWidth: 2.4),
+                      )
+                    : Text(_isLast ? l.finishAction : l.nextAction),
+              ),
+            ),
           ),
         ),
       ],
+    );
+  }
+}
+
+/// One answer option: a card that visibly commits to the choice — accent
+/// border + radio dot, with an eased transition instead of a hard swap.
+class _OptionCard extends StatelessWidget {
+  const _OptionCard({
+    required this.text,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final String text;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    const accent = AppColors.placement;
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 180),
+      curve: Curves.easeOut,
+      decoration: BoxDecoration(
+        color: selected ? accent.withValues(alpha: 0.06) : AppColors.surface,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        border: Border.all(
+          color: selected ? accent : AppColors.line,
+          width: selected ? 1.6 : 1,
+        ),
+        boxShadow: selected ? AppShadow.soft : null,
+      ),
+      child: Material(
+        type: MaterialType.transparency,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(AppRadius.md),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpace.lg,
+              vertical: AppSpace.lg,
+            ),
+            child: Row(
+              children: [
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 180),
+                  width: 22,
+                  height: 22,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: selected ? accent : Colors.transparent,
+                    border: Border.all(
+                      color: selected ? accent : AppColors.inkFaint,
+                      width: 2,
+                    ),
+                  ),
+                  child: selected
+                      ? const Icon(
+                          Icons.check_rounded,
+                          size: 14,
+                          color: Colors.white,
+                        )
+                      : null,
+                ),
+                const SizedBox(width: AppSpace.md),
+                Expanded(
+                  child: Text(
+                    text,
+                    style: TextStyle(
+                      fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+                      fontSize: 14.5,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
     );
   }
 }

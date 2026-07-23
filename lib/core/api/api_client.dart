@@ -134,12 +134,14 @@ class ApiClient {
   /// empty/silent audio, 402 paywall, ...) arrive as JSON and are thrown.
   Future<Stream<List<int>>> postMultipartStream(
     String path, {
-    required String filePath,
+    required Uint8List bytes,
     required String filename,
     String field = 'audio',
   }) async {
+    // `fromBytes` (not `fromFile`) so this works identically on native and
+    // web — dio's web adapter has no filesystem to read a path from.
     final form = FormData.fromMap({
-      field: await MultipartFile.fromFile(filePath, filename: filename),
+      field: MultipartFile.fromBytes(bytes, filename: filename),
     });
     final Response<ResponseBody> resp;
     try {

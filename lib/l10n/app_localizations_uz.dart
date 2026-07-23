@@ -473,7 +473,116 @@ class AppLocalizationsUz extends AppLocalizations {
   String get choosePlan => 'Tanlash';
 
   @override
+  String get quotaTitle => 'Kunlik so‘zlashuv vaqti';
+
+  @override
+  String quotaMinutesLeft(int minutes) {
+    return '$minutes daqiqa qoldi';
+  }
+
+  @override
+  String quotaUsedOf(int used, int total) {
+    return '$total daqiqadan $used tasi ishlatildi';
+  }
+
+  @override
+  String get quotaExhausted => 'Bugungi daqiqalar tugadi';
+
+  @override
+  String get quotaUpgrade => 'Limitni oshirish';
+
+  @override
+  String get commProfileTitle => 'Muloqot profili';
+
+  @override
+  String get commProfileEmpty =>
+      'AI ustoz bilan bir necha suhbat qiling — profilingiz haqiqiy nutqingizdan o‘zi shakllanadi.';
+
+  @override
+  String get focusTagsTitle => 'Hozir ustida ishlayapmiz';
+
+  @override
+  String get paceLabel => 'Nutq tezligi';
+
+  @override
+  String paceValue(int wpm) {
+    return '$wpm so‘z/daq';
+  }
+
+  @override
+  String paceTarget(int target) {
+    return 'maqsad $target';
+  }
+
+  @override
+  String get minutesSpoken => 'Gapirilgan daqiqalar';
+
+  @override
+  String get wordsSpoken => 'Aytilgan so‘zlar';
+
+  @override
+  String basedOnSessions(int count) {
+    return '$count ta suhbat asosida';
+  }
+
+  @override
+  String get settingsTitle => 'Sozlamalar';
+
+  @override
+  String get paywallReportTitle => 'To‘liq hisobotni oching';
+
+  @override
+  String get paywallReportBody =>
+      'Har bir xato, tuzatish va shaxsiy maslahat — Premium bilan.';
+
+  @override
+  String get paywallSeePlans => 'Tariflarni ko‘rish';
+
+  @override
+  String get premiumBadge => 'Premium';
+
+  @override
+  String get planPopular => 'Eng ommabop';
+
+  @override
+  String get premiumHeroTitle => 'EduGain Premium';
+
+  @override
+  String get premiumHeroBody =>
+      'Har kuni ko‘proq gapiring, barcha yo‘nalishlarni oching va nutqingizning to‘liq tahlilini oling.';
+
+  @override
   String get appTagline => 'Sun’iy intellekt bilan ingliz tili';
+
+  @override
+  String get welcomeChooseLanguage => 'Tilni tanlang';
+
+  @override
+  String get welcomeSkip => 'O‘tkazib yuborish';
+
+  @override
+  String get welcomeStart => 'Boshlash';
+
+  @override
+  String get welcomeSpeakTitle => 'AI ustoz bilan gaplashing';
+
+  @override
+  String get welcomeSpeakBody =>
+      'Kun-u tun istalgan payt jonli suhbat. Xato qilishdan qo‘rqmasdan — shunchaki mashq qiling.';
+
+  @override
+  String get welcomeCoachTitle => 'Suhbat ichida jonli yordam';
+
+  @override
+  String get welcomeCoachBody =>
+      'Har jumladan keyin yumshoq tuzatishlar hamda grammatika, so‘z boyligi va ravonlik bo‘yicha aniq hisobot.';
+
+  @override
+  String get welcomeGoalTitle => 'Maqsadingiz sari yo‘l';
+
+  @override
+  String get welcomeGoalBody =>
+      'IELTS, karyera, sayohat yoki kundalik suhbat — trek zaif tomonlaringizga moslashadi.';
 
   @override
   String get xpSourceDailyGoal => 'Kunlik maqsad';

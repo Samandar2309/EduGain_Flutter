@@ -9,6 +9,7 @@ class VocabSet {
     required this.category,
     required this.isPremium,
     required this.isLocked,
+    this.wordCount = 0,
   });
 
   final String id;
@@ -18,6 +19,7 @@ class VocabSet {
   final String category;
   final bool isPremium;
   final bool isLocked;
+  final int wordCount;
 
   factory VocabSet.fromJson(Map<String, dynamic> json) => VocabSet(
     id: json['id'] as String,
@@ -27,6 +29,7 @@ class VocabSet {
     category: json['category'] as String? ?? 'general',
     isPremium: json['is_premium'] as bool? ?? false,
     isLocked: json['is_locked'] as bool? ?? false,
+    wordCount: (json['word_count'] as num?)?.toInt() ?? 0,
   );
 }
 

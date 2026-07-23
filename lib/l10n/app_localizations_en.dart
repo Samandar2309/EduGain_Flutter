@@ -470,7 +470,116 @@ class AppLocalizationsEn extends AppLocalizations {
   String get choosePlan => 'Choose';
 
   @override
+  String get quotaTitle => 'Daily speaking time';
+
+  @override
+  String quotaMinutesLeft(int minutes) {
+    return '$minutes min left';
+  }
+
+  @override
+  String quotaUsedOf(int used, int total) {
+    return '$used of $total min used';
+  }
+
+  @override
+  String get quotaExhausted => 'Today\'s minutes are used up';
+
+  @override
+  String get quotaUpgrade => 'Increase limit';
+
+  @override
+  String get commProfileTitle => 'Communication Profile';
+
+  @override
+  String get commProfileEmpty =>
+      'Have a few conversations with the AI tutor — your profile builds itself from your real speech.';
+
+  @override
+  String get focusTagsTitle => 'Working on now';
+
+  @override
+  String get paceLabel => 'Speaking pace';
+
+  @override
+  String paceValue(int wpm) {
+    return '$wpm words/min';
+  }
+
+  @override
+  String paceTarget(int target) {
+    return 'goal $target';
+  }
+
+  @override
+  String get minutesSpoken => 'Minutes spoken';
+
+  @override
+  String get wordsSpoken => 'Words spoken';
+
+  @override
+  String basedOnSessions(int count) {
+    return 'based on $count sessions';
+  }
+
+  @override
+  String get settingsTitle => 'Settings';
+
+  @override
+  String get paywallReportTitle => 'Unlock your full report';
+
+  @override
+  String get paywallReportBody =>
+      'Every mistake, correction and personal tip — with Premium.';
+
+  @override
+  String get paywallSeePlans => 'See plans';
+
+  @override
+  String get premiumBadge => 'Premium';
+
+  @override
+  String get planPopular => 'Most popular';
+
+  @override
+  String get premiumHeroTitle => 'EduGain Premium';
+
+  @override
+  String get premiumHeroBody =>
+      'Speak more every day, open every track and get the full analysis of your speech.';
+
+  @override
   String get appTagline => 'English with artificial intelligence';
+
+  @override
+  String get welcomeChooseLanguage => 'Choose your language';
+
+  @override
+  String get welcomeSkip => 'Skip';
+
+  @override
+  String get welcomeStart => 'Get started';
+
+  @override
+  String get welcomeSpeakTitle => 'Speak with an AI tutor';
+
+  @override
+  String get welcomeSpeakBody =>
+      'Real conversations any time of day. No judgement, no fear of mistakes — just practice.';
+
+  @override
+  String get welcomeCoachTitle => 'Live coaching as you talk';
+
+  @override
+  String get welcomeCoachBody =>
+      'Gentle corrections after every sentence and a clear report on your grammar, vocabulary and fluency.';
+
+  @override
+  String get welcomeGoalTitle => 'A path to your goal';
+
+  @override
+  String get welcomeGoalBody =>
+      'IELTS, career, travel or everyday talk — follow a track that adapts to your weak spots.';
 
   @override
   String get xpSourceDailyGoal => 'Daily goal';

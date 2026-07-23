@@ -58,12 +58,12 @@ dependencies:
   # Replaced flutter_tts (on-device) — voices now come from the backend so they
   # are identical on every device, which on-device engines can't guarantee.
   just_audio: ^0.10.5
+  # Peer speaking: live 1:1 WebRTC voice calls between learners. Media flows
+  # peer-to-peer; our server only relays signaling over a WebSocket.
+  flutter_webrtc: ^0.14.1
+  web_socket_channel: ^3.0.1
   # Persist the learner's chosen voice across sessions.
   shared_preferences: ^2.5.5
-  # Real 3D tutor avatar: a three.js scene (assets/avatar3d/) renders a rigged
-  # Ready Player Me model with live viseme lip-sync, hosted in a transparent
-  # WebView over the scenario backdrop.
-  webview_flutter: ^4.10.0
 
 dev_dependencies:
   flutter_test:
@@ -96,9 +96,10 @@ flutter:
   assets:
     - assets/avatars/
     - assets/backgrounds/
-    # Real-time 3D avatar engine (three.js + GLTFLoader) and rigged models.
-    - assets/avatar3d/
-    - assets/avatar3d/models/
+    # The official key-visual hero (base + open-mouth patch) for PhotoHero.
+    - assets/hero/
+    # Synthesized UI chimes for the vocab games (correct / wrong / streak).
+    - assets/sfx/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

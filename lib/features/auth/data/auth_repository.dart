@@ -40,6 +40,22 @@ class AuthRepository {
     return result;
   }
 
+  /// Silent login for the Telegram Mini App: exchange Telegram's signed
+  /// `initData` for a session (the backend verifies the HMAC before trusting
+  /// it — never validated client-side).
+  Future<AuthResult> signInWithTelegram(String initData) async {
+    final data = await _api.post(
+      '/auth/telegram/webapp',
+      body: {'init_data': initData},
+    );
+    final result = AuthResult.fromJson(data);
+    await _tokens.save(
+      access: result.tokens.accessToken,
+      refresh: result.tokens.refreshToken,
+    );
+    return result;
+  }
+
   Future<AppUser> me() async {
     final data = await _api.get('/auth/me');
     return AppUser.fromJson(data['user'] as Map<String, dynamic>);

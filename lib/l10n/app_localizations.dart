@@ -958,11 +958,197 @@ abstract class AppLocalizations {
   /// **'Choose'**
   String get choosePlan;
 
+  /// No description provided for @quotaTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily speaking time'**
+  String get quotaTitle;
+
+  /// No description provided for @quotaMinutesLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min left'**
+  String quotaMinutesLeft(int minutes);
+
+  /// No description provided for @quotaUsedOf.
+  ///
+  /// In en, this message translates to:
+  /// **'{used} of {total} min used'**
+  String quotaUsedOf(int used, int total);
+
+  /// No description provided for @quotaExhausted.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s minutes are used up'**
+  String get quotaExhausted;
+
+  /// No description provided for @quotaUpgrade.
+  ///
+  /// In en, this message translates to:
+  /// **'Increase limit'**
+  String get quotaUpgrade;
+
+  /// No description provided for @commProfileTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Communication Profile'**
+  String get commProfileTitle;
+
+  /// No description provided for @commProfileEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Have a few conversations with the AI tutor — your profile builds itself from your real speech.'**
+  String get commProfileEmpty;
+
+  /// No description provided for @focusTagsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Working on now'**
+  String get focusTagsTitle;
+
+  /// No description provided for @paceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Speaking pace'**
+  String get paceLabel;
+
+  /// No description provided for @paceValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{wpm} words/min'**
+  String paceValue(int wpm);
+
+  /// No description provided for @paceTarget.
+  ///
+  /// In en, this message translates to:
+  /// **'goal {target}'**
+  String paceTarget(int target);
+
+  /// No description provided for @minutesSpoken.
+  ///
+  /// In en, this message translates to:
+  /// **'Minutes spoken'**
+  String get minutesSpoken;
+
+  /// No description provided for @wordsSpoken.
+  ///
+  /// In en, this message translates to:
+  /// **'Words spoken'**
+  String get wordsSpoken;
+
+  /// No description provided for @basedOnSessions.
+  ///
+  /// In en, this message translates to:
+  /// **'based on {count} sessions'**
+  String basedOnSessions(int count);
+
+  /// No description provided for @settingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settingsTitle;
+
+  /// No description provided for @paywallReportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock your full report'**
+  String get paywallReportTitle;
+
+  /// No description provided for @paywallReportBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Every mistake, correction and personal tip — with Premium.'**
+  String get paywallReportBody;
+
+  /// No description provided for @paywallSeePlans.
+  ///
+  /// In en, this message translates to:
+  /// **'See plans'**
+  String get paywallSeePlans;
+
+  /// No description provided for @premiumBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium'**
+  String get premiumBadge;
+
+  /// No description provided for @planPopular.
+  ///
+  /// In en, this message translates to:
+  /// **'Most popular'**
+  String get planPopular;
+
+  /// No description provided for @premiumHeroTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'EduGain Premium'**
+  String get premiumHeroTitle;
+
+  /// No description provided for @premiumHeroBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Speak more every day, open every track and get the full analysis of your speech.'**
+  String get premiumHeroBody;
+
   /// No description provided for @appTagline.
   ///
   /// In en, this message translates to:
   /// **'English with artificial intelligence'**
   String get appTagline;
+
+  /// No description provided for @welcomeChooseLanguage.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your language'**
+  String get welcomeChooseLanguage;
+
+  /// No description provided for @welcomeSkip.
+  ///
+  /// In en, this message translates to:
+  /// **'Skip'**
+  String get welcomeSkip;
+
+  /// No description provided for @welcomeStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Get started'**
+  String get welcomeStart;
+
+  /// No description provided for @welcomeSpeakTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Speak with an AI tutor'**
+  String get welcomeSpeakTitle;
+
+  /// No description provided for @welcomeSpeakBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Real conversations any time of day. No judgement, no fear of mistakes — just practice.'**
+  String get welcomeSpeakBody;
+
+  /// No description provided for @welcomeCoachTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Live coaching as you talk'**
+  String get welcomeCoachTitle;
+
+  /// No description provided for @welcomeCoachBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Gentle corrections after every sentence and a clear report on your grammar, vocabulary and fluency.'**
+  String get welcomeCoachBody;
+
+  /// No description provided for @welcomeGoalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'A path to your goal'**
+  String get welcomeGoalTitle;
+
+  /// No description provided for @welcomeGoalBody.
+  ///
+  /// In en, this message translates to:
+  /// **'IELTS, career, travel or everyday talk — follow a track that adapts to your weak spots.'**
+  String get welcomeGoalBody;
 
   /// No description provided for @xpSourceDailyGoal.
   ///

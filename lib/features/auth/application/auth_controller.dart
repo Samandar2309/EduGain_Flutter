@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/api/api_client.dart';
+import '../../../core/telegram_webapp.dart';
 import '../data/auth_repository.dart';
 import '../domain/models.dart';
 
@@ -29,6 +30,21 @@ class AuthController extends StateNotifier<AuthState> {
 
   Future<void> _bootstrap() async {
     if (!await _repo.hasSession()) {
+      // Running inside a Telegram Mini App: Telegram already vouches for the
+      // learner's identity, so log in silently instead of showing the
+      // phone/Google welcome flow. `initData` is null on every other
+      // platform, so this is a no-op for the regular mobile app.
+      final initData = TelegramWebApp.initData;
+      if (initData != null) {
+        try {
+          final result = await _repo.signInWithTelegram(initData);
+          state = AuthState(status: AuthStatus.authenticated, user: result.user);
+          return;
+        } on Object {
+          // Fall through to the normal unauthenticated flow (e.g. the
+          // signature failed to verify, or the request itself failed).
+        }
+      }
       state = const AuthState(status: AuthStatus.unauthenticated);
       return;
     }

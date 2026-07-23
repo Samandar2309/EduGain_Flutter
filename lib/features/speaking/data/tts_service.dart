@@ -56,6 +56,11 @@ class TtsService {
   int _gen = 0;
   Future<void>? _drainFuture;
 
+  /// Call from a user-gesture handler (mic tap): lets the web playback
+  /// satisfy the browser's autoplay policy before any real clip plays.
+  /// No-op on native.
+  Future<void> prime() => _playback.prime();
+
   /// Queue a phrase to be spoken after anything already playing/queued.
   void enqueue(String text) {
     final t = text.trim();

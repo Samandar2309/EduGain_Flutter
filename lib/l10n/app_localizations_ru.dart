@@ -470,7 +470,116 @@ class AppLocalizationsRu extends AppLocalizations {
   String get choosePlan => 'Выбрать';
 
   @override
+  String get quotaTitle => 'Дневное время разговора';
+
+  @override
+  String quotaMinutesLeft(int minutes) {
+    return 'Осталось $minutes мин';
+  }
+
+  @override
+  String quotaUsedOf(int used, int total) {
+    return 'Использовано $used из $total мин';
+  }
+
+  @override
+  String get quotaExhausted => 'Минуты на сегодня закончились';
+
+  @override
+  String get quotaUpgrade => 'Увеличить лимит';
+
+  @override
+  String get commProfileTitle => 'Профиль общения';
+
+  @override
+  String get commProfileEmpty =>
+      'Проведите несколько бесед с ИИ-репетитором — профиль построится сам из вашей живой речи.';
+
+  @override
+  String get focusTagsTitle => 'Сейчас работаем над';
+
+  @override
+  String get paceLabel => 'Темп речи';
+
+  @override
+  String paceValue(int wpm) {
+    return '$wpm слов/мин';
+  }
+
+  @override
+  String paceTarget(int target) {
+    return 'цель $target';
+  }
+
+  @override
+  String get minutesSpoken => 'Минут говорения';
+
+  @override
+  String get wordsSpoken => 'Сказано слов';
+
+  @override
+  String basedOnSessions(int count) {
+    return 'на основе $count бесед';
+  }
+
+  @override
+  String get settingsTitle => 'Настройки';
+
+  @override
+  String get paywallReportTitle => 'Откройте полный отчёт';
+
+  @override
+  String get paywallReportBody =>
+      'Каждая ошибка, исправление и личный совет — с Premium.';
+
+  @override
+  String get paywallSeePlans => 'Смотреть тарифы';
+
+  @override
+  String get premiumBadge => 'Premium';
+
+  @override
+  String get planPopular => 'Самый популярный';
+
+  @override
+  String get premiumHeroTitle => 'EduGain Premium';
+
+  @override
+  String get premiumHeroBody =>
+      'Говорите больше каждый день, откройте все треки и получайте полный анализ своей речи.';
+
+  @override
   String get appTagline => 'Английский с искусственным интеллектом';
+
+  @override
+  String get welcomeChooseLanguage => 'Выберите язык';
+
+  @override
+  String get welcomeSkip => 'Пропустить';
+
+  @override
+  String get welcomeStart => 'Начать';
+
+  @override
+  String get welcomeSpeakTitle => 'Говорите с ИИ-репетитором';
+
+  @override
+  String get welcomeSpeakBody =>
+      'Живые диалоги в любое время суток. Без осуждения и страха ошибиться — просто практика.';
+
+  @override
+  String get welcomeCoachTitle => 'Подсказки прямо в разговоре';
+
+  @override
+  String get welcomeCoachBody =>
+      'Мягкие исправления после каждой фразы и понятный отчёт о грамматике, лексике и беглости.';
+
+  @override
+  String get welcomeGoalTitle => 'Путь к вашей цели';
+
+  @override
+  String get welcomeGoalBody =>
+      'IELTS, карьера, путешествия или повседневная речь — трек подстраивается под ваши слабые места.';
 
   @override
   String get xpSourceDailyGoal => 'Дневная цель';

@@ -447,6 +447,7 @@ class FeedbackReport {
     required this.errors,
     required this.strengths,
     required this.isLocked,
+    this.scoreDeltas,
   });
 
   final String? cefrEstimate;
@@ -455,6 +456,10 @@ class FeedbackReport {
   final List<FeedbackError> errors;
   final List<String> strengths;
   final bool isLocked;
+
+  /// Per-skill change vs the learner's previous session (e.g. {"grammar": 7}).
+  /// Null when either side is missing — the UI shows the score without arrows.
+  final Map<String, int>? scoreDeltas;
 
   factory FeedbackReport.fromJson(Map<String, dynamic> json) => FeedbackReport(
     cefrEstimate: json['cefr_estimate'] as String?,
@@ -469,6 +474,11 @@ class FeedbackReport {
         .map((e) => e.toString())
         .toList(),
     isLocked: json['is_locked'] as bool? ?? false,
+    scoreDeltas: json['score_deltas'] == null
+        ? null
+        : (json['score_deltas'] as Map).map(
+            (k, v) => MapEntry(k.toString(), (v as num).toInt()),
+          ),
   );
 }
 
@@ -570,4 +580,109 @@ class StreamErrorEvent extends SpeakingEvent {
   const StreamErrorEvent(this.code, this.message);
   final String code;
   final String message;
+}
+
+/// Today's speaking budget (`GET /speaking/quota`) — drives the minutes ring.
+/// `used` is clamped server-side, so the remainder is never negative.
+class SpeakingQuota {
+  const SpeakingQuota({
+    required this.sessionsRemaining,
+    required this.secondsLimit,
+    required this.secondsUsed,
+  });
+
+  final int sessionsRemaining;
+  final int secondsLimit;
+  final int secondsUsed;
+
+  int get secondsRemaining => (secondsLimit - secondsUsed).clamp(0, 1 << 31);
+  bool get isExhausted => secondsLimit > 0 && secondsRemaining <= 0;
+
+  /// 0..1 of today's budget still available.
+  double get remainingRatio =>
+      secondsLimit == 0 ? 0 : (secondsRemaining / secondsLimit).clamp(0.0, 1.0);
+
+  /// Whole minutes shown to the learner (partial minutes round up, so the ring
+  /// never says "0 min" while seconds remain).
+  int get minutesRemaining => (secondsRemaining / 60).ceil();
+  int get minutesLimit => (secondsLimit / 60).round();
+  int get minutesUsed => minutesLimit - minutesRemaining;
+
+  factory SpeakingQuota.fromJson(Map<String, dynamic> json) {
+    final speaking = (json['speaking'] as Map?) ?? const {};
+    return SpeakingQuota(
+      sessionsRemaining: (json['sessions_remaining'] as num?)?.toInt() ?? 0,
+      secondsLimit: (speaking['seconds_limit'] as num?)?.toInt() ?? 0,
+      secondsUsed: (speaking['seconds_used'] as num?)?.toInt() ?? 0,
+    );
+  }
+}
+
+/// One ability's smoothed trend inside the Communication Profile.
+class AbilityTrend {
+  const AbilityTrend({
+    required this.current,
+    required this.delta,
+    required this.samples,
+  });
+
+  final double current; // EWMA-smoothed 0..100
+  final double? delta; // change vs the previous smoothed value
+  final int samples; // scored sessions behind the number
+
+  factory AbilityTrend.fromJson(Map<String, dynamic> json) => AbilityTrend(
+    current: (json['current'] as num?)?.toDouble() ?? 0,
+    delta: (json['delta'] as num?)?.toDouble(),
+    samples: (json['samples'] as num?)?.toInt() ?? 0,
+  );
+}
+
+/// The learner's Communication Profile (`GET /speaking/profile`): observed
+/// weak points + measured fluency + smoothed ability trends. Axes follow the
+/// honesty rule — null until actually measured, and the UI must not invent
+/// numbers for them.
+class LearnerProfile {
+  const LearnerProfile({
+    required this.focusTags,
+    required this.voicedMinutes,
+    required this.spokenWords,
+    required this.wordsPerMinute,
+    required this.wpmTarget,
+    required this.abilities,
+    required this.hasMemory,
+  });
+
+  final List<String> focusTags; // recurring error tags, worst first
+  final double? voicedMinutes; // total voiced speaking time
+  final int spokenWords;
+  final double? wordsPerMinute; // null under the measurement floor
+  final int wpmTarget;
+  final Map<String, AbilityTrend> abilities; // grammar/vocabulary/overall
+  final bool hasMemory;
+
+  /// True when nothing measurable exists yet — the UI shows a friendly
+  /// "start speaking" state instead of a wall of zeros.
+  bool get isEmpty =>
+      focusTags.isEmpty && abilities.isEmpty && spokenWords == 0;
+
+  factory LearnerProfile.fromJson(Map<String, dynamic> json) {
+    final fluency = (json['fluency'] as Map?) ?? const {};
+    final abilities = (json['abilities'] as Map?) ?? const {};
+    return LearnerProfile(
+      focusTags: ((json['focus_tags'] as List?) ?? const [])
+          .map((e) => e.toString())
+          .toList(),
+      voicedMinutes: (fluency['voiced_minutes'] as num?)?.toDouble(),
+      spokenWords: (fluency['spoken_words'] as num?)?.toInt() ?? 0,
+      wordsPerMinute: (fluency['words_per_minute'] as num?)?.toDouble(),
+      wpmTarget: (fluency['wpm_target'] as num?)?.toInt() ?? 140,
+      abilities: abilities.map(
+        (k, v) => MapEntry(
+          k.toString(),
+          AbilityTrend.fromJson(Map<String, dynamic>.from(v as Map)),
+        ),
+      ),
+      hasMemory: json['has_memory'] as bool? ?? false,
+    );
+  }
 }

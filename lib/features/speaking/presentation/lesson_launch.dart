@@ -24,7 +24,7 @@ Future<void> launchLesson(
         .read(speakingRepositoryProvider)
         .startSession(lessonKey: lessonKey);
     if (context.mounted) {
-      context.push(
+      await context.push(
         '/speaking/chat',
         extra: SpeakingLaunch(
           started: started,
@@ -32,6 +32,12 @@ Future<void> launchLesson(
           title: title,
         ),
       );
+      // Back from the session: progress and today's minutes both moved.
+      // (context.mounted guards ref too — both die with the caller's State.)
+      if (context.mounted) {
+        ref.invalidate(speakingHomeProvider);
+        ref.invalidate(speakingQuotaProvider);
+      }
     }
   } on ApiException catch (e) {
     if (context.mounted) {

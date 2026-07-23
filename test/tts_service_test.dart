@@ -10,7 +10,7 @@ Uint8List _bytes(String s) => Uint8List.fromList(utf8.encode(s));
 
 /// Records what it plays; optionally blocks each [play] on a gate so a test can
 /// observe a "currently playing" state and then interrupt it.
-class _FakePlayback implements AudioPlayback {
+class _FakePlayback extends AudioPlayback {
   final List<String> played = [];
   int stops = 0;
   int disposes = 0;

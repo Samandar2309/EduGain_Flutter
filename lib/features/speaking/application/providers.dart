@@ -30,6 +30,18 @@ final trackLessonsProvider = FutureProvider.autoDispose
           ref.read(speakingRepositoryProvider).trackLessons(track),
     );
 
+/// Today's speaking-minutes budget (auto-disposed so the ring is fresh every
+/// time the learner returns; invalidate after a session to reflect spend).
+final speakingQuotaProvider = FutureProvider.autoDispose<SpeakingQuota>(
+  (ref) => ref.read(speakingRepositoryProvider).quota(),
+);
+
+/// The learner's Communication Profile (auto-disposed: it changes after every
+/// scored session).
+final learnerProfileProvider = FutureProvider.autoDispose<LearnerProfile>(
+  (ref) => ref.read(speakingRepositoryProvider).profile(),
+);
+
 /// Server-curated TTS voice catalogue (kept alive: small, reused by the picker
 /// and the chat screen across a session).
 final voicesProvider = FutureProvider<List<Voice>>(
@@ -48,7 +60,7 @@ final ttsServiceProvider = Provider<TtsService>((ref) {
   final repo = ref.read(speakingRepositoryProvider);
   final tts = TtsService(
     synthesize: repo.synthesizeSpeech,
-    playback: JustAudioPlayback(),
+    playback: createAudioPlayback(),
   );
   ref.onDispose(tts.dispose);
   return tts;

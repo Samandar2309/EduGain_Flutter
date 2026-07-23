@@ -72,12 +72,12 @@ class SpeakingRepository {
   /// [TranscriptEvent] carries what was heard; the rest mirrors [streamReply].
   Stream<SpeakingEvent> streamAudioReply(
     String sessionId,
-    String filePath,
+    Uint8List audioBytes,
     String filename,
   ) async* {
     final raw = await _api.postMultipartStream(
       '/speaking/sessions/$sessionId/messages/audio',
-      filePath: filePath,
+      bytes: audioBytes,
       filename: filename,
     );
     yield* _parseSse(raw);
@@ -121,5 +121,20 @@ class SpeakingRepository {
   Future<FeedbackReport> endSession(String sessionId) async {
     final data = await _api.post('/speaking/sessions/$sessionId/end');
     return FeedbackReport.fromJson(data['feedback'] as Map<String, dynamic>);
+  }
+
+  /// Today's speaking budget — one cheap call that renders the minutes ring.
+  Future<SpeakingQuota> quota() async {
+    final data = await _api.get('/speaking/quota');
+    return SpeakingQuota.fromJson(data);
+  }
+
+  /// The learner's Communication Profile (observed weak points + measured
+  /// fluency + ability trends).
+  Future<LearnerProfile> profile() async {
+    final data = await _api.get('/speaking/profile');
+    return LearnerProfile.fromJson(
+      (data['profile'] as Map<String, dynamic>?) ?? const {},
+    );
   }
 }

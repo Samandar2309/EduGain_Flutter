@@ -4,13 +4,20 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/api/api_exception.dart';
 import '../../../core/format.dart';
+import '../../../core/ui/components.dart';
 import '../../../core/ui/error_handling.dart';
+import '../../../core/ui/tokens.dart';
 import '../../../l10n/app_localizations.dart';
 import '../application/providers.dart';
 import '../domain/models.dart';
 
-const _tierNames = {'entry': 'Entry', 'main': 'Main ⭐', 'pro': 'Pro'};
+// Product tier names (the pricing table): entry=Beginner, main=Standart, pro=Pro.
+const _tierNames = {'entry': 'Beginner', 'main': 'Standart', 'pro': 'Pro'};
+const _popularTier = 'main';
 
+/// The Premium paywall: a brand hero that sells the outcome, then the three
+/// plans as clean cards — the popular one visually committed to (accent
+/// border, badge, filled CTA), the others quieter.
 class PlansScreen extends ConsumerStatefulWidget {
   const PlansScreen({super.key});
 
@@ -27,25 +34,38 @@ class _PlansScreenState extends ConsumerState<PlansScreen> {
       context: context,
       showDragHandle: true,
       builder: (ctx) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(16),
-              child: Text(l.choosePayment),
-            ),
-            ListTile(
-              leading: const Icon(Icons.account_balance_wallet_rounded),
-              title: const Text('Payme'),
-              onTap: () => Navigator.pop(ctx, 'payme'),
-            ),
-            ListTile(
-              leading: const Icon(Icons.payments_rounded),
-              title: const Text('Click'),
-              onTap: () => Navigator.pop(ctx, 'click'),
-            ),
-            const SizedBox(height: 8),
-          ],
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            AppSpace.lg,
+            0,
+            AppSpace.lg,
+            AppSpace.lg,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                l.choosePayment,
+                style: Theme.of(ctx).textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: AppSpace.lg),
+              _PaymentOption(
+                icon: Icons.account_balance_wallet_rounded,
+                label: 'Payme',
+                color: const Color(0xFF00CCCC),
+                onTap: () => Navigator.pop(ctx, 'payme'),
+              ),
+              const SizedBox(height: AppSpace.md),
+              _PaymentOption(
+                icon: Icons.payments_rounded,
+                label: 'Click',
+                color: const Color(0xFF0073FF),
+                onTap: () => Navigator.pop(ctx, 'click'),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -129,29 +149,51 @@ class _PlansScreenState extends ConsumerState<PlansScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final plans = ref.watch(plansProvider);
     final mine = ref.watch(mySubscriptionProvider);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Premium')),
+      backgroundColor: AppColors.canvas,
+      appBar: AppBar(
+        title: const Text('Premium'),
+        backgroundColor: AppColors.canvas,
+      ),
       body: Stack(
         children: [
           plans.when(
-            loading: () => const Center(child: CircularProgressIndicator()),
-            error: (_, _) =>
-                Center(child: Text(AppLocalizations.of(context).loadFailed)),
+            loading: () => const AppLoader(),
+            error: (_, _) => Center(child: Text(l.loadFailed)),
             data: (list) => ListView(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(
+                AppSpace.lg,
+                AppSpace.sm,
+                AppSpace.lg,
+                AppSpace.xxl,
+              ),
               children: [
+                const _PremiumHero(),
+                const SizedBox(height: AppSpace.lg),
                 mine.maybeWhen(
-                  data: (sub) => _CurrentPlan(subscription: sub, onCancel: _cancel),
+                  data: (sub) => sub.isPaid
+                      ? Padding(
+                          padding: const EdgeInsets.only(bottom: AppSpace.lg),
+                          child: _CurrentPlan(
+                            subscription: sub,
+                            onCancel: _cancel,
+                          ),
+                        )
+                      : const SizedBox.shrink(),
                   orElse: () => const SizedBox.shrink(),
                 ),
-                const SizedBox(height: 8),
                 ...list.map(
-                  (p) => _PlanCard(
-                    plan: p,
-                    onBuy: _busy ? null : () => _buy(p),
+                  (p) => Padding(
+                    padding: const EdgeInsets.only(bottom: AppSpace.lg),
+                    child: _PlanCard(
+                      plan: p,
+                      isPopular: p.tier == _popularTier,
+                      onBuy: _busy ? null : () => _buy(p),
+                    ),
                   ),
                 ),
               ],
@@ -168,6 +210,66 @@ class _PlansScreenState extends ConsumerState<PlansScreen> {
   }
 }
 
+/// The paywall hero: sells the outcome, not the feature list.
+class _PremiumHero extends StatelessWidget {
+  const _PremiumHero();
+
+  @override
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    return Container(
+      padding: const EdgeInsets.all(AppSpace.xl),
+      decoration: BoxDecoration(
+        gradient: AppGradients.brand,
+        borderRadius: BorderRadius.circular(AppRadius.xl),
+        boxShadow: AppShadow.glow(AppColors.brand),
+      ),
+      child: Row(
+        children: [
+          Container(
+            width: 56,
+            height: 56,
+            decoration: BoxDecoration(
+              color: Colors.white.withValues(alpha: 0.18),
+              borderRadius: BorderRadius.circular(18),
+            ),
+            child: const Icon(
+              Icons.workspace_premium_rounded,
+              color: Colors.white,
+              size: 30,
+            ),
+          ),
+          const SizedBox(width: AppSpace.lg),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l.premiumHeroTitle,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.w800,
+                    fontSize: 17,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  l.premiumHeroBody,
+                  style: const TextStyle(
+                    color: Colors.white70,
+                    fontSize: 12.5,
+                    height: 1.35,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class _CurrentPlan extends StatelessWidget {
   const _CurrentPlan({required this.subscription, required this.onCancel});
 
@@ -176,93 +278,209 @@ class _CurrentPlan extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final l = AppLocalizations.of(context);
-    return Card(
-      color: theme.colorScheme.surfaceContainerHighest,
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(l.currentPlan, style: theme.textTheme.bodySmall),
-                  const SizedBox(height: 4),
+    return AppCard(
+      color: AppColors.brandTint,
+      child: Row(
+        children: [
+          const Icon(Icons.verified_rounded, color: AppColors.brandDeep),
+          const SizedBox(width: AppSpace.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l.currentPlan,
+                  style: const TextStyle(
+                    color: AppColors.brandDeep,
+                    fontSize: 11.5,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                Text(
+                  _tierNames[subscription.tier] ?? subscription.tier,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.w800,
+                    fontSize: 16,
+                  ),
+                ),
+                if (subscription.expiresAt != null)
                   Text(
-                    _tierNames[subscription.tier] ?? subscription.tier,
-                    style: theme.textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
+                    l.validUntil(subscription.expiresAt!.split('T').first),
+                    style: const TextStyle(
+                      color: AppColors.inkSoft,
+                      fontSize: 12,
                     ),
                   ),
-                  if (subscription.expiresAt != null)
-                    Text(
-                      l.validUntil(subscription.expiresAt!.split('T').first),
-                      style: theme.textTheme.bodySmall,
-                    ),
-                ],
-              ),
+              ],
             ),
-            if (subscription.isPaid && subscription.isActive)
-              TextButton(onPressed: onCancel, child: Text(l.cancelAction)),
-          ],
-        ),
+          ),
+          if (subscription.isPaid && subscription.isActive)
+            TextButton(onPressed: onCancel, child: Text(l.cancelAction)),
+        ],
       ),
     );
   }
 }
 
 class _PlanCard extends StatelessWidget {
-  const _PlanCard({required this.plan, required this.onBuy});
+  const _PlanCard({
+    required this.plan,
+    required this.isPopular,
+    required this.onBuy,
+  });
 
   final Plan plan;
+  final bool isPopular;
   final VoidCallback? onBuy;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l = AppLocalizations.of(context);
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: Padding(
-        padding: const EdgeInsets.all(18),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              _tierNames[plan.tier] ?? plan.tier,
-              style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              l.pricePerMonth(formatUzs(plan.priceUzs)),
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: theme.colorScheme.primary,
-              ),
-            ),
-            const SizedBox(height: 12),
-            ...plan.features.map(
-              (f) => Padding(
-                padding: const EdgeInsets.symmetric(vertical: 3),
-                child: Row(
-                  children: [
-                    const Icon(Icons.check_rounded, size: 18, color: Colors.green),
-                    const SizedBox(width: 8),
-                    Expanded(child: Text(f)),
-                  ],
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        AppCard(
+          padding: const EdgeInsets.all(AppSpace.xl),
+          border: isPopular
+              ? Border.all(color: AppColors.brand, width: 1.6)
+              : Border.all(color: AppColors.line),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                _tierNames[plan.tier] ?? plan.tier,
+                style: theme.textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w800,
                 ),
               ),
-            ),
-            const SizedBox(height: 14),
-            FilledButton(
-              onPressed: onBuy,
-              child: Text(l.choosePlan),
-            ),
-          ],
+              const SizedBox(height: 2),
+              Text(
+                l.pricePerMonth(formatUzs(plan.priceUzs)),
+                style: theme.textTheme.titleMedium?.copyWith(
+                  color: AppColors.brandDark,
+                  fontWeight: FontWeight.w800,
+                ),
+              ),
+              const SizedBox(height: AppSpace.md),
+              ...plan.features.map(
+                (f) => Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(
+                        Icons.check_circle_rounded,
+                        size: 18,
+                        color: AppColors.brand,
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          f,
+                          style: const TextStyle(fontSize: 13.5, height: 1.35),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: AppSpace.lg),
+              SizedBox(
+                width: double.infinity,
+                child: isPopular
+                    ? FilledButton(
+                        onPressed: onBuy,
+                        style: FilledButton.styleFrom(
+                          minimumSize: const Size(0, 50),
+                        ),
+                        child: Text(l.choosePlan),
+                      )
+                    : OutlinedButton(
+                        onPressed: onBuy,
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: const Size(0, 50),
+                          foregroundColor: AppColors.brandDark,
+                          side: const BorderSide(color: AppColors.brand),
+                        ),
+                        child: Text(l.choosePlan),
+                      ),
+              ),
+            ],
+          ),
         ),
+        if (isPopular)
+          Positioned(
+            top: -11,
+            right: AppSpace.lg,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+              decoration: BoxDecoration(
+                gradient: AppGradients.brand,
+                borderRadius: BorderRadius.circular(AppRadius.pill),
+                boxShadow: AppShadow.glow(AppColors.brand),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.star_rounded,
+                    color: Colors.white,
+                    size: 13,
+                  ),
+                  const SizedBox(width: 4),
+                  Text(
+                    l.planPopular,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 11.5,
+                      fontWeight: FontWeight.w800,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+      ],
+    );
+  }
+}
+
+class _PaymentOption extends StatelessWidget {
+  const _PaymentOption({
+    required this.icon,
+    required this.label,
+    required this.color,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final Color color;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return AppCard(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpace.lg,
+        vertical: AppSpace.md,
+      ),
+      onTap: onTap,
+      border: Border.all(color: AppColors.line),
+      child: Row(
+        children: [
+          IconChip(icon: icon, color: color, size: 40, iconSize: 20),
+          const SizedBox(width: AppSpace.lg),
+          Expanded(
+            child: Text(
+              label,
+              style: const TextStyle(fontWeight: FontWeight.w700, fontSize: 15),
+            ),
+          ),
+          const Icon(Icons.chevron_right_rounded, color: AppColors.inkFaint),
+        ],
       ),
     );
   }
