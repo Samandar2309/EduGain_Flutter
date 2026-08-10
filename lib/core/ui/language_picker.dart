@@ -22,7 +22,7 @@ class _LanguageSheet extends ConsumerWidget {
     final l = AppLocalizations.of(context);
     final scheme = Theme.of(context).colorScheme;
     final current = AppLanguage.fromCode(
-      ref.watch(localeProvider)?.languageCode,
+      ref.watch(localeProvider).locale?.languageCode,
     );
 
     return SafeArea(

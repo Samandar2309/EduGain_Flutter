@@ -1,0 +1,12 @@
+# Screenshot tests are a design tool, not a regression gate.
+#
+# They are excluded from `flutter test` because one of them renders a live call
+# clock: the elapsed time differs by a second between runs, so the golden can
+# never match twice. Run them deliberately when a screen changes:
+#
+#     flutter test --tags shot --run-skipped --update-goldens
+#
+# then LOOK at test/shots/ — that is the whole point of them.
+tags:
+  shot:
+    skip: "run explicitly: flutter test --tags shot"

@@ -220,16 +220,10 @@ ScenarioBackdrop backdropForKey(String key) {
 /// Resolve a scenario's backdrop from whatever text we know (slug/title/category
 /// for a scenario session, or the learner's free topic). Falls back to a clean
 /// indigo theme when nothing matches.
-ScenarioBackdrop backdropFor({
-  String? slug,
-  String? title,
-  String? category,
-  String? freeTopic,
-}) {
-  final haystack = [slug, title, category, freeTopic]
-      .whereType<String>()
-      .join(' ')
-      .toLowerCase();
+/// Pick a scene by matching the learner's own topic text against each theme's
+/// keywords. Track lessons never come here — they carry a [backdropForKey].
+ScenarioBackdrop backdropFor({String? freeTopic}) {
+  final haystack = (freeTopic ?? '').toLowerCase();
   if (haystack.trim().isEmpty) return _default;
   for (final theme in _themes) {
     for (final kw in theme.keywords) {

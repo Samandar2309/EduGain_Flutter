@@ -12,10 +12,14 @@ Uint8List _bytes(String s) => Uint8List.fromList(utf8.encode(s));
 /// observe a "currently playing" state and then interrupt it.
 class _FakePlayback extends AudioPlayback {
   final List<String> played = [];
+  final List<double> speeds = [];
   int stops = 0;
   int disposes = 0;
   bool block = false;
   Completer<void>? _gate;
+
+  @override
+  Future<void> setSpeed(double speed) async => speeds.add(speed);
 
   @override
   final ValueNotifier<double> level = ValueNotifier<double>(0);
@@ -166,6 +170,199 @@ void main() {
       tts.enqueue('late');
       await pumpEventQueue();
       expect(playback.played, isEmpty);
+    });
+
+    test('replay speaks the line again without a turn, at normal speed',
+        () async {
+      final tts = make()..enqueue('first');
+      await pumpEventQueue();
+      playback.played.clear();
+
+      await tts.replay('Hello there. How are you?');
+      await pumpEventQueue();
+
+      // split into sentences so it starts speaking promptly
+      expect(playback.played, ['Hello there.', 'How are you?']);
+      // The rate is set explicitly every time, so a replay is never left slow
+      // by an earlier one whose restore did not land.
+      expect(playback.speeds, [1.0]);
+    });
+
+    test('slow replay sets the rate and restores it afterwards', () async {
+      final tts = make();
+      await tts.replay('Say it slowly.', speed: 0.7);
+      await pumpEventQueue();
+
+      expect(playback.played, ['Say it slowly.']);
+      expect(playback.speeds.first, 0.7);
+      expect(playback.speeds.last, 1.0, reason: 'the next turn must not be slow');
+    });
+
+    test('replay drops whatever was already queued', () async {
+      final tts = make()
+        ..enqueue('stale one')
+        ..enqueue('stale two');
+      playback.block = true;
+      await pumpEventQueue();
+
+      playback.block = false;
+      await tts.replay('the only thing that should be heard');
+      await pumpEventQueue();
+
+      expect(playback.played.last, 'the only thing that should be heard');
+      expect(playback.played, isNot(contains('stale two')));
+    });
+
+    test('replay after dispose is ignored', () async {
+      final tts = make();
+      await tts.dispose();
+      await tts.replay('too late');
+      await pumpEventQueue();
+      expect(playback.played, isEmpty);
+    });
+
+    // ── rendered-audio cache ────────────────────────────────────────────
+    // Synthesis is billed against the learner's daily tts_chars budget, so
+    // audio we already hold must never be paid for twice.
+    test('replaying a line does not re-synthesise it', () async {
+      final tts = make()..enqueue('Hello there.');
+      await pumpEventQueue();
+      expect(synthCalls.length, 1);
+
+      await tts.replay('Hello there.');
+      await pumpEventQueue();
+      await tts.replay('Hello there.', speed: 0.7);
+      await pumpEventQueue();
+
+      // played three times, paid for once
+      expect(playback.played.length, 3);
+      expect(synthCalls.length, 1, reason: 'replay must be free');
+    });
+
+    test('the same voice+text is synthesised once even when requested at once',
+        () async {
+      final tts = make();
+      // two callers race for the identical clip
+      await Future.wait([
+        tts.replay('Same line.'),
+        tts.replay('Same line.'),
+      ]);
+      await pumpEventQueue();
+      expect(synthCalls.length, 1, reason: 'in-flight requests must coalesce');
+    });
+
+    test('a different voice is different audio, not a cache hit', () async {
+      final tts = make()..enqueue('Ping.');
+      await pumpEventQueue();
+      tts
+        ..voice = 'diana'
+        ..enqueue('Ping.');
+      await pumpEventQueue();
+      expect(synthCalls, [
+        ['Ping.', 'troy'],
+        ['Ping.', 'diana'],
+      ]);
+    });
+
+    test('a failed synth is not cached, so a retry really retries', () async {
+      final tts = make()..enqueue('boom');
+      await pumpEventQueue();
+      expect(synthCalls.length, 1);
+      expect(playback.played, isEmpty);
+
+      await tts.replay('boom');
+      await pumpEventQueue();
+      expect(synthCalls.length, 2, reason: 'a failure must not poison the line');
+    });
+
+    test('the cache is bounded, so a long session cannot grow without limit',
+        () async {
+      final tts = make();
+      for (var i = 0; i < 60; i++) {
+        tts.enqueue('line number $i.');
+      }
+      await pumpEventQueue();
+      expect(playback.played.length, 60);
+      expect(tts.cachedClips, lessThanOrEqualTo(24));
+    });
+
+    test('an oversized clip is played but never cached', () async {
+      final big = Uint8List(2 * 1024 * 1024); // over the per-clip ceiling
+      var calls = 0;
+      final tts = TtsService(
+        synthesize: (t, v) async {
+          calls++;
+          return big;
+        },
+        playback: playback,
+      )..enqueue('huge');
+      await pumpEventQueue();
+      expect(tts.cachedClips, 0);
+
+      await tts.replay('huge');
+      await pumpEventQueue();
+      expect(calls, 2, reason: 'not cached, so it is fetched again');
+    });
+
+    test('dispose releases the cached audio', () async {
+      final tts = make()..enqueue('hold me.');
+      await pumpEventQueue();
+      expect(tts.cachedClips, 1);
+      await tts.dispose();
+      expect(tts.cachedClips, 0);
+    });
+
+    // ── gapless playback ────────────────────────────────────────────────
+    // Rendering only after the previous clip finished made every sentence
+    // boundary cost a full network round-trip, which is heard as the tutor
+    // hesitating mid-thought.
+    test('renders the next sentence while the current one is still playing',
+        () async {
+      playback.block = true; // hold the first clip open
+      make()
+        ..enqueue('first sentence.')
+        ..enqueue('second sentence.');
+      await pumpEventQueue();
+
+      expect(playback.played, ['first sentence.'], reason: 'still on the first');
+      expect(
+        synthCalls.map((c) => c[0]),
+        containsAll(['first sentence.', 'second sentence.']),
+        reason: 'the next clip must already be rendered, not started later',
+      );
+    });
+
+    test('the prefetched clip is reused, not rendered twice', () async {
+      make()
+        ..enqueue('alpha.')
+        ..enqueue('beta.');
+      await pumpEventQueue();
+
+      expect(playback.played, ['alpha.', 'beta.']);
+      // One render per sentence — the prefetch primed the cache the drain then hit.
+      expect(synthCalls.length, 2);
+    });
+
+    test('a failed prefetch is retried when its turn comes, not skipped',
+        () async {
+      var attempts = 0;
+      final tts = TtsService(
+        synthesize: (t, v) async {
+          if (t == 'flaky.') {
+            attempts++;
+            if (attempts == 1) throw Exception('transient');
+          }
+          return _bytes(t);
+        },
+        playback: playback,
+      )
+        ..enqueue('steady.')
+        ..enqueue('flaky.');
+      await pumpEventQueue();
+
+      expect(attempts, 2, reason: 'prefetch failed, the real turn retried');
+      expect(playback.played, ['steady.', 'flaky.']);
+      await tts.dispose();
     });
   });
 }

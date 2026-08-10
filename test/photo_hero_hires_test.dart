@@ -28,6 +28,9 @@ void main() {
       ('close_2', const HeroPose(mouthOpen: 0.12, mouthWide: 0.9)),
       ('close_3', const HeroPose(mouthOpen: 0.05, mouthWide: 0.9)),
       ('close_4', const HeroPose(mouthOpen: 0.0)),
+      ('lo_06', const HeroPose(mouthOpen: 0.06)),
+      ('lo_15', const HeroPose(mouthOpen: 0.15)),
+      ('lo_30', const HeroPose(mouthOpen: 0.30)),
     ]) {
       final rec = ui.PictureRecorder();
       paintPhotoHero(Canvas(rec), size, pose: pose, images: images);

@@ -20,6 +20,11 @@ abstract class AudioPlayback {
   /// Stop immediately; any in-flight [play] resolves.
   Future<void> stop();
 
+  /// Playback rate for subsequent clips (1.0 = as rendered). Used to replay a
+  /// line slowly for a learner who missed it; the lip-sync stays honest because
+  /// the envelope is sampled by SOURCE position, which slows with the audio.
+  Future<void> setSpeed(double speed);
+
   /// Call from inside a user-gesture handler (e.g. the mic button tap) to
   /// satisfy browser autoplay policies before any real clip plays. No-op on
   /// native, where no such policy exists.
@@ -53,10 +58,31 @@ Future<void> playFollowingEnvelope({
 }) async {
   final env = amplitudeEnvelope(bytes, fps: envelopeFps);
   await loadSource();
-  // Resolve on natural end (`completed`) or an external stop (`idle`). We wait
-  // on the state stream rather than trusting `play()`'s own completion, which
-  // is version-dependent — getting it wrong would hang the whole queue after
-  // the first sentence.
+
+  // Wait until the player is actually holding this clip before listening for
+  // the end of it.
+  //
+  // `processingStateStream` replays its current value the moment you subscribe,
+  // and the previous clip left the player at `idle` (this function ends with
+  // `stop()`). `setUrl`'s future can resolve a beat before the state stream
+  // catches up — so subscribing straight away could match that stale `idle`,
+  // resolve `done` instantly, and stop the clip before a single note played.
+  // That is the tutor reading half its answer: some sentences played, others
+  // were cut at the very start, and nothing failed anywhere.
+  //
+  // Bounded, because a load that never reaches `ready` must not hang the queue
+  // — the clip is skipped and the next sentence still gets spoken.
+  await player.processingStateStream
+      .firstWhere(
+        (s) =>
+            s == ProcessingState.ready ||
+            s == ProcessingState.buffering ||
+            s == ProcessingState.completed,
+      )
+      .timeout(const Duration(seconds: 5), onTimeout: () => ProcessingState.idle);
+
+  // Now a terminal state genuinely means this clip: `completed` on a natural
+  // end, `idle` when something stopped it.
   final done = player.processingStateStream.firstWhere(
     (s) => s == ProcessingState.completed || s == ProcessingState.idle,
   );

@@ -11,14 +11,6 @@ class SpeakingRepository {
 
   final ApiClient _api;
 
-  Future<List<Scenario>> listScenarios() async {
-    final data = await _api.get('/speaking/scenarios');
-    final items = (data['items'] as List?) ?? const [];
-    return items
-        .map((e) => Scenario.fromJson(e as Map<String, dynamic>))
-        .toList();
-  }
-
   /// The whole Speaking home in one call: continue, daily mission, recommended
   /// lesson, the goal tracks (with progress) and an overall summary.
   Future<SpeakingHome> home() async {
@@ -40,12 +32,10 @@ class SpeakingRepository {
   }
 
   Future<StartedSession> startSession({
-    String? scenarioId,
     String? freeTopic,
     String? lessonKey,
   }) async {
     final body = <String, dynamic>{};
-    if (scenarioId != null) body['scenario_id'] = scenarioId;
     if (freeTopic != null) body['free_topic'] = freeTopic;
     if (lessonKey != null) body['lesson_key'] = lessonKey;
     final data = await _api.post('/speaking/sessions', body: body);
@@ -73,12 +63,14 @@ class SpeakingRepository {
   Stream<SpeakingEvent> streamAudioReply(
     String sessionId,
     Uint8List audioBytes,
-    String filename,
-  ) async* {
+    String filename, {
+    void Function(int sent, int total)? onProgress,
+  }) async* {
     final raw = await _api.postMultipartStream(
       '/speaking/sessions/$sessionId/messages/audio',
       bytes: audioBytes,
       filename: filename,
+      onProgress: onProgress,
     );
     yield* _parseSse(raw);
   }
@@ -118,9 +110,65 @@ class SpeakingRepository {
     );
   }
 
-  Future<FeedbackReport> endSession(String sessionId) async {
-    final data = await _api.post('/speaking/sessions/$sessionId/end');
+  /// Mid-conversation help: translate the partner's last line ([kind] =
+  /// `translate`) or suggest what to say back (`hint`), answered in [lang] —
+  /// the language the learner runs the app in. Costs no turn and no speaking
+  /// minutes.
+  Future<String> assist({
+    required String sessionId,
+    required String kind,
+    required String lang,
+  }) async {
+    final data = await _api.post(
+      '/speaking/sessions/$sessionId/assist',
+      body: {'kind': kind, 'lang': lang},
+    );
+    return (data['text'] as String?)?.trim() ?? '';
+  }
+
+  /// Past conversations, newest first. The data has always been there; until
+  /// now nothing in the app asked for it, so a learner could never look back at
+  /// what they had practised.
+  Future<List<SpeakingSession>> history({int limit = 20}) async {
+    // A list payload arrives wrapped as {items, meta} by the client envelope.
+    final data = await _api.get('/speaking/history', query: {'limit': limit});
+    final items = (data['items'] as List?) ?? const [];
+    return items
+        .map((e) => SpeakingSession.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
+  /// One conversation in full — the session plus every message. Used to reopen
+  /// an interrupted session exactly where it stopped.
+  Future<({SpeakingSession session, List<ChatMessage> messages})> getSession(
+    String sessionId,
+  ) async {
+    final data = await _api.get('/speaking/sessions/$sessionId');
+    final msgs = (data['messages'] as List? ?? const [])
+        .map((e) => ChatMessage.fromJson(e as Map<String, dynamic>))
+        .toList();
+    return (
+      session: SpeakingSession.fromJson(data['session'] as Map<String, dynamic>),
+      messages: msgs,
+    );
+  }
+
+  /// The report for a finished session, so a learner can re-read it later.
+  Future<FeedbackReport> sessionFeedback(String sessionId) async {
+    final data = await _api.get('/speaking/sessions/$sessionId/feedback');
     return FeedbackReport.fromJson(data['feedback'] as Map<String, dynamic>);
+  }
+
+  /// Close the session and get its report.
+  ///
+  /// Null means the session IS closed but the grading model was unavailable —
+  /// never that the conversation was lost. Calling this again rebuilds the
+  /// report, so the caller should offer that rather than discard the session.
+  Future<FeedbackReport?> endSession(String sessionId) async {
+    final data = await _api.post('/speaking/sessions/$sessionId/end');
+    final feedback = data['feedback'];
+    if (feedback == null) return null;
+    return FeedbackReport.fromJson(feedback as Map<String, dynamic>);
   }
 
   /// Today's speaking budget — one cheap call that renders the minutes ring.

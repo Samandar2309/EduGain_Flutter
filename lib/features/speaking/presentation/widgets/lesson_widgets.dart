@@ -129,7 +129,7 @@ class LessonTile extends StatelessWidget {
                         ),
                         if (isPremium) ...[
                           const SizedBox(width: 6),
-                          Icon(Icons.workspace_premium_rounded,
+                          Icon(Icons.military_tech,
                               size: 15, color: accent),
                         ],
                       ],

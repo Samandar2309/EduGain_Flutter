@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/api/api_exception.dart';
 import '../../../core/providers.dart';
 import '../../../core/ui/tokens.dart';
+import '../../../core/ui/error_handling.dart';
 import '../../../l10n/app_localizations.dart';
 
 /// Onboarding step shown once, right after a new user signs up, to capture
@@ -41,7 +42,7 @@ class _NameScreenState extends ConsumerState<NameScreen> {
           .updateProfile(fullName: name);
       // The router redirect moves to /home once the name is set.
     } on ApiException catch (e) {
-      _snack(e.message);
+      _snack(e.localized(l));
     } finally {
       if (mounted) setState(() => _loading = false);
     }

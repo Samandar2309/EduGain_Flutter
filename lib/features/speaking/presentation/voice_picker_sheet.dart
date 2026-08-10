@@ -81,7 +81,7 @@ class _VoicePickerSheetState extends ConsumerState<_VoicePickerSheet> {
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
     final voicesAsync = ref.watch(voicesProvider);
-    final selected = ref.watch(selectedVoiceProvider);
+    final selected = ref.watch(selectedVoiceProvider).id;
     final media = MediaQuery.of(context);
 
     return SafeArea(
@@ -187,7 +187,7 @@ class _VoiceTile extends StatelessWidget {
       leading: CircleAvatar(
         backgroundColor: selected ? scheme.primary : scheme.surfaceContainerHighest,
         child: Icon(
-          voice.gender == 'female' ? Icons.face_3_rounded : Icons.face_rounded,
+          voice.gender == 'female' ? Icons.face_rounded : Icons.face_rounded,
           color: selected ? scheme.onPrimary : scheme.onSurfaceVariant,
         ),
       ),

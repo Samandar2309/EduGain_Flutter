@@ -5,6 +5,24 @@ import '../../l10n/app_localizations.dart';
 import '../api/api_exception.dart';
 import 'tokens.dart';
 
+extension ApiExceptionText on ApiException {
+  /// What to show the learner.
+  ///
+  /// Codes the client raises itself have no server-provided text, so they are
+  /// translated here. Everything else keeps the backend's message, which is
+  /// already written in the learner's language (it answers `Accept-Language`).
+  String localized(AppLocalizations l) => switch (code) {
+    'NETWORK_ERROR' => l.networkError,
+    // Running out of the day's speaking minutes is the one refusal a learner
+    // meets often, and the server sends it in English — the quota messages have
+    // no translation layer behind them. We already have this sentence in all
+    // three languages, so use ours rather than showing a Russian or Uzbek
+    // learner an English one at the exact moment they are being told no.
+    'QUOTA_EXCEEDED' when details['scope'] == 'daily_minutes' => l.quotaExhausted,
+    _ => message,
+  };
+}
+
 /// Maps an [ApiException] to UX: a premium paywall sheet for 402, a snackbar
 /// otherwise.
 void showApiError(BuildContext context, ApiException e) {
@@ -79,6 +97,6 @@ void showApiError(BuildContext context, ApiException e) {
   } else {
     ScaffoldMessenger.of(
       context,
-    ).showSnackBar(SnackBar(content: Text(e.message)));
+    ).showSnackBar(SnackBar(content: Text(e.localized(l))));
   }
 }

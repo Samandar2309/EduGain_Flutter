@@ -62,3 +62,22 @@ class VocabSetDetail {
   final VocabSet set;
   final List<VocabItem> items;
 }
+
+/// A themed group of words, as the browse screen shows them.
+///
+/// The words used to arrive as one flat list of 782. They are authored in
+/// themes and learned in themes, and that grouping was being thrown away
+/// between the database and the screen.
+class VocabGroup {
+  const VocabGroup({required this.set, required this.items});
+
+  final VocabSet set;
+  final List<VocabItem> items;
+
+  factory VocabGroup.fromJson(Map<String, dynamic> json) => VocabGroup(
+    set: VocabSet.fromJson(json['set'] as Map<String, dynamic>),
+    items: ((json['items'] as List?) ?? const [])
+        .map((e) => VocabItem.fromJson(e as Map<String, dynamic>))
+        .toList(),
+  );
+}

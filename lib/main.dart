@@ -10,11 +10,16 @@ import 'core/telegram_webapp.dart';
 import 'core/theme.dart';
 import 'l10n/app_localizations.dart';
 
-void main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Decode the hero art before the user ever reaches Speaking, so the stage
   // opens straight onto the finished hero (no fallback flash).
   PhotoHeroImages.load(rootBundle).ignore();
+  // Settle "are we inside Telegram?" BEFORE anything reads it. The SDK is a
+  // remote script; if startup and the router answer that question differently
+  // the learner is stranded on the register screen, so it is resolved once
+  // here and frozen. Instant off-web and in the normal in-Telegram case.
+  await TelegramWebApp.waitForSdk();
   // No-op outside a Telegram Mini App: hides Telegram's own loading spinner
   // and claims the full viewport height once Flutter has taken over.
   TelegramWebApp.ready();
@@ -28,7 +33,7 @@ class EduGainApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
-    final locale = ref.watch(localeProvider);
+    final locale = ref.watch(localeProvider).locale;
     return MaterialApp.router(
       title: 'EduGain',
       debugShowCheckedModeBanner: false,

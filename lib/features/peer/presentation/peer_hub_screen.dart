@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
+
+import '../../../core/ui/back_or_home.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/ui/tokens.dart';
+import '../../../l10n/app_localizations.dart';
 import '../application/peer_call_controller.dart';
+import 'partner_filter_sheet.dart';
 import '../data/peer_models.dart';
 
 /// The live-speaking hub (Sayra-style): one big "find a partner" action, the
@@ -15,12 +19,16 @@ class PeerHubScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context);
     final hub = ref.watch(peerHubProvider);
     final online = hub.valueOrNull?.online ?? 0;
     final calls = hub.valueOrNull?.calls ?? const <PeerCallLog>[];
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Jonli suhbat')),
+      appBar: AppBar(
+        leading: const BackOrHome(),
+        title: Text(l.peerLiveChat),
+      ),
       body: RefreshIndicator(
         onRefresh: () => ref.refresh(peerHubProvider.future),
         child: ListView(
@@ -29,8 +37,21 @@ class PeerHubScreen extends ConsumerWidget {
           children: [
             _FindPartnerHero(
               online: online,
-              onFind: () =>
-                  context.push('/peer/call', extra: PeerLaunch.match),
+              // Ask before searching, not after. A learner dropped into a
+              // random live call and only then offered a filter has already
+              // had the conversation they were trying to choose.
+              onFind: () async {
+                final choice = await showPartnerFilterSheet(
+                  context,
+                  online: online,
+                );
+                if (choice == null || !context.mounted) return;
+                if (!context.mounted) return;
+                context.push(
+                  '/peer/call',
+                  extra: PeerLaunchMatch(pref: choice.wire),
+                );
+              },
             ),
             const SizedBox(height: AppSpace.lg),
             Row(
@@ -38,7 +59,7 @@ class PeerHubScreen extends ConsumerWidget {
                 Expanded(
                   child: _SecondaryAction(
                     icon: Icons.group_add_rounded,
-                    label: 'Do‘st bilan xona',
+                    label: l.peerFriendRoom,
                     onTap: () =>
                         context.push('/peer/call', extra: PeerLaunch.create),
                   ),
@@ -47,7 +68,7 @@ class PeerHubScreen extends ConsumerWidget {
                 Expanded(
                   child: _SecondaryAction(
                     icon: Icons.pin_rounded,
-                    label: 'Kod bilan kirish',
+                    label: l.peerJoinByCode,
                     onTap: () => _askCode(context),
                   ),
                 ),
@@ -56,14 +77,14 @@ class PeerHubScreen extends ConsumerWidget {
             const SizedBox(height: AppSpace.xxl),
             Row(
               children: [
-                const Text(
-                  'Suhbatlar tarixi',
-                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
+                Text(
+                  l.peerHistory,
+                  style: const TextStyle(fontSize: 15, fontWeight: FontWeight.w700),
                 ),
                 const Spacer(),
                 if (calls.isNotEmpty)
                   Text(
-                    '${calls.length} ta suhbat',
+                    l.peerConvCount(calls.length),
                     style: const TextStyle(
                         color: AppColors.inkFaint, fontSize: 12),
                   ),
@@ -86,6 +107,7 @@ class PeerHubScreen extends ConsumerWidget {
   }
 
   Future<void> _askCode(BuildContext context) async {
+    final l = AppLocalizations.of(context);
     final controller = TextEditingController();
     final code = await showDialog<String>(
       context: context,
@@ -93,7 +115,7 @@ class PeerHubScreen extends ConsumerWidget {
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.lg),
         ),
-        title: const Text('Xona kodi'),
+        title: Text(l.peerRoomCode),
         content: TextField(
           controller: controller,
           autofocus: true,
@@ -111,11 +133,11 @@ class PeerHubScreen extends ConsumerWidget {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(),
-            child: const Text('Bekor qilish'),
+            child: Text(l.cancel),
           ),
           FilledButton(
             onPressed: () => Navigator.of(ctx).pop(controller.text),
-            child: const Text('Kirish'),
+            child: Text(l.peerEnter),
           ),
         ],
       ),
@@ -135,6 +157,7 @@ class _FindPartnerHero extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.symmetric(
           vertical: AppSpace.xxxl, horizontal: AppSpace.xl),
@@ -167,7 +190,7 @@ class _FindPartnerHero extends StatelessWidget {
                   ),
                   const SizedBox(width: 6),
                   Text(
-                    '$online kishi onlayn',
+                    l.peerOnlineCount(online),
                     style: const TextStyle(color: Colors.white70, fontSize: 12),
                   ),
                 ],
@@ -194,25 +217,68 @@ class _FindPartnerHero extends StatelessWidget {
                     ),
                   ],
                 ),
-                child: const Icon(Icons.record_voice_over_rounded,
+                // A magnifier with a person in it, not a speaking head.
+                //
+                // The card says "find a partner" and the action is a search —
+                // the app looks for somebody who is online right now. A talking
+                // figure describes what happens AFTER the match, which is the
+                // step nobody is confused about. `person_search` says both: it
+                // is a search, and it is a search for a person.
+                child: const Icon(Icons.person_search_rounded,
                     color: Colors.white, size: 48),
               ),
             ),
           ),
           const SizedBox(height: AppSpace.xl),
-          const Text(
-            'Partner topish',
-            style: TextStyle(
+          Text(
+            l.peerFindPartner,
+            style: const TextStyle(
               color: Colors.white,
               fontSize: 19,
               fontWeight: FontWeight.w800,
             ),
           ),
           const SizedBox(height: 6),
-          const Text(
-            'Onlayn o‘quvchi bilan tasodifiy ulanib,\ninglizcha jonli suhbat quring',
+          Text(
+            l.peerFindPartnerSubtitle,
             textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.white60, fontSize: 13, height: 1.4),
+            style: const TextStyle(color: Colors.white60, fontSize: 13, height: 1.4),
+          ),
+          const SizedBox(height: AppSpace.lg),
+          // An explicit button, not just a tappable circle.
+          //
+          // The whole card already responded to a tap, and learners told us
+          // they could not tell what to do. A big glowing circle is a
+          // designer's idea of an invitation; a control that looks like a
+          // button and says what pressing it does is everybody else's. It is
+          // the same fix the course path needed, for the same reason.
+          Material(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(AppRadius.pill),
+            clipBehavior: Clip.antiAlias,
+            child: InkWell(
+              onTap: onFind,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpace.xl, vertical: AppSpace.md),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.search_rounded,
+                        size: 19, color: AppColors.speaking),
+                    const SizedBox(width: AppSpace.sm),
+                    Text(
+                      l.peerFindTap,
+                      style: const TextStyle(
+                        color: AppColors.speaking,
+                        fontSize: 15,
+                        fontWeight: FontWeight.w900,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
         ],
       ),
@@ -252,25 +318,26 @@ class _EmptyHistory extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(AppSpace.xxl),
       decoration: BoxDecoration(
         color: AppColors.canvasAlt,
         borderRadius: BorderRadius.circular(AppRadius.lg),
       ),
-      child: const Column(
+      child: Column(
         children: [
-          Icon(Icons.forum_outlined, color: AppColors.inkFaint, size: 34),
-          SizedBox(height: AppSpace.md),
+          const Icon(Icons.forum_outlined, color: AppColors.inkFaint, size: 34),
+          const SizedBox(height: AppSpace.md),
           Text(
-            'Hali suhbatlaringiz yo‘q',
-            style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
+            l.peerNoHistoryTitle,
+            style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
           ),
-          SizedBox(height: 4),
+          const SizedBox(height: 4),
           Text(
-            'Birinchi partneringizni toping — har bir suhbat\nshu yerda saqlanadi.',
+            l.peerNoHistorySubtitle,
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
                 color: AppColors.inkSoft, fontSize: 12.5, height: 1.4),
           ),
         ],
@@ -284,25 +351,26 @@ class _HistoryTile extends StatelessWidget {
 
   final PeerCallLog call;
 
-  String get _duration {
+  String _duration(AppLocalizations l) {
     final m = call.durationSeconds ~/ 60;
     final s = call.durationSeconds % 60;
-    return m > 0 ? '$m min $s s' : '$s s';
+    return m > 0 ? l.peerDurMinSec(m, s) : l.peerDurSec(s);
   }
 
-  String get _when {
+  String _when(AppLocalizations l) {
     final now = DateTime.now();
     final d = call.startedAt.toLocal();
     final today = DateTime(now.year, now.month, now.day);
     final that = DateTime(d.year, d.month, d.day);
     final diff = today.difference(that).inDays;
-    if (diff == 0) return 'Bugun';
-    if (diff == 1) return 'Kecha';
+    if (diff == 0) return l.peerToday;
+    if (diff == 1) return l.peerYesterday;
     return '${d.day.toString().padLeft(2, '0')}.${d.month.toString().padLeft(2, '0')}.${d.year}';
   }
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final initial =
         call.partnerName.isNotEmpty ? call.partnerName[0].toUpperCase() : '?';
     return Container(
@@ -339,7 +407,7 @@ class _HistoryTile extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  '${call.topic} · $_when',
+                  '${call.topic} · ${_when(l)}',
                   style: const TextStyle(
                       color: AppColors.inkSoft, fontSize: 12.5),
                 ),
@@ -354,7 +422,7 @@ class _HistoryTile extends StatelessWidget {
               borderRadius: BorderRadius.circular(999),
             ),
             child: Text(
-              _duration,
+              _duration(l),
               style: const TextStyle(
                 color: AppColors.speaking,
                 fontSize: 12,

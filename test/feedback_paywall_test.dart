@@ -19,7 +19,8 @@ void main() {
       body: Builder(
         builder: (context) => Center(
           child: FilledButton(
-            onPressed: () => showFeedbackSheet(context, report),
+            onPressed: () =>
+                showFeedbackSheet(context, report, sessionId: 'test-session'),
             child: const Text('open'),
           ),
         ),

@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import '../../../core/api/api_client.dart';
 import '../../../core/api/token_storage.dart';
 import '../domain/models.dart';
@@ -67,12 +69,16 @@ class AuthRepository {
     String? timezone,
     String? nativeLang,
     String? email,
+    String? learningLanguage,
+    String? gender,
   }) async {
     final body = <String, dynamic>{};
     if (fullName != null) body['full_name'] = fullName;
     if (timezone != null) body['timezone'] = timezone;
     if (nativeLang != null) body['native_lang'] = nativeLang;
     if (email != null) body['email'] = email;
+    if (learningLanguage != null) body['learning_language'] = learningLanguage;
+    if (gender != null) body['gender'] = gender;
     final data = await _api.patch('/users/me', body: body);
     return AppUser.fromJson(data['user'] as Map<String, dynamic>);
   }
@@ -87,4 +93,27 @@ class AuthRepository {
   }
 
   Future<bool> hasSession() async => (await _tokens.readAccess()) != null;
+
+  /// Drop the stored tokens without telling the server — for a session that is
+  /// already dead, where `logout()`'s revoke call would just fail anyway.
+  Future<void> clearSession() => _tokens.clear();
+
+  /// Replace the profile picture.
+  ///
+  /// Returns the new URL so the caller can show it immediately rather than
+  /// waiting for the next `/auth/me`.
+  Future<String> uploadAvatar(Uint8List bytes, String filename) async {
+    final data = await _api.putMultipart(
+      '/auth/avatar/me',
+      bytes: bytes,
+      filename: filename,
+    );
+    return data['avatar_url'] as String? ?? '';
+  }
+
+  /// Go back to the Telegram picture.
+  Future<String> resetAvatar() async {
+    final data = await _api.delete('/auth/avatar/me');
+    return data['avatar_url'] as String? ?? '';
+  }
 }

@@ -18,7 +18,153 @@ class AppLocalizationsUz extends AppLocalizations {
   String get retry => 'Qayta urinish';
 
   @override
+  String get peerQuotaTitle => 'Bugungi jonli suhbat vaqtingiz tugadi';
+
+  @override
+  String get peerQuotaBody =>
+      'Obuna bilan boshqa o‘quvchilar bilan cheksiz gaplashing.';
+
+  @override
+  String get resumeTitle => 'Tugallanmagan suhbat';
+
+  @override
+  String resumeSubtitle(int turns) {
+    return '$turns ta navbat o‘tdi — to‘xtagan joyingizdan davom eting';
+  }
+
+  @override
+  String get resumeAction => 'Davom ettirish';
+
+  @override
+  String get networkError =>
+      'Internetga ulanishda xatolik. Qaytadan urinib ko‘ring.';
+
+  @override
+  String get feedbackNotReadyTitle => 'Hisobot tayyor emas';
+
+  @override
+  String get feedbackNotReadyBody =>
+      'Suhbatingiz saqlandi. Baholash xizmati hozir javob bermadi — hisobotni qaytadan yig‘ishingiz mumkin.';
+
+  @override
   String get continueAction => 'Davom etish';
+
+  @override
+  String minutesShort(int count) {
+    return '$count daq';
+  }
+
+  @override
+  String groupRoomHoldsUpTo(int count) {
+    return 'Xonaga $count kishigacha qo‘shiladi';
+  }
+
+  @override
+  String get cannotHearYou =>
+      'Sizni eshitmayapmiz — balandroq gapiring yoki yozib yuboring';
+
+  @override
+  String get micBlockedTapToAllow =>
+      'Mikrofon yopiq — ruxsat berish uchun bosing';
+
+  @override
+  String minutesLeft(int count) {
+    return '$count daqiqa qoldi';
+  }
+
+  @override
+  String get actionEnd => 'Tugatish';
+
+  @override
+  String get questionsTitle => 'Savollar';
+
+  @override
+  String get workedTitle => 'Qanday javob berish kerak';
+
+  @override
+  String get workedWeak => 'Ko‘pchilik shunday javob beradi';
+
+  @override
+  String get workedStrong => 'Shunday bo‘lsa yaxshiroq';
+
+  @override
+  String get workedMoves => 'Nima o‘zgardi';
+
+  @override
+  String get workedLocked => 'Javob tahlili Premium’da';
+
+  @override
+  String get workedLockedWhy =>
+      'Savollar hamma uchun ochiq. Tahlil — kuchsiz va kuchli javob yonma-yon, farqi belgilangan holda — Premium’da.';
+
+  @override
+  String get workedOpen => 'Tahlilni ochish';
+
+  @override
+  String questionsFollows(String title) {
+    return '$title kartochkasidan keyin';
+  }
+
+  @override
+  String get questionsPart3Hint =>
+      'Bu savollar shaxsiy emas — jamiyat haqida. Fikringizni ayting va sabab keltiring, bir-ikki jumla bilan chegaralanmang.';
+
+  @override
+  String get cueCardLabel => 'Kartochka topshirig‘i';
+
+  @override
+  String get cueCardYouShouldSay => 'Quyidagilarni aytishingiz kerak:';
+
+  @override
+  String get cueCardHint =>
+      '1 daqiqa tayyorlaning, keyin to‘xtamasdan 2 daqiqa gapiring. Juftlikda mashq qilsangiz: biri kartani o‘qiydi va vaqtni oladi, keyin almashasiz.';
+
+  @override
+  String cueCardPrep(int count) {
+    return '$count daqiqa tayyorgarlik';
+  }
+
+  @override
+  String cueCardTalk(int count) {
+    return '$count daqiqa gapirish';
+  }
+
+  @override
+  String get questionsModeSubtitle => 'Suhbat uchun tayyor savollar to‘plami';
+
+  @override
+  String get questionsIntro =>
+      'Jonli suhbatda bir-biringizga bering yoki oldindan tayyorlaning.';
+
+  @override
+  String get questionsUseHint =>
+      'Bittasini tanlang va sherigingizga bering — keyin siz javob bering.';
+
+  @override
+  String get questionsSaved => 'Saqlanganlar';
+
+  @override
+  String get questionsNoneSaved =>
+      'Hali savol saqlamadingiz.\nYoqqanini xatcho‘pga qo‘shing.';
+
+  @override
+  String get questionsNew => 'YANGI';
+
+  @override
+  String get questionsError => 'Savollarni yuklab bo‘lmadi.';
+
+  @override
+  String get speakingSectionPrepare => 'Tayyorgarlik';
+
+  @override
+  String questionsCount(int count) {
+    return '$count ta savol';
+  }
+
+  @override
+  String questionsTopicCount(int count) {
+    return '$count ta mavzu';
+  }
 
   @override
   String get languageTitle => 'Til';
@@ -99,13 +245,76 @@ class AppLocalizationsUz extends AppLocalizations {
   String get nameEmpty => 'Iltimos, ismingizni kiriting';
 
   @override
+  String get learnLangComingSoon => 'Tez kunda';
+
+  @override
+  String get learnLangNotifyMe => 'Xabar beramiz';
+
+  @override
+  String learnLangInterestSaved(String language) {
+    return 'Qayd etildi. $language ochilganda birinchi bo‘lib sizga aytamiz.';
+  }
+
+  @override
+  String get feedbackSendTitle => 'Fikr bildirish';
+
+  @override
+  String get feedbackSendSubtitle =>
+      'Nima ishlamadi, nima yetishmayapti — yozing. Har birini o‘qiymiz.';
+
+  @override
+  String get feedbackHint => 'Muammoni yoki taklifingizni yozing…';
+
+  @override
+  String get feedbackSend => 'Yuborish';
+
+  @override
+  String get feedbackEmpty => 'Iltimos, avval fikringizni yozing';
+
+  @override
+  String get feedbackThanks => 'Rahmat! Xabaringiz bizga yetib bordi.';
+
+  @override
+  String get feedbackTooMany =>
+      'Bugunga yetarli xabar yubordingiz. Ertaga davom etamiz.';
+
+  @override
+  String get rateSessionQuestion => 'Bu suhbat qanday bo‘ldi?';
+
+  @override
+  String get rateSessionCommentHint => 'Izoh qoldirasizmi? (ixtiyoriy)';
+
+  @override
+  String get rateSessionCommentSent => 'Izohingiz yuborildi. Rahmat!';
+
+  @override
+  String get rateSessionThanks => 'Rahmat — bu bizga yordam beradi.';
+
+  @override
+  String get channelTitle => 'Kanalimizga qo‘shiling';
+
+  @override
+  String get channelSubtitle =>
+      'Yangi darslar, foydali maslahatlar va yangiliklar shu yerda e’lon qilinadi. Bir marta obuna bo‘lasiz — keyin davom etamiz.';
+
+  @override
+  String get channelOpenAction => 'Kanalga o‘tish';
+
+  @override
+  String get channelJoinedAction => 'Obuna bo‘ldim';
+
+  @override
+  String get channelNotYet =>
+      'Obunangiz hali ko‘rinmadi. Kanalga qo‘shilib, qaytadan urinib ko‘ring.';
+
+  @override
   String greeting(String name) {
     return 'Salom, $name 👋';
   }
 
   @override
   String levelLabel(String level) {
-    return 'Daraja: $level';
+    return 'Ingliz tili: $level';
   }
 
   @override
@@ -217,6 +426,9 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get close => 'Yopish';
+
+  @override
+  String get details => 'Tafsilotlar';
 
   @override
   String get yes => 'Ha';
@@ -372,6 +584,31 @@ class AppLocalizationsUz extends AppLocalizations {
   }
 
   @override
+  String get gamesTitle => 'O‘yinlar';
+
+  @override
+  String get gamesVocabTitle => 'So‘z o‘yinlari';
+
+  @override
+  String get gamesVocabSubtitle =>
+      'Yolg‘iz, Gainsy bilan yoki jonli raqib bilan';
+
+  @override
+  String get gamesGrammarTitle => 'Grammatika';
+
+  @override
+  String get gamesGrammarSubtitle => 'Qoidani o‘rganing va mashq qiling';
+
+  @override
+  String get gamesBrowseTitle => 'So‘zlarni ko‘rish';
+
+  @override
+  String get gamesBrowseSubtitle => 'Tarjimasi va misoli bilan';
+
+  @override
+  String get gamesReviewSubtitle => 'Unutish arafasidagi so‘zlar';
+
+  @override
   String get reviewTitle => 'Takrorlash';
 
   @override
@@ -423,6 +660,120 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get yourEnglishLevel => 'Sizning ingliz tili darajangiz';
+
+  @override
+  String get placementResultBody =>
+      'Endi ustoz shu darajada gapiradi — siz oʻsgan sari daraja ham oʻzgaradi.';
+
+  @override
+  String get placementLastResultTitle => 'Oxirgi natijangiz';
+
+  @override
+  String get placementTakenToday => 'Bugun topshirilgan';
+
+  @override
+  String get placementTakenYesterday => 'Kecha topshirilgan';
+
+  @override
+  String placementTakenDaysAgo(int days) {
+    return '$days kun oldin topshirilgan';
+  }
+
+  @override
+  String get placementRetakeQuestion => 'Testni qaytadan yechmoqchimisiz?';
+
+  @override
+  String get placementRetakeReplaces =>
+      'Yangi natija hozirgi darajangiz oʻrnini egallaydi.';
+
+  @override
+  String get placementRetakeAction => 'Ha, qaytadan boshlayman';
+
+  @override
+  String get placementKeepAction => 'Yoʻq, darajam qolsin';
+
+  @override
+  String get levelInviteTitle => 'Avval darajangizni aniqlaymiz';
+
+  @override
+  String get levelInviteBody =>
+      'Bir necha qisqa savol. Shundan keyin ustoz taxmin qilib emas, siz tushunadigan darajada gapiradi.';
+
+  @override
+  String get levelInviteMeta => '18 ta savol · taxminan 2 daqiqa';
+
+  @override
+  String get levelInviteStart => 'Darajamni aniqlash';
+
+  @override
+  String get levelInviteSkip => 'Hozir emas';
+
+  @override
+  String get leaderboardTitle => 'Reyting';
+
+  @override
+  String get navLeaderboard => 'Reyting';
+
+  @override
+  String get leaderboardThisWeek => 'Bu hafta';
+
+  @override
+  String get leaderboardLastWeek => 'Oʻtgan hafta';
+
+  @override
+  String get leaderboardEmpty => 'Bu hafta hali hech kim XP yigʻmagan.';
+
+  @override
+  String get leaderboardEmptyLastWeek => 'Oʻtgan hafta hech kim XP yigʻmagan.';
+
+  @override
+  String get leaderboardFirstPlaceOpen => 'Birinchi suhbat — birinchi oʻrin.';
+
+  @override
+  String get leaderboardNotRankedYet =>
+      'Reytingga kirish uchun bitta darsni tugating.';
+
+  @override
+  String get leaderboardYou => 'Siz';
+
+  @override
+  String get leaderboardYouAreFirst => 'Siz birinchisiz — oʻrningizni saqlang.';
+
+  @override
+  String get leaderboardPlaceSuffix => '-oʻringacha';
+
+  @override
+  String leaderboardStreakDays(int days) {
+    return '$days kun';
+  }
+
+  @override
+  String get leaderboardResetsMonday =>
+      'Reyting har dushanba yangidan boshlanadi.';
+
+  @override
+  String get tierFree => 'Bepul';
+
+  @override
+  String get homeLevelUnknown => 'Daraja: aniqlanmagan';
+
+  @override
+  String get statStreak => 'Kunlik seriya';
+
+  @override
+  String get statGoal => 'Maqsad';
+
+  @override
+  String get homeAiKicker => 'Tavsiya';
+
+  @override
+  String get homeAiTitle => 'AI bilan suhbatni boshlang';
+
+  @override
+  String get homeAiSubtitle => 'Speaking koʻnikmangizni oshiring';
+
+  @override
+  String get homeAiLocked => 'Daraja aniqlangach ochiladi';
 
   @override
   String get startAction => 'Boshlash';
@@ -588,7 +939,7 @@ class AppLocalizationsUz extends AppLocalizations {
   String get xpSourceDailyGoal => 'Kunlik maqsad';
 
   @override
-  String get xpSourceStreak => 'Streak bonus';
+  String get xpSourceStreak => 'Seriya bonusi';
 
   @override
   String get coachCorrection => 'To‘g‘rilash';
@@ -637,12 +988,6 @@ class AppLocalizationsUz extends AppLocalizations {
   String get voiceUnavailable => 'Ovoz vaqtincha mavjud emas.';
 
   @override
-  String get listenModeOn => 'Tinglash rejimi — matn yashirilgan';
-
-  @override
-  String get listenModeOff => 'Matnni ko‘rsatish';
-
-  @override
   String get tapToReveal => 'Ko‘rsatish uchun bosing';
 
   @override
@@ -657,4 +1002,1190 @@ class AppLocalizationsUz extends AppLocalizations {
   @override
   String get hintTip =>
       'To‘liq gap bilan javob bering va suhbatni davom ettirish uchun qarshi savol bering.';
+
+  @override
+  String get groupChatTitle => 'Guruh suhbati';
+
+  @override
+  String get groupCreateRoom => 'Xona yaratish';
+
+  @override
+  String get groupNewRoom => 'Yangi guruh suhbati';
+
+  @override
+  String get groupTopicLabel => 'Mavzu';
+
+  @override
+  String get groupVisibilityLabel => 'Ko‘rinish';
+
+  @override
+  String get groupPublicOption => 'Ochiq';
+
+  @override
+  String get groupPrivateOption => 'Yopiq';
+
+  @override
+  String get groupPublicHint => 'Har kim lobbydan qo‘shila oladi';
+
+  @override
+  String get groupPrivateHint => 'Faqat kod/havola orqali qo‘shiladi';
+
+  @override
+  String groupParticipantsCount(int count) {
+    return 'Ishtirokchilar: $count';
+  }
+
+  @override
+  String get groupCreateAndStart => 'Yaratish va boshlash';
+
+  @override
+  String get groupCreateFailed => 'Xona yaratib bo‘lmadi';
+
+  @override
+  String get groupEmptyTitle => 'Hozircha ochiq suhbat yo‘q';
+
+  @override
+  String get groupEmptySubtitle => 'Birinchi bo‘lib xona yarating!';
+
+  @override
+  String get groupJoinByCode => 'Kod bilan qo‘shilish';
+
+  @override
+  String get groupCodeHint => 'masalan: ABC123';
+
+  @override
+  String get groupInviteFriends => 'Do‘stlaringizni taklif qiling';
+
+  @override
+  String get groupShareTelegram => 'Telegram’da ulashish';
+
+  @override
+  String get groupCopyCode => 'Kodni nusxalash';
+
+  @override
+  String get groupCodeCopied => 'Kod nusxalandi';
+
+  @override
+  String get inviteCopied => 'Taklif nusxalandi — do‘stingizga yuboring';
+
+  @override
+  String get groupInvite => 'Taklif qilish';
+
+  @override
+  String groupInviteShareText(String code) {
+    return 'EduGain\'da guruh suhbatiga qo\'shiling! 🎙\n\nXona kodi: $code\n\n@edugain_bot ni oching → Speaking → Guruh suhbati → «Kod bilan qo\'shilish»';
+  }
+
+  @override
+  String get groupConnected => 'Ulangan';
+
+  @override
+  String get groupConnectingStatus => 'Ulanmoqda…';
+
+  @override
+  String get groupYou => 'Siz';
+
+  @override
+  String get groupMicOff => 'Mikrofon o‘chiq';
+
+  @override
+  String get groupRemove => 'Chiqarish';
+
+  @override
+  String get groupRoomNotFound => 'Xona topilmadi';
+
+  @override
+  String get groupFull => 'To‘lgan';
+
+  @override
+  String get groupJoin => 'Qo‘shilish';
+
+  @override
+  String get groupKickedMsg => 'Siz xonadan chiqarildingiz';
+
+  @override
+  String get groupConnectErrorMsg => 'Ulanishda xatolik';
+
+  @override
+  String get groupChatEmpty => 'Hozircha xabar yo‘q — birinchi bo‘lib yozing';
+
+  @override
+  String get groupModeratorNote => 'AI moderator mavzuni boshqarib boradi';
+
+  @override
+  String get groupRule4b => 'AI moderator ko‘rsatmalariga amal qiling';
+
+  @override
+  String get groupCallTime => 'Suhbat vaqti';
+
+  @override
+  String get groupLeaveRoom => 'Suhbatdan chiqish';
+
+  @override
+  String get groupOthers => 'Boshqalar';
+
+  @override
+  String get groupWriteMessage => 'Xabar yozing…';
+
+  @override
+  String get groupParticipants => 'Ishtirokchilar';
+
+  @override
+  String get groupSeeAll => 'Barchasini ko‘rish';
+
+  @override
+  String get groupRulesTitle => 'Xona qoidalari';
+
+  @override
+  String get groupRule1 => 'Bir-biringizni tinglang';
+
+  @override
+  String get groupRule2 => 'Hurmatli bo‘ling';
+
+  @override
+  String get groupRule3 => 'Ingliz tilida gaplashing';
+
+  @override
+  String get groupRule4 => 'Spam yo‘q';
+
+  @override
+  String get groupSettingsTitle => 'Suhbat sozlamalari';
+
+  @override
+  String get groupSettingMic => 'Mikrofon';
+
+  @override
+  String get groupSettingNotify => 'Eslatma';
+
+  @override
+  String get groupSettingRules => 'Qoidalar';
+
+  @override
+  String get groupSpeakNow => 'Gapirish';
+
+  @override
+  String get groupMuteMic => 'Mikrofonni o‘chirish';
+
+  @override
+  String get groupSpeakingNow => 'HOZIR GAPIRYAPTI';
+
+  @override
+  String get groupNobodySpeaking => 'Hech kim gapirmayapti';
+
+  @override
+  String get groupInRoom => 'XONADA';
+
+  @override
+  String get groupMuteMember => 'Ovozsiz qilish';
+
+  @override
+  String get groupMakeHost => 'Hostlikni topshirish';
+
+  @override
+  String get groupMuteEveryone => 'Hammani ovozsiz qilish';
+
+  @override
+  String get groupMutedByHost => 'Xona egasi sizni ovozsiz qildi';
+
+  @override
+  String get groupMicBlocked => 'Mikrofonga ruxsat berilmadi';
+
+  @override
+  String get groupHostBadge => 'Host';
+
+  @override
+  String get groupMore => 'yana';
+
+  @override
+  String get grammarTitle => 'Grammatika';
+
+  @override
+  String get grammarChooseLevel => 'Darajangizni tanlang';
+
+  @override
+  String get grammarLevelsSubtitle =>
+      'A1 dan C2 gacha — bosqichma-bosqich grammatika';
+
+  @override
+  String grammarTopicCount(int count) {
+    return '$count ta mavzu';
+  }
+
+  @override
+  String get comingSoon => 'Tez kunda';
+
+  @override
+  String get grammarLevelA1 => 'Boshlang‘ich';
+
+  @override
+  String get grammarLevelA2 => 'Elementar';
+
+  @override
+  String get grammarLevelB1 => 'O‘rta';
+
+  @override
+  String get grammarLevelB2 => 'O‘rta-yuqori';
+
+  @override
+  String get grammarLevelC1 => 'Ilg‘or';
+
+  @override
+  String get grammarLevelC2 => 'Professional';
+
+  @override
+  String get grammarRulePlusPractice => 'Qoida + mashq';
+
+  @override
+  String get grammarLearnRule => 'Qoidani o‘rganish';
+
+  @override
+  String get grammarRuleExamplesPattern => 'Qoida, misollar va naqsh';
+
+  @override
+  String get grammarPractice => 'Mashq qilish';
+
+  @override
+  String get grammarPracticeSubtitle =>
+      'Bo‘shliqni to‘ldirish + gap tuzish o‘yinlari';
+
+  @override
+  String get grammarStartPractice => 'Mashq qilishni boshlash';
+
+  @override
+  String get grammarRuleLabel => 'Qoida';
+
+  @override
+  String get grammarRuleReadySpeaking =>
+      'Bu qoidani endi Speaking mashg‘ulotida qo‘llab ko‘ring 🎯';
+
+  @override
+  String get grammarNotEnoughExercises =>
+      'Bu mavzuda mashq uchun yetarli topshiriq yo‘q.';
+
+  @override
+  String get grammarChooseForm => 'TO‘G‘RI SHAKLNI TANLANG';
+
+  @override
+  String get grammarBuildSentence => 'GAPNI TUZING';
+
+  @override
+  String get answerCorrectExcl => 'To‘g‘ri!';
+
+  @override
+  String get answerWrongLabel => 'Xato';
+
+  @override
+  String correctAnswerLabel(String answer) {
+    return 'To‘g‘ri javob: $answer';
+  }
+
+  @override
+  String get vocabWhatToDo => 'Nima qilamiz?';
+
+  @override
+  String get vocabLearnTitle => 'So‘zlarni o‘rganish';
+
+  @override
+  String get vocabLearnSubtitle =>
+      'Yangi so‘zlarni tarjimasi va misoli bilan ko‘ring';
+
+  @override
+  String get vocabTestKnowledge => 'Bilimni sinash';
+
+  @override
+  String get vocabTestSubtitle => 'O‘yinlar orqali yodlaganingizni tekshiring';
+
+  @override
+  String get vocabDailyReview => 'Kunlik takrorlash';
+
+  @override
+  String vocabDueReady(int count) {
+    return '$count ta so‘z takrorlashga tayyor — mustahkamlab oling.';
+  }
+
+  @override
+  String get vocabStartReview => 'Takrorlashni boshlash';
+
+  @override
+  String get vocabNotEnoughReview => 'Takrorlash uchun so‘z yetarli emas';
+
+  @override
+  String vocabWordCount(int count) {
+    return '$count so‘z';
+  }
+
+  @override
+  String get vocabWordSet => 'So‘z to‘plami';
+
+  @override
+  String get vocabHowToPlay => 'Qanday o‘ynaymiz?';
+
+  @override
+  String get vocabSoloTitle => 'Solo o‘ynash';
+
+  @override
+  String get vocabSoloSubtitle => 'O‘z tezligingizda so‘z yodlang';
+
+  @override
+  String get vocabSpellTitle => 'Harflardan yig‘ish';
+
+  @override
+  String get vocabSpellSubtitle => 'So‘zni xotiradan harflab tuzing';
+
+  @override
+  String get vocabDuelBotTitle => 'Gainsy bilan bellashuv';
+
+  @override
+  String get vocabDuelBotSubtitle => 'Botga qarshi tezlik poygasi';
+
+  @override
+  String get vocabDuelOnlineTitle => 'Odam bilan o‘ynash';
+
+  @override
+  String get vocabDuelOnlineSubtitle => 'Jonli raqib bilan tezlik poygasi';
+
+  @override
+  String get vocabNotEnoughWords =>
+      'Bu to‘plamda o‘yin uchun so‘z yetarli emas';
+
+  @override
+  String get loadRetryError => 'Yuklashda xatolik. Qayta urinib ko‘ring.';
+
+  @override
+  String get vocabGainsyAnswering => 'Gainsy javob beryapti…';
+
+  @override
+  String get vocabFindingOpponent => 'Raqib qidirilmoqda…';
+
+  @override
+  String get vocabDuelWaitHint =>
+      'Boshqa o‘quvchi shu o‘yinni tanlashi bilan avtomatik ulanasiz';
+
+  @override
+  String get vocabNoOpponent => 'Hozircha onlayn raqib topilmadi.';
+
+  @override
+  String get vocabPlayWithGainsy => 'Gainsy bilan o‘ynash';
+
+  @override
+  String vocabPartnerAnswering(String name) {
+    return '$name javob beryapti…';
+  }
+
+  @override
+  String get vocabConnLostPlayBot =>
+      'Ulanishda muammo. Gainsy bilan o‘ynab turasizmi?';
+
+  @override
+  String get backAction => 'Orqaga';
+
+  @override
+  String get vocabSpellInstruction => 'SO‘ZNI HARFLARDAN YIG‘ING';
+
+  @override
+  String get vocabNoSpellWords =>
+      'Bu to‘plamda harflardan yig‘ish uchun mos so‘z yo‘q.';
+
+  @override
+  String get gameChooseTranslation => 'Tarjimasini tanlang';
+
+  @override
+  String get gameChooseWord => 'So‘zni tanlang';
+
+  @override
+  String get gameWordsReadySpeaking =>
+      'Bu so‘zlar endi Speaking mashg‘ulotida tayyor 🎯';
+
+  @override
+  String get gameYouWon => 'Siz yutdingiz!';
+
+  @override
+  String gameOpponentAhead(String name) {
+    return '$name bu safar oldinda';
+  }
+
+  @override
+  String get gameNiceWork => 'Ajoyib ish!';
+
+  @override
+  String get youLabel => 'Siz';
+
+  @override
+  String get gameCorrectAnswers => 'To‘g‘ri javob';
+
+  @override
+  String get gameCombo => 'Kombo';
+
+  @override
+  String get gameAccuracy => 'Aniqlik';
+
+  @override
+  String get gamePlayAgain => 'Yana o‘ynash';
+
+  @override
+  String get vocabTitle => 'Lug‘at';
+
+  @override
+  String get speakingSectionAi => 'AI ustoz bilan · doim mavjud';
+
+  @override
+  String get speakingSectionLive => 'Odamlar bilan · jonli';
+
+  @override
+  String get speakingFreeTitle => 'Erkin suhbat';
+
+  @override
+  String get speakingFreeSubtitle => 'AI bilan istalgan mavzuda';
+
+  @override
+  String get speakingTopicsTitle => 'Tayyor darslar';
+
+  @override
+  String get speakingTopicsSubtitle => 'AI bilan darajangiz bo‘yicha';
+
+  @override
+  String get speakingGroupSubtitle =>
+      'Ochiq xonaga qo‘shiling yoki o‘zingiz yarating';
+
+  @override
+  String get speakingOneToOneTitle => '1:1 jonli suhbat';
+
+  @override
+  String get speakingOneToOneSubtitle => 'Bitta odam bilan yuzma-yuz mashq';
+
+  @override
+  String get peerLiveChat => 'Jonli suhbat';
+
+  @override
+  String get peerFriendRoom => 'Do‘st bilan xona';
+
+  @override
+  String get peerJoinByCode => 'Kod bilan kirish';
+
+  @override
+  String get peerHistory => 'Suhbatlar tarixi';
+
+  @override
+  String peerConvCount(int count) {
+    return '$count ta suhbat';
+  }
+
+  @override
+  String get peerRoomCode => 'Xona kodi';
+
+  @override
+  String get peerEnter => 'Kirish';
+
+  @override
+  String peerOnlineCount(int count) {
+    return '$count kishi onlayn';
+  }
+
+  @override
+  String get peerFindPartner => 'Partner topish';
+
+  @override
+  String get peerFindPartnerSubtitle =>
+      'Onlayn o‘quvchi bilan tasodifiy ulanib,\ninglizcha jonli suhbat quring';
+
+  @override
+  String get peerNoHistoryTitle => 'Hali suhbatlaringiz yo‘q';
+
+  @override
+  String get peerNoHistorySubtitle =>
+      'Birinchi partneringizni toping — har bir suhbat\nshu yerda saqlanadi.';
+
+  @override
+  String get peerToday => 'Bugun';
+
+  @override
+  String get peerYesterday => 'Kecha';
+
+  @override
+  String peerDurMinSec(int m, int s) {
+    return '$m min $s s';
+  }
+
+  @override
+  String peerDurSec(int s) {
+    return '$s s';
+  }
+
+  @override
+  String get peerStatusConnecting => 'Ulanmoqda…';
+
+  @override
+  String get peerStatusSearching => 'Partner qidirilmoqda…';
+
+  @override
+  String get peerStatusWaitingFriend => 'Do‘stingiz kutilmoqda';
+
+  @override
+  String get peerStatusConnectingVoice => 'Ovoz ulanmoqda…';
+
+  @override
+  String peerStatusLiveChat(String time) {
+    return 'Jonli suhbat · $time';
+  }
+
+  @override
+  String get peerStatusEnded => 'Suhbat tugadi';
+
+  @override
+  String get peerSearchingTitle => 'Sizga mos partner qidirilmoqda…';
+
+  @override
+  String get peerSearchingSubtitle =>
+      'Boshqa o‘quvchi qidiruvni boshlashi bilan\navtomatik ulanasiz';
+
+  @override
+  String get peerYourPartner => 'Suhbat partneringiz';
+
+  @override
+  String get peerInviteTelegram => 'Telegram orqali taklif qilish';
+
+  @override
+  String peerInviteShareText(String code) {
+    return 'EduGain’da men bilan jonli ingliz tili suhbatiga qo‘shiling! Ilovadagi “Jonli suhbat” bo‘limida shu kodni kiriting: $code';
+  }
+
+  @override
+  String get peerYourRole => 'Sizning rolingiz';
+
+  @override
+  String get peerPartnerRole => 'Partner roli';
+
+  @override
+  String get peerStopSearching => 'Qidiruvni to‘xtatish';
+
+  @override
+  String get peerEndedPartnerLeft => 'Partner suhbatni tark etdi.';
+
+  @override
+  String get peerEndedYouEnded => 'Suhbat yakunlandi. Yaxshi mashq! 👏';
+
+  @override
+  String get peerEndedFailed =>
+      'Ulanishda muammo yuz berdi. Qayta urinib ko‘ring.';
+
+  @override
+  String get peerEndedDefault => 'Suhbat tugadi.';
+
+  @override
+  String get speakingDailyMission => 'Kunlik topshiriq';
+
+  @override
+  String get speakingRecommended => 'Sizga tavsiya';
+
+  @override
+  String get seeAll => 'Barchasi';
+
+  @override
+  String get tracksSectionTitle => 'Yoʻnalishlar';
+
+  @override
+  String lessonsOf(int done, int total) {
+    return '$total darsdan $done tasi';
+  }
+
+  @override
+  String get speakingExploreByGoal => 'Maqsad bo‘yicha';
+
+  @override
+  String get speakingLessonPremium => 'Bu dars Premium tarkibida.';
+
+  @override
+  String speakingReachToUnlock(String level) {
+    return 'Bu darsni ochish uchun $level darajaga yeting.';
+  }
+
+  @override
+  String get speakingStartFirstLesson => 'Birinchi darsni boshlang';
+
+  @override
+  String get speakingPickGoal =>
+      'Maqsadni tanlang va bir zumda gapirishni boshlang.';
+
+  @override
+  String get speakingStartNow => 'Hozir boshlash';
+
+  @override
+  String get speakingContinueLearning => 'O‘rganishni davom ettirish';
+
+  @override
+  String get speakingPracticeAgain => 'Yana mashq qilish';
+
+  @override
+  String get speakingTodaysMission => 'Bugungi Speaking topshirig‘i';
+
+  @override
+  String get speakingLoadError => 'Speaking yuklanmadi.';
+
+  @override
+  String get speakingLastToday => 'Bugun ochilgan';
+
+  @override
+  String get speakingLastYesterday => 'Kecha ochilgan';
+
+  @override
+  String speakingLastDaysAgo(int days) {
+    return '$days kun oldin ochilgan';
+  }
+
+  @override
+  String speakingMinutesShort(int minutes) {
+    return '$minutes daq';
+  }
+
+  @override
+  String speakingLessonsShort(int done, int total) {
+    return '$done/$total dars';
+  }
+
+  @override
+  String speakingLessonsCompleted(int done, int total) {
+    return '$done/$total dars tugatildi';
+  }
+
+  @override
+  String get turnFailedRetry => 'Javobingiz yuborilmadi';
+
+  @override
+  String get assistTooFast => 'Bir soniya — qaytadan urinib ko‘ring.';
+
+  @override
+  String get sayAgain => 'Yana ayt';
+
+  @override
+  String get saySlower => 'Sekinroq';
+
+  @override
+  String get youSaidLabel => 'Siz aytdingiz';
+
+  @override
+  String get sttMisheardHint =>
+      'Siz aytgandek emasmi? Mikrofonni bosib qayta urinib ko‘ring.';
+
+  @override
+  String get switchToTyping => 'Yozib javob berish';
+
+  @override
+  String get switchToSpeaking => 'Gapirib javob berish';
+
+  @override
+  String get sendAction => 'Yuborish';
+
+  @override
+  String get sendingLabel => 'Yuborilmoqda';
+
+  @override
+  String get speakingHistoryTitle => 'O‘tgan suhbatlar';
+
+  @override
+  String get speakingHistoryEmpty => 'Hali suhbatlar yo‘q';
+
+  @override
+  String get speakingHistoryEmptyBody =>
+      'Suhbatni yakunlang — u hisoboti bilan shu yerda saqlanadi.';
+
+  @override
+  String speakingTurnsCount(int count) {
+    return '$count ta javob';
+  }
+
+  @override
+  String get speakingUnfinished => 'Tugallanmagan';
+
+  @override
+  String get speakingNoReport => 'Bu suhbat uchun hisobot yo‘q';
+
+  @override
+  String get speakingFreeTopicLabel => 'Erkin mavzu';
+
+  @override
+  String get a11yMicReady => 'Mikrofon. Gapirish uchun bosing';
+
+  @override
+  String get a11yMicRecording => 'Yozilmoqda. Javobni yuborish uchun bosing';
+
+  @override
+  String get a11yMicBusy => 'Kuting — o‘qituvchi javob bermoqda';
+
+  @override
+  String get speakingUnclearAudio =>
+      'Yaxshi eshitilmadi — biroz aniqroq aytib ko‘ring';
+
+  @override
+  String get tapToHide => 'Matnni yashirish uchun bosing';
+
+  @override
+  String get groupReply => 'Javob berish';
+
+  @override
+  String get questionsDraw => 'Tasodifiy savol';
+
+  @override
+  String get questionsDrawHint =>
+      'Gap tugab qoldimi? «Tasodifiy savol» ni bosing — hali javob bermagan savolingiz chiqadi.';
+
+  @override
+  String get questionsAllSeen => 'Hammasi berildi, yangidan boshlandi';
+
+  @override
+  String get courseUnitLocked =>
+      'Bu bo‘lim hali ochilmagan — avvalgisini tugating';
+
+  @override
+  String courseUnitsDone(int done, int total) {
+    return '$done / $total bo‘lim tugatildi';
+  }
+
+  @override
+  String get courseStart => 'Boshlash';
+
+  @override
+  String get courseLessons => 'Darslar';
+
+  @override
+  String get courseRule => 'Qoida';
+
+  @override
+  String get courseYouWillLearn => 'BU BO‘LIMDA O‘RGANASIZ';
+
+  @override
+  String get courseStartLesson => 'Boshlash';
+
+  @override
+  String courseContinueLesson(int n) {
+    return '$n-darsni davom ettirish';
+  }
+
+  @override
+  String courseLessonN(int n) {
+    return '$n-dars';
+  }
+
+  @override
+  String courseItemCount(int n) {
+    return '$n ta mashq';
+  }
+
+  @override
+  String courseMastery(int level, int max) {
+    return 'Mahorat $level / $max';
+  }
+
+  @override
+  String get drillPickMeaning => 'So\'zning ma\'nosini tanlang';
+
+  @override
+  String get drillPickWord => 'Mos inglizcha so\'zni tanlang';
+
+  @override
+  String get drillMatchPairs =>
+      'Chapdagini bosing, so\'ng juftini o\'ngdan tanlang';
+
+  @override
+  String get drillPickAnswer => 'To\'g\'ri javobni tanlang';
+
+  @override
+  String get drillOrderWords => 'So\'zlarni bosib, gapni tuzing';
+
+  @override
+  String get drillTypeMissing => 'Tushib qolgan so\'zni yozing';
+
+  @override
+  String get drillRewrite => 'Gapni qayta yozing';
+
+  @override
+  String get courseCheck => 'Tekshirish';
+
+  @override
+  String get courseContinue => 'Davom etish';
+
+  @override
+  String get courseCorrect => 'To\'g\'ri!';
+
+  @override
+  String get courseNotQuite => 'Bu safar emas';
+
+  @override
+  String courseTheAnswerWas(String answer) {
+    return 'To\'g\'ri javob: $answer';
+  }
+
+  @override
+  String get courseLessonDone => 'Dars tugadi!';
+
+  @override
+  String get courseUnitDone => 'Bo\'lim tugadi!';
+
+  @override
+  String get courseCorrectCount => 'To\'g\'ri javob';
+
+  @override
+  String get courseBackToPath => 'Yo‘lga qaytish';
+
+  @override
+  String get courseQuitTitle => 'Darsni tark etasizmi?';
+
+  @override
+  String get courseQuitBody => 'Hozirgi javoblaringiz saqlanmaydi.';
+
+  @override
+  String get courseQuitStay => 'Davom etaman';
+
+  @override
+  String get courseQuitLeave => 'Chiqish';
+
+  @override
+  String get lessonCourseTitle => 'Words & Rules';
+
+  @override
+  String get lessonCourseSubtitle => 'Qoidalarni o‘rganing, so‘zlarni yodlang';
+
+  @override
+  String get lessonPracticeTitle => 'Mashq';
+
+  @override
+  String get lessonPracticeSubtitle => 'Xato qilganlaringiz';
+
+  @override
+  String get courseWillReturn => 'Bu savol dars oxirida qayta chiqadi';
+
+  @override
+  String get courseTestFinish => 'Tugatish';
+
+  @override
+  String courseTestPassed(int n) {
+    return '$n ta bo‘lim ochildi!';
+  }
+
+  @override
+  String get courseTestFailed => 'Hali erta — darslardan boshlang';
+
+  @override
+  String get courseTestNoXp =>
+      'Sakrab o‘tish XP bermaydi. Darslarni qilsangiz, XP olasiz.';
+
+  @override
+  String get courseJumpTitle => 'Bu darajani bilasizmi?';
+
+  @override
+  String courseJumpBody(int n, int pass) {
+    return 'Oldingi bo‘limlardan $n ta savolga javob bering. To‘g‘ri javoblaringiz $pass% dan yuqori bo‘lsa, ular ochiladi — lekin XP berilmaydi.';
+  }
+
+  @override
+  String get courseJumpStart => 'Sinovni boshlash';
+
+  @override
+  String get courseJumpCancel => 'Yo‘q, tartib bilan boraman';
+
+  @override
+  String get courseReview => 'TAKRORLASH';
+
+  @override
+  String get courseQuitBodyKept =>
+      'Javob berganlaringiz saqlanadi, lekin dars tugallanmagan bo\'lib qoladi.';
+
+  @override
+  String get homeSpeakLive => 'Jonli suhbat';
+
+  @override
+  String get homeGroupTitle => 'Guruh suhbati';
+
+  @override
+  String get homeGroupSubtitle => '50 kishigacha ochiq xonada gapiring';
+
+  @override
+  String get homePeerTitle => 'Sherik bilan suhbat';
+
+  @override
+  String get homePeerSubtitle => 'Bir kishi bilan yuzma-yuz mashq';
+
+  @override
+  String get peerFindTap => 'Partner qidirish';
+
+  @override
+  String get profilePhotoTitle => 'Profil rasmi';
+
+  @override
+  String get profilePhotoPick => 'Galereyadan tanlash';
+
+  @override
+  String get profilePhotoCamera => 'Suratga olish';
+
+  @override
+  String get profilePhotoReset => 'Telegram rasmiga qaytish';
+
+  @override
+  String get profilePhotoSaved => 'Rasm yangilandi';
+
+  @override
+  String get profilePhotoTooLarge =>
+      'Rasm juda katta — 2 MB gacha bo‘lishi kerak';
+
+  @override
+  String get commProfileIntro =>
+      'So‘nggi suhbatlaringiz asosida. Har bir baho — 100 ballik shkalada.';
+
+  @override
+  String get bandStrong => 'Kuchli';
+
+  @override
+  String get bandGood => 'Yaxshi';
+
+  @override
+  String get bandMiddle => 'O‘rtacha';
+
+  @override
+  String get bandStarting => 'Boshlanmoqda';
+
+  @override
+  String get trendUp => 'o‘smoqda';
+
+  @override
+  String get trendDown => 'pasaymoqda';
+
+  @override
+  String get trendSteady => 'barqaror';
+
+  @override
+  String get paceExplain =>
+      'Ravon suhbat odatda 120–160 so‘z/daqiqa. Tezlik o‘z-o‘zidan maqsad emas — aniq gapirish muhimroq.';
+
+  @override
+  String get focusTagsHint =>
+      'Ustoz keyingi suhbatlarda shularga e’tibor beradi.';
+
+  @override
+  String get tagVerbTense => 'Fe’l zamonlari';
+
+  @override
+  String get tagWordChoice => 'So‘z tanlash';
+
+  @override
+  String get tagWordOrder => 'So‘z tartibi';
+
+  @override
+  String get tagArticles => 'Artikllar (a / the)';
+
+  @override
+  String get tagPreposition => 'Predloglar';
+
+  @override
+  String get tagPlural => 'Ko‘plik shakli';
+
+  @override
+  String get tagAgreement => 'Ega-kesim moslashuvi';
+
+  @override
+  String get tagPronoun => 'Olmoshlar';
+
+  @override
+  String get tagComparative => 'Qiyosiy daraja';
+
+  @override
+  String get tagConditional => 'Shart gaplar';
+
+  @override
+  String get tagQuestionForm => 'So‘roq gap tuzilishi';
+
+  @override
+  String get tagCollocation => 'So‘z birikmalari';
+
+  @override
+  String get accountTitle => 'Hisob';
+
+  @override
+  String get xpSourceCourse => 'Kurs darsi';
+
+  @override
+  String get developerTitle => 'Yordam';
+
+  @override
+  String get developerCopied => 'Telegram manzili nusxalandi';
+
+  @override
+  String get speakingTopicsTag => 'CEFR · IELTS';
+
+  @override
+  String get peerWhoTitle => 'Kim bilan suhbatlashmoqchisiz?';
+
+  @override
+  String get peerWhoFemale => 'Ayol';
+
+  @override
+  String get peerWhoMale => 'Erkak';
+
+  @override
+  String get peerWhoAny => 'Farqi yo‘q';
+
+  @override
+  String get peerWhoFemaleSub => 'Faqat ayollar bilan bog‘lanasiz';
+
+  @override
+  String get peerWhoMaleSub => 'Faqat erkaklar bilan bog‘lanasiz';
+
+  @override
+  String get peerWhoAnySub => 'Eng tez juftlanadi';
+
+  @override
+  String get peerWhoStart => 'Suhbatdosh qidirish';
+
+  @override
+  String get peerWhoNarrowHint =>
+      'Tanlov qo‘ysangiz kutish uzoqroq bo‘lishi mumkin.';
+
+  @override
+  String peerWhoOnline(int count) {
+    return '$count kishi onlayn';
+  }
+
+  @override
+  String get accountName => 'Ism';
+
+  @override
+  String get accountUsername => 'Telegram';
+
+  @override
+  String get accountPhone => 'Telefon';
+
+  @override
+  String get accountGender => 'Jins';
+
+  @override
+  String get accountGenderUnset => 'Ko‘rsatilmagan';
+
+  @override
+  String get accountGenderFemale => 'Ayol';
+
+  @override
+  String get accountGenderMale => 'Erkak';
+
+  @override
+  String get accountGenderWhy =>
+      'Jonli suhbatda mos suhbatdosh tanlash uchun ishlatiladi.';
+
+  @override
+  String get accountNoUsername => 'Yo‘q';
+
+  @override
+  String get accountSaved => 'Saqlandi';
+
+  @override
+  String get quizTitle => 'Jonli viktorina';
+
+  @override
+  String get quizHubTitle => 'Jonli viktorina';
+
+  @override
+  String get quizHubSubtitle =>
+      'Istalgan vaqtda qo\'shiling — har 3 daqiqada yangi o\'yin';
+
+  @override
+  String quizPlaying(int count) {
+    return '$count kishi o\'ynayapti';
+  }
+
+  @override
+  String get quizAlone => 'Birinchi bo\'lib kiring';
+
+  @override
+  String quizQuestionOf(int index, int total) {
+    return '$index / $total';
+  }
+
+  @override
+  String get quizPickMeaning => 'Ma\'nosini tanlang';
+
+  @override
+  String get quizPickWord => 'So\'zni tanlang';
+
+  @override
+  String get quizFillGap => 'Bo\'shliqni to\'ldiring';
+
+  @override
+  String get quizGrammar => 'Grammatika';
+
+  @override
+  String get quizCorrect => 'To\'g\'ri';
+
+  @override
+  String get quizWrong => 'Bu safar emas';
+
+  @override
+  String get quizTimeUp => 'Vaqt tugadi';
+
+  @override
+  String quizPoints(int points) {
+    return '+$points';
+  }
+
+  @override
+  String get quizMatchBoard => 'Shu o\'yin';
+
+  @override
+  String quizNextMatch(int seconds) {
+    return 'Yangi o\'yin $seconds soniyada';
+  }
+
+  @override
+  String get quizMatchOver => 'O\'yin tugadi';
+
+  @override
+  String get quizYouPlaceholder => 'Siz';
+
+  @override
+  String get quizNoScoreYet => 'Jadvalga tushish uchun javob bering';
+
+  @override
+  String get quizEmpty =>
+      'Viktorina tayyorlanmoqda. Bir ozdan keyin urinib ko\'ring.';
+
+  @override
+  String get quizJoinedMidMatch =>
+      'O\'yin o\'rtasida qo\'shildingiz — tez orada yangisi boshlanadi';
+
+  @override
+  String get quizStart => 'Viktorinani boshlash';
+
+  @override
+  String get quizStartHint =>
+      'Hozir hech kim o\'ynamayapti — o\'yin oching, hammaga xabar boradi';
+
+  @override
+  String get quizLobbyTitle => 'Boshlanishini kutamiz';
+
+  @override
+  String quizWaitingFor(int count) {
+    return 'Yana $count kishi kerak';
+  }
+
+  @override
+  String get quizStartingNow => 'Boshlanmoqda…';
+
+  @override
+  String get quizImReady => 'Tayyorman';
+
+  @override
+  String get quizYouAreReady => 'Siz o\'yindasiz';
+
+  @override
+  String get quizInLobby => 'Lobbida';
+
+  @override
+  String quizHostedBy(String name) {
+    return '$name o\'yinni ochdi';
+  }
+
+  @override
+  String get quizLeave => 'Chiqish';
+
+  @override
+  String get peerNoMicBody => 'Mikrofon yoqilmadi — qayta bosing';
+
+  @override
+  String get peerListening => 'Gapirish uchun mikrofonni bosing';
 }

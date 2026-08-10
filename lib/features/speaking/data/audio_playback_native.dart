@@ -52,6 +52,9 @@ class JustAudioPlayback extends AudioPlayback {
   }
 
   @override
+  Future<void> setSpeed(double speed) => _player.setSpeed(speed);
+
+  @override
   Future<void> dispose() async {
     await _player.dispose();
     _level.dispose();

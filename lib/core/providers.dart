@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../features/auth/application/auth_controller.dart';
 import '../features/auth/data/auth_repository.dart';
 import 'api/api_client.dart';
+import 'locale_controller.dart';
 import 'api/token_storage.dart';
 import 'google_sign_in_service.dart';
 
@@ -14,9 +15,24 @@ final googleSignInServiceProvider = Provider<GoogleSignInService>(
   (ref) => GoogleSignInService(),
 );
 
-final apiClientProvider = Provider<ApiClient>(
-  (ref) => ApiClient(tokens: ref.read(tokenStorageProvider)),
-);
+/// The language the server should answer in, as a code it supports.
+///
+/// `localeProvider` is null until prefs load, and the platform locale may be
+/// one we do not ship — fall back to English rather than sending nonsense.
+/// Both the `Accept-Language` header and the signaling sockets read this, so
+/// a role-play card cannot arrive in a different language than the feedback.
+final languageCodeProvider = Provider<String>((ref) {
+  final code = ref.watch(localeProvider).locale?.languageCode;
+  return AppLanguage.fromCode(code) != null ? code! : 'en';
+});
+
+final apiClientProvider = Provider<ApiClient>((ref) {
+  final client = ApiClient(tokens: ref.read(tokenStorageProvider));
+  // Read lazily on each request rather than captured once: the learner can
+  // switch language mid-session and the very next call must follow.
+  client.languageCode = () => ref.read(languageCodeProvider);
+  return client;
+});
 
 final authRepositoryProvider = Provider<AuthRepository>(
   (ref) => AuthRepository(

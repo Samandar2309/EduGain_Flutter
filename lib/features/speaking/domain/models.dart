@@ -1,41 +1,5 @@
 // Speaking domain models mirroring the backend DTOs (§3, §4.4).
 
-class Scenario {
-  const Scenario({
-    required this.id,
-    required this.slug,
-    required this.title,
-    required this.description,
-    required this.category,
-    required this.cefrMin,
-    required this.cefrMax,
-    required this.isPremium,
-    required this.isLocked,
-  });
-
-  final String id;
-  final String slug;
-  final String title;
-  final String description;
-  final String category;
-  final String cefrMin;
-  final String cefrMax;
-  final bool isPremium;
-  final bool isLocked;
-
-  factory Scenario.fromJson(Map<String, dynamic> json) => Scenario(
-    id: json['id'] as String,
-    slug: json['slug'] as String,
-    title: json['title'] as String,
-    description: json['description'] as String? ?? '',
-    category: json['category'] as String? ?? '',
-    cefrMin: json['cefr_min'] as String? ?? '',
-    cefrMax: json['cefr_max'] as String? ?? '',
-    isPremium: json['is_premium'] as bool? ?? false,
-    isLocked: json['is_locked'] as bool? ?? false,
-  );
-}
-
 /// One of the five goal paths shown on the Speaking home (`GET /speaking/tracks`).
 class TrackSummary {
   const TrackSummary({
@@ -253,9 +217,51 @@ class DailyMission {
 
 /// The whole Speaking home payload (`GET /speaking/home`) — one call so the
 /// page opens instantly with everything it needs.
+/// An unfinished conversation waiting to be walked back into.
+///
+/// A session lives on the server, so it survives the app being killed — which
+/// in a Telegram Mini App happens constantly (a call, another chat, a swipe
+/// away). Without this the next session silently abandoned it, taking the
+/// transcript and the speaking minutes already spent with it.
+class ResumableSession {
+  const ResumableSession({
+    required this.session,
+    required this.lastMessage,
+    required this.title,
+    required this.backdropKey,
+  });
+
+  final SpeakingSession session;
+  /// The tutor's last line — shown and spoken on resume so the learner lands
+  /// back in context instead of on a blank screen.
+  final ChatMessage lastMessage;
+  final String title;
+  final String backdropKey;
+
+  factory ResumableSession.fromJson(Map<String, dynamic> json) =>
+      ResumableSession(
+        session: SpeakingSession.fromJson(
+          json['session'] as Map<String, dynamic>,
+        ),
+        lastMessage: ChatMessage.fromJson(
+          json['last_message'] as Map<String, dynamic>,
+        ),
+        title: json['title'] as String? ?? '',
+        backdropKey: json['backdrop'] as String? ?? '',
+      );
+
+  /// Re-enter the same conversation: the launch the chat screen expects.
+  SpeakingLaunch toLaunch() => SpeakingLaunch(
+    started: StartedSession(session: session, firstMessage: lastMessage),
+    backdropKey: backdropKey.isEmpty ? null : backdropKey,
+    title: title.isEmpty ? null : title,
+  );
+}
+
 class SpeakingHome {
   const SpeakingHome({
     required this.cefrLevel,
+    required this.activeSession,
     required this.continueLesson,
     required this.dailyMission,
     required this.recommendedTrack,
@@ -266,6 +272,7 @@ class SpeakingHome {
   });
 
   final String cefrLevel;
+  final ResumableSession? activeSession;
   final ContinueLesson? continueLesson;
   final DailyMission? dailyMission;
   final String recommendedTrack;
@@ -278,6 +285,11 @@ class SpeakingHome {
     final summary = (json['progress_summary'] as Map?) ?? const {};
     return SpeakingHome(
       cefrLevel: json['cefr_level'] as String? ?? '',
+      activeSession: json['active_session'] == null
+          ? null
+          : ResumableSession.fromJson(
+              json['active_session'] as Map<String, dynamic>,
+            ),
       continueLesson: json['continue_lesson'] == null
           ? null
           : ContinueLesson.fromJson(
@@ -355,6 +367,10 @@ class SpeakingSession {
     required this.turnCount,
     required this.maxTurns,
     required this.quotaRemaining,
+    this.lessonKey,
+    this.freeTopic,
+    this.startedAt,
+    this.endedAt,
   });
 
   final String id;
@@ -362,6 +378,13 @@ class SpeakingSession {
   final int turnCount;
   final int maxTurns;
   final int quotaRemaining;
+
+  // What the conversation was about + when — only needed by the history list,
+  // so they stay nullable for every other caller.
+  final String? lessonKey;
+  final String? freeTopic;
+  final DateTime? startedAt;
+  final DateTime? endedAt;
 
   bool get isActive => status == 'active';
   int get turnsLeft => (maxTurns - turnCount).clamp(0, maxTurns);
@@ -373,6 +396,10 @@ class SpeakingSession {
         turnCount: (json['turn_count'] as num?)?.toInt() ?? 0,
         maxTurns: (json['max_turns'] as num?)?.toInt() ?? 0,
         quotaRemaining: (json['quota_remaining'] as num?)?.toInt() ?? 0,
+        lessonKey: json['lesson_key'] as String?,
+        freeTopic: json['free_topic'] as String?,
+        startedAt: DateTime.tryParse(json['started_at'] as String? ?? ''),
+        endedAt: DateTime.tryParse(json['ended_at'] as String? ?? ''),
       );
 }
 
@@ -495,13 +522,11 @@ class StartedSession {
 class SpeakingLaunch {
   const SpeakingLaunch({
     required this.started,
-    this.scenario,
     this.freeTopic,
     this.backdropKey,
     this.title,
   });
   final StartedSession started;
-  final Scenario? scenario;
   final String? freeTopic;
   final String? backdropKey; // track lesson theme key (scenario_theme)
   final String? title; // header title for a track lesson
@@ -556,8 +581,18 @@ sealed class SpeakingEvent {
 /// Audio turns only: the speech-to-text result, sent before the reply streams
 /// so the UI can show what the learner said.
 class TranscriptEvent extends SpeakingEvent {
-  const TranscriptEvent(this.text);
+  const TranscriptEvent(this.text, {this.clarity});
   final String text;
+
+  /// How confidently the recogniser read the audio, 0..1, or null when the
+  /// provider gave no signal. NOT a pronunciation score — a noisy room lowers
+  /// it too — so it is only ever used to suggest repeating an answer.
+  final double? clarity;
+
+  /// Low enough that the learner is likely to have been misheard. Deliberately
+  /// conservative: a false "we could not hear you" is more discouraging than
+  /// staying quiet.
+  bool get wasHardToHear => clarity != null && clarity! < 0.35;
 }
 
 class ChunkEvent extends SpeakingEvent {
@@ -589,11 +624,20 @@ class SpeakingQuota {
     required this.sessionsRemaining,
     required this.secondsLimit,
     required this.secondsUsed,
+    this.aiUnlocked = false,
   });
 
   final int sessionsRemaining;
   final int secondsLimit;
   final int secondsUsed;
+
+  /// Whether the AI tutor is open to this learner yet.
+  ///
+  /// Defaults to false, which is the important half: a response we could not
+  /// parse, an old build talking to a new server, a field that goes missing —
+  /// every one of those shows the "coming soon" card rather than a door that
+  /// opens onto a 423.
+  final bool aiUnlocked;
 
   int get secondsRemaining => (secondsLimit - secondsUsed).clamp(0, 1 << 31);
   bool get isExhausted => secondsLimit > 0 && secondsRemaining <= 0;
@@ -614,6 +658,7 @@ class SpeakingQuota {
       sessionsRemaining: (json['sessions_remaining'] as num?)?.toInt() ?? 0,
       secondsLimit: (speaking['seconds_limit'] as num?)?.toInt() ?? 0,
       secondsUsed: (speaking['seconds_used'] as num?)?.toInt() ?? 0,
+      aiUnlocked: json['ai_unlocked'] as bool? ?? false,
     );
   }
 }

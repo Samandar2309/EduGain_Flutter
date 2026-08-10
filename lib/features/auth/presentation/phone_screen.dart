@@ -10,6 +10,7 @@ import '../../../core/providers.dart';
 import '../../../core/ui/components.dart';
 import '../../../core/ui/language_picker.dart';
 import '../../../core/ui/tokens.dart';
+import '../../../core/ui/error_handling.dart';
 import '../../../l10n/app_localizations.dart';
 
 /// Step 1 of passwordless login — enter the phone number, get an OTP.
@@ -31,6 +32,7 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
   }
 
   Future<void> _submit() async {
+    final l = AppLocalizations.of(context);
     final phone = _controller.text.trim();
     if (!AppConfig.phonePattern.hasMatch(phone)) {
       _snack(AppLocalizations.of(context).phoneInvalid);
@@ -41,13 +43,14 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
       await ref.read(authRepositoryProvider).requestOtp(phone);
       if (mounted) context.push('/login/otp', extra: phone);
     } on ApiException catch (e) {
-      _snack(e.message);
+      _snack(e.localized(l));
     } finally {
       if (mounted) setState(() => _loading = false);
     }
   }
 
   Future<void> _google() async {
+    final l = AppLocalizations.of(context);
     setState(() => _loading = true);
     try {
       final idToken = await ref.read(googleSignInServiceProvider).signIn();
@@ -58,7 +61,7 @@ class _PhoneScreenState extends ConsumerState<PhoneScreen> {
       ref.read(authControllerProvider.notifier).onAuthenticated(result.user);
       // The router redirect handles navigation to /home.
     } on ApiException catch (e) {
-      _snack(e.message);
+      _snack(e.localized(l));
     } finally {
       if (mounted) setState(() => _loading = false);
     }

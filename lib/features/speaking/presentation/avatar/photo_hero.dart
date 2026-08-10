@@ -84,14 +84,23 @@ void paintPhotoBackdrop(Canvas canvas, Size size) {
 const _imgW = 723.0;
 const _imgH = 1087.0;
 // ── MOUTH GEOMETRY ──
-// The open-mouth ART's own box (image px) — the asset is exactly this region
-// of the open panel, so drawing it at this rect reproduces the render 1:1.
-// teeth → cavity → lower lip ONLY (NO upper lip): the base upper lip is
-// never overdrawn, so no overlapping-lip line appears when talking.
+// CAVITY only (image px): teeth → cavity → lower lip. The base upper lip is
+// NEVER overdrawn, so no upper-lip line ever appears while talking, and the
+// mouth stays contained (the jaw drops, the upper lip does not lift). The
+// aperture opens between the lips and collapses onto the closed-lip seam.
 const _mouthSrc = Rect.fromLTRB(302, 526, 462, 585);
 const _mouthCenterX = 381.0;
-const _mouthSeamY = 533.0; // the base's own closed-lip seam — the aperture
-// collapses onto exactly this line at rest, so the close is invisible
+// The mouth is drawn as THREE anatomical bands, not one squashed rectangle:
+// the upper teeth hang off the skull and never move, the lower lip rides the
+// jaw at its own true size, and only the cavity between them opens and closes.
+// (Uniformly scaling the whole patch — the old way — thinned the teeth into a
+// bright hairline and the sub-lip shadow into a dark one: the "lines" seen
+// while talking.) Boundaries measured off the asset's luminance profile.
+const _mouthTeethBotY = 536.0; // end of the upper-teeth band
+const _mouthCavityBotY = 556.0; // end of the cavity, start of the lower lip
+// The base's own closed-lip seam is y=533; the asset's alpha ramps 0→opaque
+// across exactly that span, so the patch can never paint over the base's upper
+// lip (doing so shaved the lip and made it read thinner than the art).
 // Each eye's OPENING measured from the art (image px): the two canthi
 // (outer/inner corners), the upper-lid peak and the lower-lid bottom.
 // The blink never paints outside this almond.
@@ -179,28 +188,67 @@ void paintPhotoHero(
     // fade in over the same low range the height grows, so the tiny opening
     // is both short AND faint as it appears/vanishes — invisible at the seam
     final alpha = ((open - 0.04) / 0.11).clamp(0.0, 1.0);
-    final wNorm = ((pose.mouthWide - 0.66) / 0.55).clamp(0.0, 1.0);
-    // NATURAL-SIZE JAW DROP: the feathered mouth art is drawn at its true
-    // panel size and scaled DOWN vertically as it closes — vScale = j reaches
-    // 0 at rest, so the jaw hinges fully shut. Its TOP anchor rises from the
-    // closed-lip seam (533) up to the teeth line (523) as it opens, so the
-    // collapsing sliver always lands EXACTLY on the base seam — the close is
-    // invisible. The feather IS the shape, so base lips/skin blend through
-    // the rim with no tone seam and no second mouth.
-    final topY = _mouthSeamY - 8.0 * j; // teeth emerge just under the lip
-    final top = ip(_mouthCenterX, topY);
-    final vScale = j; // 0 at rest → 1 fully open
-    final hScale = 0.88 + 0.16 * wNorm; // O narrower ↔ E wider
-    final destH = _mouthSrc.height * scale * vScale;
-    final destW = _mouthSrc.width * scale * hScale;
-    canvas.drawImageRect(
-      images.mouthOpen,
-      _mouthSrc.shift(-_mouthSrc.topLeft),
-      Rect.fromLTWH(top.dx - destW / 2, top.dy, destW, destH),
-      Paint()
-        ..filterQuality = FilterQuality.high
-        ..color = Colors.white.withValues(alpha: alpha),
-    );
+    // NATURAL-SIZE JAW DROP: the art is drawn at its true panel size; only the
+    // aperture between the fixed teeth and the riding lower lip opens, so the
+    // mouth is always the mouth the artist drew.
+    final vScale = j; // 0 at rest → 1 fully open (jaw hinge)
+    // HORIZONTAL ALIGNMENT IS THE WHOLE GAME. The patch carries a margin of
+    // SKIN either side of the cavity; at scale 1 those margins sit pixel-exact
+    // over the base's own skin and are therefore invisible. Scale the patch
+    // horizontally and they slide off register — the feathered rim then lands
+    // outside the lip commissures and reads as a dark wire drawn across the
+    // cheeks (worst around 15-40% open, where the squashed art is darkest).
+    // A dropping jaw does not narrow the lips anyway, so width stays ~1 and
+    // only the viseme shapes it, within a range small enough to stay aligned.
+    // WIDTH IS NEVER SCALED. The patch is the artist's own open mouth; drawn at
+    // exactly 1:1 it lands pixel-for-pixel on the base, so its skin margins are
+    // literally the base's skin and its corners land on the base's corners.
+    // Any horizontal scaling (even 2%) slides those margins off register, which
+    // both widened the mouth past the drawn lips and left the closed-lip seam
+    // showing as a dark spur at each corner. A single fixed-shape patch cannot
+    // honestly make an "O" versus an "E" anyway — the aperture carries the
+    // speech, and alignment is worth more than a few percent of wobble.
+    const w = 1.0;
+    // A JAW, NOT A CONCERTINA. Teeth stay put at their true size; the lower lip
+    // keeps its true size and simply rides down; the dark cavity between them
+    // is the only thing that stretches — and being a flat dark field, stretching
+    // it is invisible. So the mouth reads naturally at every opening instead of
+    // flattening into stripes.
+    final cx = ip(_mouthCenterX, 0).dx;
+    final halfW = _mouthSrc.width / 2 * scale * w;
+    final l = cx - halfW, r = cx + halfW;
+
+    final teethH = (_mouthTeethBotY - _mouthSrc.top) * scale; // fixed
+    final cavityH = (_mouthCavityBotY - _mouthTeethBotY) * scale * vScale; // opens
+    final lipH = (_mouthSrc.bottom - _mouthCavityBotY) * scale; // fixed, rides
+
+    final yTeethTop = ip(0, _mouthSrc.top).dy;
+    final yCavityTop = yTeethTop + teethH;
+    final yLipTop = yCavityTop + cavityH;
+
+    // Bands are drawn with a hairline overlap so bilinear sampling can never
+    // leave a seam between them.
+    const ov = 0.75;
+    final paint = Paint()
+      ..filterQuality = FilterQuality.high
+      ..color = Colors.white.withValues(alpha: alpha);
+    final srcLocal = _mouthSrc.shift(-_mouthSrc.topLeft);
+    final sTeethBot = _mouthTeethBotY - _mouthSrc.top;
+    final sCavityBot = _mouthCavityBotY - _mouthSrc.top;
+
+    void band(double srcTop, double srcBot, double dstTop, double dstBot) {
+      if (dstBot - dstTop <= 0.01) return;
+      canvas.drawImageRect(
+        images.mouthOpen,
+        Rect.fromLTRB(srcLocal.left, srcTop, srcLocal.right, srcBot),
+        Rect.fromLTRB(l, dstTop, r, dstBot),
+        paint,
+      );
+    }
+
+    band(0, sTeethBot, yTeethTop, yCavityTop + ov);
+    band(sTeethBot, sCavityBot, yCavityTop, yLipTop + ov);
+    band(sCavityBot, srcLocal.height, yLipTop, yLipTop + lipH);
   }
 
   // ── GAZE — the iris glides inside the exact opening: the art's own

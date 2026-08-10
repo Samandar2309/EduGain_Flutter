@@ -1,16 +1,108 @@
 {
   "@@locale": "uz",
-
   "save": "Saqlash",
   "cancel": "Bekor",
   "retry": "Qayta urinish",
+  "peerQuotaTitle": "Bugungi jonli suhbat vaqtingiz tugadi",
+  "peerQuotaBody": "Obuna bilan boshqa o‘quvchilar bilan cheksiz gaplashing.",
+  "resumeTitle": "Tugallanmagan suhbat",
+  "resumeSubtitle": "{turns} ta navbat o‘tdi — to‘xtagan joyingizdan davom eting",
+  "resumeAction": "Davom ettirish",
+  "networkError": "Internetga ulanishda xatolik. Qaytadan urinib ko‘ring.",
+  "feedbackNotReadyTitle": "Hisobot tayyor emas",
+  "feedbackNotReadyBody": "Suhbatingiz saqlandi. Baholash xizmati hozir javob bermadi — hisobotni qaytadan yig‘ishingiz mumkin.",
   "continueAction": "Davom etish",
-
+  "minutesShort": "{count} daq",
+  "@minutesShort": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "groupRoomHoldsUpTo": "Xonaga {count} kishigacha qo‘shiladi",
+  "@groupRoomHoldsUpTo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "cannotHearYou": "Sizni eshitmayapmiz — balandroq gapiring yoki yozib yuboring",
+  "micBlockedTapToAllow": "Mikrofon yopiq — ruxsat berish uchun bosing",
+  "minutesLeft": "{count} daqiqa qoldi",
+  "@minutesLeft": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "actionEnd": "Tugatish",
+  "questionsTitle": "Savollar",
+  "workedTitle": "Qanday javob berish kerak",
+  "workedWeak": "Ko‘pchilik shunday javob beradi",
+  "workedStrong": "Shunday bo‘lsa yaxshiroq",
+  "workedMoves": "Nima o‘zgardi",
+  "workedLocked": "Javob tahlili Premium’da",
+  "workedLockedWhy": "Savollar hamma uchun ochiq. Tahlil — kuchsiz va kuchli javob yonma-yon, farqi belgilangan holda — Premium’da.",
+  "workedOpen": "Tahlilni ochish",
+  "questionsFollows": "{title} kartochkasidan keyin",
+  "@questionsFollows": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "questionsPart3Hint": "Bu savollar shaxsiy emas — jamiyat haqida. Fikringizni ayting va sabab keltiring, bir-ikki jumla bilan chegaralanmang.",
+  "cueCardLabel": "Kartochka topshirig‘i",
+  "cueCardYouShouldSay": "Quyidagilarni aytishingiz kerak:",
+  "cueCardHint": "1 daqiqa tayyorlaning, keyin to‘xtamasdan 2 daqiqa gapiring. Juftlikda mashq qilsangiz: biri kartani o‘qiydi va vaqtni oladi, keyin almashasiz.",
+  "cueCardPrep": "{count} daqiqa tayyorgarlik",
+  "@cueCardPrep": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "cueCardTalk": "{count} daqiqa gapirish",
+  "@cueCardTalk": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "questionsModeSubtitle": "Suhbat uchun tayyor savollar to‘plami",
+  "questionsIntro": "Jonli suhbatda bir-biringizga bering yoki oldindan tayyorlaning.",
+  "questionsUseHint": "Bittasini tanlang va sherigingizga bering — keyin siz javob bering.",
+  "questionsSaved": "Saqlanganlar",
+  "questionsNoneSaved": "Hali savol saqlamadingiz.\nYoqqanini xatcho‘pga qo‘shing.",
+  "questionsNew": "YANGI",
+  "questionsError": "Savollarni yuklab bo‘lmadi.",
+  "speakingSectionPrepare": "Tayyorgarlik",
+  "questionsCount": "{count} ta savol",
+  "@questionsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "questionsTopicCount": "{count} ta mavzu",
+  "@questionsTopicCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "languageTitle": "Til",
   "languageEnglish": "English",
   "languageRussian": "Русский",
   "languageUzbek": "O‘zbekcha",
-
   "welcomeTitle": "Xush kelibsiz 👋",
   "phoneSubtitle": "Davom etish uchun telefon raqamingizni kiriting",
   "phoneLabel": "Telefon raqam",
@@ -19,7 +111,6 @@
   "googleSignIn": "Google bilan kirish",
   "termsNotice": "Davom etish orqali siz Foydalanish shartlari va Maxfiylik siyosatiga rozilik bildirasiz",
   "phoneInvalid": "Telefon raqamini to‘g‘ri kiriting (+998XXXXXXXXX)",
-
   "otpTitle": "Tasdiqlash kodi",
   "otpSentTo": "Kod yuborildi: {phone}",
   "verify": "Tasdiqlash",
@@ -27,15 +118,32 @@
   "resendCode": "Kodni qayta yuborish",
   "otpEnter6": "6 xonali kodni kiriting",
   "otpResent": "Yangi kod yuborildi",
-
   "nameTitle": "Tanishib olaylik",
   "nameSubtitle": "Sizga qanday murojaat qilaylik?",
   "nameLabel": "Ismingiz",
   "nameHint": "Masalan, Aziz",
   "nameEmpty": "Iltimos, ismingizni kiriting",
-
+  "learnLangComingSoon": "Tez kunda",
+  "learnLangNotifyMe": "Xabar beramiz",
+  "learnLangInterestSaved": "Qayd etildi. {language} ochilganda birinchi bo‘lib sizga aytamiz.",
+  "feedbackSendTitle": "Fikr bildirish",
+  "feedbackSendSubtitle": "Nima ishlamadi, nima yetishmayapti — yozing. Har birini o‘qiymiz.",
+  "feedbackHint": "Muammoni yoki taklifingizni yozing…",
+  "feedbackSend": "Yuborish",
+  "feedbackEmpty": "Iltimos, avval fikringizni yozing",
+  "feedbackThanks": "Rahmat! Xabaringiz bizga yetib bordi.",
+  "feedbackTooMany": "Bugunga yetarli xabar yubordingiz. Ertaga davom etamiz.",
+  "rateSessionQuestion": "Bu suhbat qanday bo‘ldi?",
+  "rateSessionCommentHint": "Izoh qoldirasizmi? (ixtiyoriy)",
+  "rateSessionCommentSent": "Izohingiz yuborildi. Rahmat!",
+  "rateSessionThanks": "Rahmat — bu bizga yordam beradi.",
+  "channelTitle": "Kanalimizga qo‘shiling",
+  "channelSubtitle": "Yangi darslar, foydali maslahatlar va yangiliklar shu yerda e’lon qilinadi. Bir marta obuna bo‘lasiz — keyin davom etamiz.",
+  "channelOpenAction": "Kanalga o‘tish",
+  "channelJoinedAction": "Obuna bo‘ldim",
+  "channelNotYet": "Obunangiz hali ko‘rinmadi. Kanalga qo‘shilib, qaytadan urinib ko‘ring.",
   "greeting": "Salom, {name} 👋",
-  "levelLabel": "Daraja: {level}",
+  "levelLabel": "Ingliz tili: {level}",
   "letsLearnToday": "Keling, bugun ham o‘rganamiz!",
   "modules": "Modullar",
   "statXp": "XP",
@@ -51,7 +159,6 @@
   "moduleSpeakingSubtitle": "AI bilan jonli suhbat",
   "moduleVocabSubtitle": "So‘z boyligini oshiring",
   "moduleGrammarSubtitle": "Grammatikani mashq qiling",
-
   "navHome": "Asosiy",
   "navLessons": "Darslar",
   "navProfile": "Profil",
@@ -61,7 +168,6 @@
   "lessonGrammarSubtitle": "Qoidalar va mashqlar bilan grammatikani mustahkamlang",
   "lessonPlacementTitle": "Daraja testi",
   "lessonPlacementSubtitle": "CEFR darajangizni aniqlang",
-
   "profileTitle": "Profil",
   "logout": "Chiqish",
   "subscription": "Obuna",
@@ -72,18 +178,16 @@
   "dailyGoalTitle": "Kunlik maqsad (XP)",
   "dailyGoalHint": "Masalan: 50",
   "dailyGoalLabel": "Kunlik maqsad",
-
   "close": "Yopish",
+  "details": "Tafsilotlar",
   "yes": "Ha",
   "no": "Yo‘q",
   "loadFailed": "Yuklab bo‘lmadi",
   "check": "Tekshirish",
   "yourAnswer": "Javobingiz",
-
   "premiumContent": "Premium kontent",
   "paywallCtaDefault": "Premium bilan davom eting",
   "premiumButton": "Premium",
-
   "freeTopic": "Erkin mavzu",
   "freeTopicHint": "Masalan: sayohat",
   "freeTopicCardSubtitle": "Istalgan mavzuda suhbat quring",
@@ -91,12 +195,10 @@
   "scenariosLoadError": "Ssenariylarni yuklab bo‘lmadi. Internetni tekshiring.",
   "limitReachedTitle": "Limit tugadi",
   "startConversation": "Boshlash",
-
   "feedbackTitle": "Natija",
   "strengths": "Kuchli tomonlar",
   "mistakes": "Xatolar",
   "feedbackLocked": "To‘liq tahlil (barcha xatolar, maslahatlar) Premium bilan ochiladi.",
-
   "micPermission": "Mikrofon ruxsati kerak — telefon sozlamalaridan yoqing.",
   "recordStartError": "Yozib olishni boshlab bo‘lmadi.",
   "audioCaptureError": "Audio olinmadi.",
@@ -112,7 +214,6 @@
   "composerHint": "Xabar yozing yoki gapiring…",
   "recordingLabel": "Yozilmoqda",
   "tapToSend": "Yuborish uchun bosing",
-
   "chooseVoice": "Ovozni tanlang",
   "voicesLoadError": "Ovozlar ro‘yxatini yuklab bo‘lmadi.",
   "noVoices": "Hozircha ovozlar mavjud emas.",
@@ -120,7 +221,6 @@
   "voicePreviewError": "Ovozni eshittirib bo‘lmadi.",
   "genderFemale": "Ayol",
   "genderMale": "Erkak",
-
   "noSets": "Hozircha to‘plamlar yo‘q",
   "noWords": "So‘zlar yo‘q",
   "tapCardToFlip": "Ko‘rish uchun kartani bosing",
@@ -128,7 +228,14 @@
   "know": "Bildim",
   "congrats": "Tabriklaymiz! 🎉",
   "vocabResult": "{total} ta so‘zdan {learned} tasini bildingiz.",
-
+  "gamesTitle": "O‘yinlar",
+  "gamesVocabTitle": "So‘z o‘yinlari",
+  "gamesVocabSubtitle": "Yolg‘iz, Gainsy bilan yoki jonli raqib bilan",
+  "gamesGrammarTitle": "Grammatika",
+  "gamesGrammarSubtitle": "Qoidani o‘rganing va mashq qiling",
+  "gamesBrowseTitle": "So‘zlarni ko‘rish",
+  "gamesBrowseSubtitle": "Tarjimasi va misoli bilan",
+  "gamesReviewSubtitle": "Unutish arafasidagi so‘zlar",
   "reviewTitle": "Takrorlash",
   "allReviewed": "Hammasi takrorlangan! 🎉",
   "noReviewWords": "Hozircha takrorlash uchun so‘z yo‘q.\nYangi so‘zlarni o‘rganishda davom eting.",
@@ -138,19 +245,65 @@
   "tapToSeeMeaning": "Ma’nosini ko‘rish uchun kartani bosing",
   "couldntRecall": "Eslay olmadim",
   "recalled": "Esladim",
-
   "noTopics": "Hozircha mavzular yo‘q",
   "atLeastOneAnswer": "Kamida bitta javob bering",
   "grammarScore": "Natija: {score} / {total}",
-
   "placementTestTitle": "Daraja testi",
   "noQuestions": "Savollar topilmadi",
   "resultReady": "Natija tayyor 🎯",
   "yourEnglishLevel": "Sizning ingliz tili darajangiz",
+  "placementResultBody": "Endi ustoz shu darajada gapiradi — siz oʻsgan sari daraja ham oʻzgaradi.",
+  "placementLastResultTitle": "Oxirgi natijangiz",
+  "placementTakenToday": "Bugun topshirilgan",
+  "placementTakenYesterday": "Kecha topshirilgan",
+  "placementTakenDaysAgo": "{days} kun oldin topshirilgan",
+  "@placementTakenDaysAgo": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "placementRetakeQuestion": "Testni qaytadan yechmoqchimisiz?",
+  "placementRetakeReplaces": "Yangi natija hozirgi darajangiz oʻrnini egallaydi.",
+  "placementRetakeAction": "Ha, qaytadan boshlayman",
+  "placementKeepAction": "Yoʻq, darajam qolsin",
+  "levelInviteTitle": "Avval darajangizni aniqlaymiz",
+  "levelInviteBody": "Bir necha qisqa savol. Shundan keyin ustoz taxmin qilib emas, siz tushunadigan darajada gapiradi.",
+  "levelInviteMeta": "18 ta savol · taxminan 2 daqiqa",
+  "levelInviteStart": "Darajamni aniqlash",
+  "levelInviteSkip": "Hozir emas",
+  "leaderboardTitle": "Reyting",
+  "navLeaderboard": "Reyting",
+  "leaderboardThisWeek": "Bu hafta",
+  "leaderboardLastWeek": "Oʻtgan hafta",
+  "leaderboardEmpty": "Bu hafta hali hech kim XP yigʻmagan.",
+  "leaderboardEmptyLastWeek": "Oʻtgan hafta hech kim XP yigʻmagan.",
+  "leaderboardFirstPlaceOpen": "Birinchi suhbat — birinchi oʻrin.",
+  "leaderboardNotRankedYet": "Reytingga kirish uchun bitta darsni tugating.",
+  "leaderboardYou": "Siz",
+  "leaderboardYouAreFirst": "Siz birinchisiz — oʻrningizni saqlang.",
+  "leaderboardPlaceSuffix": "-oʻringacha",
+  "leaderboardStreakDays": "{days} kun",
+  "@leaderboardStreakDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "leaderboardResetsMonday": "Reyting har dushanba yangidan boshlanadi.",
+  "tierFree": "Bepul",
+  "homeLevelUnknown": "Daraja: aniqlanmagan",
+  "statStreak": "Kunlik seriya",
+  "statGoal": "Maqsad",
+  "homeAiKicker": "Tavsiya",
+  "homeAiTitle": "AI bilan suhbatni boshlang",
+  "homeAiSubtitle": "Speaking koʻnikmangizni oshiring",
+  "homeAiLocked": "Daraja aniqlangach ochiladi",
   "startAction": "Boshlash",
   "finishAction": "Yakunlash",
   "nextAction": "Keyingi",
-
   "choosePayment": "To‘lov usulini tanlang",
   "paymentPageError": "To‘lov sahifasini ochib bo‘lmadi",
   "finishPaymentTitle": "To‘lovni yakunlang",
@@ -162,13 +315,11 @@
   "cancelAction": "Bekor qilish",
   "pricePerMonth": "{price} / oy",
   "choosePlan": "Tanlash",
-
   "quotaTitle": "Kunlik so‘zlashuv vaqti",
   "quotaMinutesLeft": "{minutes} daqiqa qoldi",
   "quotaUsedOf": "{total} daqiqadan {used} tasi ishlatildi",
   "quotaExhausted": "Bugungi daqiqalar tugadi",
   "quotaUpgrade": "Limitni oshirish",
-
   "commProfileTitle": "Muloqot profili",
   "commProfileEmpty": "AI ustoz bilan bir necha suhbat qiling — profilingiz haqiqiy nutqingizdan o‘zi shakllanadi.",
   "focusTagsTitle": "Hozir ustida ishlayapmiz",
@@ -179,7 +330,6 @@
   "wordsSpoken": "Aytilgan so‘zlar",
   "basedOnSessions": "{count} ta suhbat asosida",
   "settingsTitle": "Sozlamalar",
-
   "paywallReportTitle": "To‘liq hisobotni oching",
   "paywallReportBody": "Har bir xato, tuzatish va shaxsiy maslahat — Premium bilan.",
   "paywallSeePlans": "Tariflarni ko‘rish",
@@ -187,9 +337,7 @@
   "planPopular": "Eng ommabop",
   "premiumHeroTitle": "EduGain Premium",
   "premiumHeroBody": "Har kuni ko‘proq gapiring, barcha yo‘nalishlarni oching va nutqingizning to‘liq tahlilini oling.",
-
   "appTagline": "Sun’iy intellekt bilan ingliz tili",
-
   "welcomeChooseLanguage": "Tilni tanlang",
   "welcomeSkip": "O‘tkazib yuborish",
   "welcomeStart": "Boshlash",
@@ -199,35 +347,597 @@
   "welcomeCoachBody": "Har jumladan keyin yumshoq tuzatishlar hamda grammatika, so‘z boyligi va ravonlik bo‘yicha aniq hisobot.",
   "welcomeGoalTitle": "Maqsadingiz sari yo‘l",
   "welcomeGoalBody": "IELTS, karyera, sayohat yoki kundalik suhbat — trek zaif tomonlaringizga moslashadi.",
-
   "xpSourceDailyGoal": "Kunlik maqsad",
-  "xpSourceStreak": "Streak bonus",
-
+  "xpSourceStreak": "Seriya bonusi",
   "coachCorrection": "To‘g‘rilash",
   "coachNatural": "Tabiiy variant",
   "coachGrammar": "Grammatika",
   "coachVocabulary": "Lug‘at",
   "coachPronunciation": "Talaffuz",
-
   "statusSpeaking": "Gapiryapti…",
   "statusListening": "Tinglayapti…",
   "statusThinking": "O‘ylayapti…",
-
   "scoreOverall": "Umumiy",
   "scoreGrammar": "Grammatika",
   "scoreVocabulary": "Lug‘at",
   "scoreFluency": "Ravonlik",
   "scorePronunciation": "Talaffuz",
   "scoresEstimatedNote": "Ravonlik va talaffuz matningiz asosida taxminiy.",
-
   "voiceUnavailable": "Ovoz vaqtincha mavjud emas.",
-
-  "listenModeOn": "Tinglash rejimi — matn yashirilgan",
-  "listenModeOff": "Matnni ko‘rsatish",
   "tapToReveal": "Ko‘rsatish uchun bosing",
-
   "actionTranslate": "Tarjima",
   "actionHint": "Maslahat",
   "hintTitle": "Qanday javob berish",
-  "hintTip": "To‘liq gap bilan javob bering va suhbatni davom ettirish uchun qarshi savol bering."
+  "hintTip": "To‘liq gap bilan javob bering va suhbatni davom ettirish uchun qarshi savol bering.",
+  "groupChatTitle": "Guruh suhbati",
+  "groupCreateRoom": "Xona yaratish",
+  "groupNewRoom": "Yangi guruh suhbati",
+  "groupTopicLabel": "Mavzu",
+  "groupVisibilityLabel": "Ko‘rinish",
+  "groupPublicOption": "Ochiq",
+  "groupPrivateOption": "Yopiq",
+  "groupPublicHint": "Har kim lobbydan qo‘shila oladi",
+  "groupPrivateHint": "Faqat kod/havola orqali qo‘shiladi",
+  "groupParticipantsCount": "Ishtirokchilar: {count}",
+  "@groupParticipantsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "groupCreateAndStart": "Yaratish va boshlash",
+  "groupCreateFailed": "Xona yaratib bo‘lmadi",
+  "groupEmptyTitle": "Hozircha ochiq suhbat yo‘q",
+  "groupEmptySubtitle": "Birinchi bo‘lib xona yarating!",
+  "groupJoinByCode": "Kod bilan qo‘shilish",
+  "groupCodeHint": "masalan: ABC123",
+  "groupInviteFriends": "Do‘stlaringizni taklif qiling",
+  "groupShareTelegram": "Telegram’da ulashish",
+  "groupCopyCode": "Kodni nusxalash",
+  "groupCodeCopied": "Kod nusxalandi",
+  "inviteCopied": "Taklif nusxalandi — do‘stingizga yuboring",
+  "groupInvite": "Taklif qilish",
+  "groupInviteShareText": "EduGain'da guruh suhbatiga qo'shiling! 🎙\n\nXona kodi: {code}\n\n@edugain_bot ni oching → Speaking → Guruh suhbati → «Kod bilan qo'shilish»",
+  "@groupInviteShareText": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "groupConnected": "Ulangan",
+  "groupConnectingStatus": "Ulanmoqda…",
+  "groupYou": "Siz",
+  "groupMicOff": "Mikrofon o‘chiq",
+  "groupRemove": "Chiqarish",
+  "groupRoomNotFound": "Xona topilmadi",
+  "groupFull": "To‘lgan",
+  "groupJoin": "Qo‘shilish",
+  "groupKickedMsg": "Siz xonadan chiqarildingiz",
+  "groupConnectErrorMsg": "Ulanishda xatolik",
+  "groupChatEmpty": "Hozircha xabar yo‘q — birinchi bo‘lib yozing",
+  "groupModeratorNote": "AI moderator mavzuni boshqarib boradi",
+  "groupRule4b": "AI moderator ko‘rsatmalariga amal qiling",
+  "groupCallTime": "Suhbat vaqti",
+  "groupLeaveRoom": "Suhbatdan chiqish",
+  "groupOthers": "Boshqalar",
+  "groupWriteMessage": "Xabar yozing…",
+  "groupParticipants": "Ishtirokchilar",
+  "groupSeeAll": "Barchasini ko‘rish",
+  "groupRulesTitle": "Xona qoidalari",
+  "groupRule1": "Bir-biringizni tinglang",
+  "groupRule2": "Hurmatli bo‘ling",
+  "groupRule3": "Ingliz tilida gaplashing",
+  "groupRule4": "Spam yo‘q",
+  "groupSettingsTitle": "Suhbat sozlamalari",
+  "groupSettingMic": "Mikrofon",
+  "groupSettingNotify": "Eslatma",
+  "groupSettingRules": "Qoidalar",
+  "groupSpeakNow": "Gapirish",
+  "groupMuteMic": "Mikrofonni o‘chirish",
+  "groupSpeakingNow": "HOZIR GAPIRYAPTI",
+  "groupNobodySpeaking": "Hech kim gapirmayapti",
+  "groupInRoom": "XONADA",
+  "groupMuteMember": "Ovozsiz qilish",
+  "groupMakeHost": "Hostlikni topshirish",
+  "groupMuteEveryone": "Hammani ovozsiz qilish",
+  "groupMutedByHost": "Xona egasi sizni ovozsiz qildi",
+  "groupMicBlocked": "Mikrofonga ruxsat berilmadi",
+  "groupHostBadge": "Host",
+  "groupMore": "yana",
+  "grammarTitle": "Grammatika",
+  "grammarChooseLevel": "Darajangizni tanlang",
+  "grammarLevelsSubtitle": "A1 dan C2 gacha — bosqichma-bosqich grammatika",
+  "grammarTopicCount": "{count} ta mavzu",
+  "@grammarTopicCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "comingSoon": "Tez kunda",
+  "grammarLevelA1": "Boshlang‘ich",
+  "grammarLevelA2": "Elementar",
+  "grammarLevelB1": "O‘rta",
+  "grammarLevelB2": "O‘rta-yuqori",
+  "grammarLevelC1": "Ilg‘or",
+  "grammarLevelC2": "Professional",
+  "grammarRulePlusPractice": "Qoida + mashq",
+  "grammarLearnRule": "Qoidani o‘rganish",
+  "grammarRuleExamplesPattern": "Qoida, misollar va naqsh",
+  "grammarPractice": "Mashq qilish",
+  "grammarPracticeSubtitle": "Bo‘shliqni to‘ldirish + gap tuzish o‘yinlari",
+  "grammarStartPractice": "Mashq qilishni boshlash",
+  "grammarRuleLabel": "Qoida",
+  "grammarRuleReadySpeaking": "Bu qoidani endi Speaking mashg‘ulotida qo‘llab ko‘ring 🎯",
+  "grammarNotEnoughExercises": "Bu mavzuda mashq uchun yetarli topshiriq yo‘q.",
+  "grammarChooseForm": "TO‘G‘RI SHAKLNI TANLANG",
+  "grammarBuildSentence": "GAPNI TUZING",
+  "answerCorrectExcl": "To‘g‘ri!",
+  "answerWrongLabel": "Xato",
+  "correctAnswerLabel": "To‘g‘ri javob: {answer}",
+  "@correctAnswerLabel": {
+    "placeholders": {
+      "answer": {
+        "type": "String"
+      }
+    }
+  },
+  "vocabWhatToDo": "Nima qilamiz?",
+  "vocabLearnTitle": "So‘zlarni o‘rganish",
+  "vocabLearnSubtitle": "Yangi so‘zlarni tarjimasi va misoli bilan ko‘ring",
+  "vocabTestKnowledge": "Bilimni sinash",
+  "vocabTestSubtitle": "O‘yinlar orqali yodlaganingizni tekshiring",
+  "vocabDailyReview": "Kunlik takrorlash",
+  "vocabDueReady": "{count} ta so‘z takrorlashga tayyor — mustahkamlab oling.",
+  "@vocabDueReady": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vocabStartReview": "Takrorlashni boshlash",
+  "vocabNotEnoughReview": "Takrorlash uchun so‘z yetarli emas",
+  "vocabWordCount": "{count} so‘z",
+  "@vocabWordCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vocabWordSet": "So‘z to‘plami",
+  "vocabHowToPlay": "Qanday o‘ynaymiz?",
+  "vocabSoloTitle": "Solo o‘ynash",
+  "vocabSoloSubtitle": "O‘z tezligingizda so‘z yodlang",
+  "vocabSpellTitle": "Harflardan yig‘ish",
+  "vocabSpellSubtitle": "So‘zni xotiradan harflab tuzing",
+  "vocabDuelBotTitle": "Gainsy bilan bellashuv",
+  "vocabDuelBotSubtitle": "Botga qarshi tezlik poygasi",
+  "vocabDuelOnlineTitle": "Odam bilan o‘ynash",
+  "vocabDuelOnlineSubtitle": "Jonli raqib bilan tezlik poygasi",
+  "vocabNotEnoughWords": "Bu to‘plamda o‘yin uchun so‘z yetarli emas",
+  "loadRetryError": "Yuklashda xatolik. Qayta urinib ko‘ring.",
+  "vocabGainsyAnswering": "Gainsy javob beryapti…",
+  "vocabFindingOpponent": "Raqib qidirilmoqda…",
+  "vocabDuelWaitHint": "Boshqa o‘quvchi shu o‘yinni tanlashi bilan avtomatik ulanasiz",
+  "vocabNoOpponent": "Hozircha onlayn raqib topilmadi.",
+  "vocabPlayWithGainsy": "Gainsy bilan o‘ynash",
+  "vocabPartnerAnswering": "{name} javob beryapti…",
+  "@vocabPartnerAnswering": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "vocabConnLostPlayBot": "Ulanishda muammo. Gainsy bilan o‘ynab turasizmi?",
+  "backAction": "Orqaga",
+  "vocabSpellInstruction": "SO‘ZNI HARFLARDAN YIG‘ING",
+  "vocabNoSpellWords": "Bu to‘plamda harflardan yig‘ish uchun mos so‘z yo‘q.",
+  "gameChooseTranslation": "Tarjimasini tanlang",
+  "gameChooseWord": "So‘zni tanlang",
+  "gameWordsReadySpeaking": "Bu so‘zlar endi Speaking mashg‘ulotida tayyor 🎯",
+  "gameYouWon": "Siz yutdingiz!",
+  "gameOpponentAhead": "{name} bu safar oldinda",
+  "@gameOpponentAhead": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "gameNiceWork": "Ajoyib ish!",
+  "youLabel": "Siz",
+  "gameCorrectAnswers": "To‘g‘ri javob",
+  "gameCombo": "Kombo",
+  "gameAccuracy": "Aniqlik",
+  "gamePlayAgain": "Yana o‘ynash",
+  "vocabTitle": "Lug‘at",
+  "speakingSectionAi": "AI ustoz bilan · doim mavjud",
+  "speakingSectionLive": "Odamlar bilan · jonli",
+  "speakingFreeTitle": "Erkin suhbat",
+  "speakingFreeSubtitle": "AI bilan istalgan mavzuda",
+  "speakingTopicsTitle": "Tayyor darslar",
+  "speakingTopicsSubtitle": "AI bilan darajangiz bo‘yicha",
+  "speakingGroupSubtitle": "Ochiq xonaga qo‘shiling yoki o‘zingiz yarating",
+  "speakingOneToOneTitle": "1:1 jonli suhbat",
+  "speakingOneToOneSubtitle": "Bitta odam bilan yuzma-yuz mashq",
+  "peerLiveChat": "Jonli suhbat",
+  "peerFriendRoom": "Do‘st bilan xona",
+  "peerJoinByCode": "Kod bilan kirish",
+  "peerHistory": "Suhbatlar tarixi",
+  "peerConvCount": "{count} ta suhbat",
+  "@peerConvCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "peerRoomCode": "Xona kodi",
+  "peerEnter": "Kirish",
+  "peerOnlineCount": "{count} kishi onlayn",
+  "@peerOnlineCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "peerFindPartner": "Partner topish",
+  "peerFindPartnerSubtitle": "Onlayn o‘quvchi bilan tasodifiy ulanib,\ninglizcha jonli suhbat quring",
+  "peerNoHistoryTitle": "Hali suhbatlaringiz yo‘q",
+  "peerNoHistorySubtitle": "Birinchi partneringizni toping — har bir suhbat\nshu yerda saqlanadi.",
+  "peerToday": "Bugun",
+  "peerYesterday": "Kecha",
+  "peerDurMinSec": "{m} min {s} s",
+  "@peerDurMinSec": {
+    "placeholders": {
+      "m": {
+        "type": "int"
+      },
+      "s": {
+        "type": "int"
+      }
+    }
+  },
+  "peerDurSec": "{s} s",
+  "@peerDurSec": {
+    "placeholders": {
+      "s": {
+        "type": "int"
+      }
+    }
+  },
+  "peerStatusConnecting": "Ulanmoqda…",
+  "peerStatusSearching": "Partner qidirilmoqda…",
+  "peerStatusWaitingFriend": "Do‘stingiz kutilmoqda",
+  "peerStatusConnectingVoice": "Ovoz ulanmoqda…",
+  "peerStatusLiveChat": "Jonli suhbat · {time}",
+  "@peerStatusLiveChat": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "peerStatusEnded": "Suhbat tugadi",
+  "peerSearchingTitle": "Sizga mos partner qidirilmoqda…",
+  "peerSearchingSubtitle": "Boshqa o‘quvchi qidiruvni boshlashi bilan\navtomatik ulanasiz",
+  "peerYourPartner": "Suhbat partneringiz",
+  "peerInviteTelegram": "Telegram orqali taklif qilish",
+  "peerInviteShareText": "EduGain’da men bilan jonli ingliz tili suhbatiga qo‘shiling! Ilovadagi “Jonli suhbat” bo‘limida shu kodni kiriting: {code}",
+  "@peerInviteShareText": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "peerYourRole": "Sizning rolingiz",
+  "peerPartnerRole": "Partner roli",
+  "peerStopSearching": "Qidiruvni to‘xtatish",
+  "peerEndedPartnerLeft": "Partner suhbatni tark etdi.",
+  "peerEndedYouEnded": "Suhbat yakunlandi. Yaxshi mashq! 👏",
+  "peerEndedFailed": "Ulanishda muammo yuz berdi. Qayta urinib ko‘ring.",
+  "peerEndedDefault": "Suhbat tugadi.",
+  "speakingDailyMission": "Kunlik topshiriq",
+  "speakingRecommended": "Sizga tavsiya",
+  "seeAll": "Barchasi",
+  "tracksSectionTitle": "Yoʻnalishlar",
+  "lessonsOf": "{total} darsdan {done} tasi",
+  "@lessonsOf": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "speakingExploreByGoal": "Maqsad bo‘yicha",
+  "speakingLessonPremium": "Bu dars Premium tarkibida.",
+  "speakingReachToUnlock": "Bu darsni ochish uchun {level} darajaga yeting.",
+  "@speakingReachToUnlock": {
+    "placeholders": {
+      "level": {
+        "type": "String"
+      }
+    }
+  },
+  "speakingStartFirstLesson": "Birinchi darsni boshlang",
+  "speakingPickGoal": "Maqsadni tanlang va bir zumda gapirishni boshlang.",
+  "speakingStartNow": "Hozir boshlash",
+  "speakingContinueLearning": "O‘rganishni davom ettirish",
+  "speakingPracticeAgain": "Yana mashq qilish",
+  "speakingTodaysMission": "Bugungi Speaking topshirig‘i",
+  "speakingLoadError": "Speaking yuklanmadi.",
+  "speakingLastToday": "Bugun ochilgan",
+  "speakingLastYesterday": "Kecha ochilgan",
+  "speakingLastDaysAgo": "{days} kun oldin ochilgan",
+  "@speakingLastDaysAgo": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "speakingMinutesShort": "{minutes} daq",
+  "@speakingMinutesShort": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "speakingLessonsShort": "{done}/{total} dars",
+  "@speakingLessonsShort": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "speakingLessonsCompleted": "{done}/{total} dars tugatildi",
+  "@speakingLessonsCompleted": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "turnFailedRetry": "Javobingiz yuborilmadi",
+  "assistTooFast": "Bir soniya — qaytadan urinib ko‘ring.",
+  "sayAgain": "Yana ayt",
+  "saySlower": "Sekinroq",
+  "youSaidLabel": "Siz aytdingiz",
+  "sttMisheardHint": "Siz aytgandek emasmi? Mikrofonni bosib qayta urinib ko‘ring.",
+  "switchToTyping": "Yozib javob berish",
+  "switchToSpeaking": "Gapirib javob berish",
+  "sendAction": "Yuborish",
+  "sendingLabel": "Yuborilmoqda",
+  "speakingHistoryTitle": "O‘tgan suhbatlar",
+  "speakingHistoryEmpty": "Hali suhbatlar yo‘q",
+  "speakingHistoryEmptyBody": "Suhbatni yakunlang — u hisoboti bilan shu yerda saqlanadi.",
+  "speakingTurnsCount": "{count} ta javob",
+  "@speakingTurnsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "speakingUnfinished": "Tugallanmagan",
+  "speakingNoReport": "Bu suhbat uchun hisobot yo‘q",
+  "speakingFreeTopicLabel": "Erkin mavzu",
+  "a11yMicReady": "Mikrofon. Gapirish uchun bosing",
+  "a11yMicRecording": "Yozilmoqda. Javobni yuborish uchun bosing",
+  "a11yMicBusy": "Kuting — o‘qituvchi javob bermoqda",
+  "speakingUnclearAudio": "Yaxshi eshitilmadi — biroz aniqroq aytib ko‘ring",
+  "tapToHide": "Matnni yashirish uchun bosing",
+  "groupReply": "Javob berish",
+  "questionsDraw": "Tasodifiy savol",
+  "questionsDrawHint": "Gap tugab qoldimi? «Tasodifiy savol» ni bosing — hali javob bermagan savolingiz chiqadi.",
+  "questionsAllSeen": "Hammasi berildi, yangidan boshlandi",
+  "courseUnitLocked": "Bu bo‘lim hali ochilmagan — avvalgisini tugating",
+  "courseUnitsDone": "{done} / {total} bo‘lim tugatildi",
+  "courseStart": "Boshlash",
+  "courseLessons": "Darslar",
+  "courseRule": "Qoida",
+  "courseYouWillLearn": "BU BO‘LIMDA O‘RGANASIZ",
+  "courseStartLesson": "Boshlash",
+  "courseContinueLesson": "{n}-darsni davom ettirish",
+  "courseLessonN": "{n}-dars",
+  "courseItemCount": "{n} ta mashq",
+  "courseMastery": "Mahorat {level} / {max}",
+  "drillPickMeaning": "So'zning ma'nosini tanlang",
+  "drillPickWord": "Mos inglizcha so'zni tanlang",
+  "drillMatchPairs": "Chapdagini bosing, so'ng juftini o'ngdan tanlang",
+  "drillPickAnswer": "To'g'ri javobni tanlang",
+  "drillOrderWords": "So'zlarni bosib, gapni tuzing",
+  "drillTypeMissing": "Tushib qolgan so'zni yozing",
+  "drillRewrite": "Gapni qayta yozing",
+  "courseCheck": "Tekshirish",
+  "courseContinue": "Davom etish",
+  "courseCorrect": "To'g'ri!",
+  "courseNotQuite": "Bu safar emas",
+  "courseTheAnswerWas": "To'g'ri javob: {answer}",
+  "courseLessonDone": "Dars tugadi!",
+  "courseUnitDone": "Bo'lim tugadi!",
+  "courseCorrectCount": "To'g'ri javob",
+  "courseBackToPath": "Yo‘lga qaytish",
+  "courseQuitTitle": "Darsni tark etasizmi?",
+  "courseQuitBody": "Hozirgi javoblaringiz saqlanmaydi.",
+  "courseQuitStay": "Davom etaman",
+  "courseQuitLeave": "Chiqish",
+  "lessonCourseTitle": "Words & Rules",
+  "lessonCourseSubtitle": "Qoidalarni o‘rganing, so‘zlarni yodlang",
+  "lessonPracticeTitle": "Mashq",
+  "lessonPracticeSubtitle": "Xato qilganlaringiz",
+  "courseWillReturn": "Bu savol dars oxirida qayta chiqadi",
+  "courseTestFinish": "Tugatish",
+  "courseTestPassed": "{n} ta bo‘lim ochildi!",
+  "courseTestFailed": "Hali erta — darslardan boshlang",
+  "courseTestNoXp": "Sakrab o‘tish XP bermaydi. Darslarni qilsangiz, XP olasiz.",
+  "courseJumpTitle": "Bu darajani bilasizmi?",
+  "courseJumpBody": "Oldingi bo‘limlardan {n} ta savolga javob bering. To‘g‘ri javoblaringiz {pass}% dan yuqori bo‘lsa, ular ochiladi — lekin XP berilmaydi.",
+  "courseJumpStart": "Sinovni boshlash",
+  "courseJumpCancel": "Yo‘q, tartib bilan boraman",
+  "courseReview": "TAKRORLASH",
+  "courseQuitBodyKept": "Javob berganlaringiz saqlanadi, lekin dars tugallanmagan bo'lib qoladi.",
+  "homeSpeakLive": "Jonli suhbat",
+  "homeGroupTitle": "Guruh suhbati",
+  "homeGroupSubtitle": "50 kishigacha ochiq xonada gapiring",
+  "homePeerTitle": "Sherik bilan suhbat",
+  "homePeerSubtitle": "Bir kishi bilan yuzma-yuz mashq",
+  "peerFindTap": "Partner qidirish",
+  "profilePhotoTitle": "Profil rasmi",
+  "profilePhotoPick": "Galereyadan tanlash",
+  "profilePhotoCamera": "Suratga olish",
+  "profilePhotoReset": "Telegram rasmiga qaytish",
+  "profilePhotoSaved": "Rasm yangilandi",
+  "profilePhotoTooLarge": "Rasm juda katta — 2 MB gacha bo‘lishi kerak",
+  "commProfileIntro": "So‘nggi suhbatlaringiz asosida. Har bir baho — 100 ballik shkalada.",
+  "bandStrong": "Kuchli",
+  "bandGood": "Yaxshi",
+  "bandMiddle": "O‘rtacha",
+  "bandStarting": "Boshlanmoqda",
+  "trendUp": "o‘smoqda",
+  "trendDown": "pasaymoqda",
+  "trendSteady": "barqaror",
+  "paceExplain": "Ravon suhbat odatda 120–160 so‘z/daqiqa. Tezlik o‘z-o‘zidan maqsad emas — aniq gapirish muhimroq.",
+  "focusTagsHint": "Ustoz keyingi suhbatlarda shularga e’tibor beradi.",
+  "tagVerbTense": "Fe’l zamonlari",
+  "tagWordChoice": "So‘z tanlash",
+  "tagWordOrder": "So‘z tartibi",
+  "tagArticles": "Artikllar (a / the)",
+  "tagPreposition": "Predloglar",
+  "tagPlural": "Ko‘plik shakli",
+  "tagAgreement": "Ega-kesim moslashuvi",
+  "tagPronoun": "Olmoshlar",
+  "tagComparative": "Qiyosiy daraja",
+  "tagConditional": "Shart gaplar",
+  "tagQuestionForm": "So‘roq gap tuzilishi",
+  "tagCollocation": "So‘z birikmalari",
+  "accountTitle": "Hisob",
+  "xpSourceCourse": "Kurs darsi",
+  "developerTitle": "Yordam",
+  "developerCopied": "Telegram manzili nusxalandi",
+  "speakingTopicsTag": "CEFR · IELTS",
+  "peerWhoTitle": "Kim bilan suhbatlashmoqchisiz?",
+  "peerWhoFemale": "Ayol",
+  "peerWhoMale": "Erkak",
+  "peerWhoAny": "Farqi yo‘q",
+  "peerWhoFemaleSub": "Faqat ayollar bilan bog‘lanasiz",
+  "peerWhoMaleSub": "Faqat erkaklar bilan bog‘lanasiz",
+  "peerWhoAnySub": "Eng tez juftlanadi",
+  "peerWhoStart": "Suhbatdosh qidirish",
+  "peerWhoNarrowHint": "Tanlov qo‘ysangiz kutish uzoqroq bo‘lishi mumkin.",
+  "peerWhoOnline": "{count} kishi onlayn",
+  "@peerWhoOnline": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "accountName": "Ism",
+  "accountUsername": "Telegram",
+  "accountPhone": "Telefon",
+  "accountGender": "Jins",
+  "accountGenderUnset": "Ko‘rsatilmagan",
+  "accountGenderFemale": "Ayol",
+  "accountGenderMale": "Erkak",
+  "accountGenderWhy": "Jonli suhbatda mos suhbatdosh tanlash uchun ishlatiladi.",
+  "accountNoUsername": "Yo‘q",
+  "accountSaved": "Saqlandi",
+  "quizTitle": "Jonli viktorina",
+  "quizHubTitle": "Jonli viktorina",
+  "quizHubSubtitle": "Istalgan vaqtda qo'shiling — har 3 daqiqada yangi o'yin",
+  "quizPlaying": "{count} kishi o'ynayapti",
+  "@quizPlaying": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "quizAlone": "Birinchi bo'lib kiring",
+  "quizQuestionOf": "{index} / {total}",
+  "@quizQuestionOf": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "quizPickMeaning": "Ma'nosini tanlang",
+  "quizPickWord": "So'zni tanlang",
+  "quizFillGap": "Bo'shliqni to'ldiring",
+  "quizGrammar": "Grammatika",
+  "quizCorrect": "To'g'ri",
+  "quizWrong": "Bu safar emas",
+  "quizTimeUp": "Vaqt tugadi",
+  "quizPoints": "+{points}",
+  "@quizPoints": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "quizMatchBoard": "Shu o'yin",
+  "quizNextMatch": "Yangi o'yin {seconds} soniyada",
+  "@quizNextMatch": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "quizMatchOver": "O'yin tugadi",
+  "quizYouPlaceholder": "Siz",
+  "quizNoScoreYet": "Jadvalga tushish uchun javob bering",
+  "quizEmpty": "Viktorina tayyorlanmoqda. Bir ozdan keyin urinib ko'ring.",
+  "quizJoinedMidMatch": "O'yin o'rtasida qo'shildingiz — tez orada yangisi boshlanadi",
+  "quizStart": "Viktorinani boshlash",
+  "quizStartHint": "Hozir hech kim o'ynamayapti — o'yin oching, hammaga xabar boradi",
+  "quizLobbyTitle": "Boshlanishini kutamiz",
+  "quizWaitingFor": "Yana {count} kishi kerak",
+  "@quizWaitingFor": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "quizStartingNow": "Boshlanmoqda…",
+  "quizImReady": "Tayyorman",
+  "quizYouAreReady": "Siz o'yindasiz",
+  "quizInLobby": "Lobbida",
+  "quizHostedBy": "{name} o'yinni ochdi",
+  "@quizHostedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "quizLeave": "Chiqish",
+  "peerNoMicBody": "Mikrofon yoqilmadi — qayta bosing",
+  "peerListening": "Gapirish uchun mikrofonni bosing"
 }

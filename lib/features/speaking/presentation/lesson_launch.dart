@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/api/api_exception.dart';
+import '../../../core/ui/error_handling.dart';
+import '../../../l10n/app_localizations.dart';
 import '../application/providers.dart';
 import '../domain/models.dart';
 
@@ -13,9 +15,13 @@ import '../domain/models.dart';
 Future<void> launchLesson(
   BuildContext context,
   WidgetRef ref, {
-  required String lessonKey,
   required String backdropKey,
   required String title,
+  // Null starts an OPEN conversation: no lesson, no subject, so the tutor's
+  // first line asks what the learner would like to talk about. Answering that
+  // is itself the first piece of speaking practice — which is why the app must
+  // not demand a topic through a form before letting them in.
+  String? lessonKey,
   void Function(bool busy)? onBusy,
 }) async {
   onBusy?.call(true);
@@ -43,9 +49,7 @@ Future<void> launchLesson(
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-            e.message.isEmpty ? 'Could not start the lesson' : e.message,
-          ),
+          content: Text(e.localized(AppLocalizations.of(context))),
         ),
       );
     }

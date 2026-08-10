@@ -38,6 +38,19 @@ class VocabularyRepository {
     return (data['learned'] as num?)?.toInt() ?? 0;
   }
 
+  /// Every word available to this learner, in one call.
+  ///
+  /// Not assembled from `listSets` + `getSet`: forty-five sets is forty-five
+  /// requests to draw one list. The server orders them by how far each set
+  /// sits from `level`, so the words they are ready for come first.
+  Future<List<VocabGroup>> listWordGroups({String? level}) async {
+    final query = (level ?? '').isEmpty ? '' : '?level=$level';
+    final data = await _api.get('/vocabulary/words$query');
+    return ((data['groups'] as List?) ?? const [])
+        .map((e) => VocabGroup.fromJson(e as Map<String, dynamic>))
+        .toList();
+  }
+
   /// Words whose spaced-repetition review is due across all sets.
   Future<List<VocabItem>> fetchReview() async {
     final data = await _api.get('/vocabulary/review');

@@ -27,6 +27,20 @@ class SpeakingHomeScreen extends ConsumerStatefulWidget {
 class _SpeakingHomeScreenState extends ConsumerState<SpeakingHomeScreen> {
   bool _starting = false;
 
+  @override
+  void initState() {
+    super.initState();
+    // Warm the voice catalogue while the learner is still choosing a lesson.
+    //
+    // The chat screen holds its opening greeting until the voices resolve (it
+    // must know which voice to speak in), so fetching them only when that
+    // screen mounts puts a cold network round-trip directly in front of the
+    // first thing the learner hears. Here it is free — the request finishes
+    // long before anyone taps a lesson, and the provider is app-scoped so the
+    // result is still there when the chat opens.
+    ref.read(voicesProvider);
+  }
+
   Future<void> _launch(String lessonKey, String backdrop, String title) async {
     await launchLesson(
       context,
@@ -98,6 +112,7 @@ class _HomeBody extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final mission = home.dailyMission;
     final rec = home.recommendedLesson;
     return ListView(
@@ -105,9 +120,17 @@ class _HomeBody extends StatelessWidget {
       children: [
         _TopBar(level: home.cefrLevel),
         const SizedBox(height: 6),
-        // Two ways to speak: the AI tutor (this page) or live with people.
-        const _ModeSwitchRow(),
-        const SizedBox(height: 14),
+        // NB: no mode switcher here. Choosing HOW to practise (AI tutor, live
+        // 1:1, group) is the job of the Speaking hub one level up; repeating it
+        // inside the AI lessons made "live conversation" appear in two places
+        // and blurred what this screen is for.
+        // 0 · An unfinished conversation, when there is one. Above Continue
+        // Learning because it is time-sensitive: the minutes are already spent
+        // and starting anything else discards them.
+        if (home.activeSession != null) ...[
+          _ResumeCard(resumable: home.activeSession!),
+          const SizedBox(height: 14),
+        ],
         // 1 · Continue Learning — the single most important element.
         _ContinueHero(home: home, onLaunch: onLaunch, onOpenTrack: onOpenTrack),
         const SizedBox(height: 14),
@@ -116,14 +139,14 @@ class _HomeBody extends StatelessWidget {
         const SizedBox(height: 22),
         // 2 · Daily mission.
         if (mission != null) ...[
-          const _SectionLabel('Daily mission'),
+          _SectionLabel(l.speakingDailyMission),
           const SizedBox(height: 10),
           _DailyMissionCard(mission: mission, onLaunch: onLaunch),
           const SizedBox(height: 22),
         ],
         // 3 · Recommended lesson.
         if (rec != null) ...[
-          const _SectionLabel('Recommended for you'),
+          _SectionLabel(l.speakingRecommended),
           const SizedBox(height: 10),
           LessonTile(
             title: rec.title,
@@ -143,7 +166,7 @@ class _HomeBody extends StatelessWidget {
           const SizedBox(height: 22),
         ],
         // 4 · The goal tracks.
-        const _SectionLabel('Explore by goal'),
+        _SectionLabel(l.speakingExploreByGoal),
         const SizedBox(height: 10),
         ...home.tracks.map(
           (t) => Padding(
@@ -166,114 +189,14 @@ class _HomeBody extends StatelessWidget {
   }
 }
 
-/// The two speaking modes, side by side: the AI tutor (this page — active)
-/// and live conversations with real people (the peer hub).
-class _ModeSwitchRow extends StatelessWidget {
-  const _ModeSwitchRow();
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Expanded(
-          child: _ModeCard(
-            icon: Icons.smart_toy_rounded,
-            title: 'AI tutor',
-            subtitle: 'Shaxsiy o‘qituvchi',
-            active: true,
-            onTap: null, // already here
-          ),
-        ),
-        const SizedBox(width: AppSpace.md),
-        Expanded(
-          child: _ModeCard(
-            icon: Icons.record_voice_over_rounded,
-            title: 'Jonli suhbat',
-            subtitle: 'Odamlar bilan',
-            active: false,
-            onTap: () => context.push('/peer'),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _ModeCard extends StatelessWidget {
-  const _ModeCard({
-    required this.icon,
-    required this.title,
-    required this.subtitle,
-    required this.active,
-    required this.onTap,
-  });
-
-  final IconData icon;
-  final String title;
-  final String subtitle;
-  final bool active;
-  final VoidCallback? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    const accent = AppColors.speaking;
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        onTap: onTap,
-        child: Container(
-          padding: const EdgeInsets.symmetric(
-              horizontal: AppSpace.lg, vertical: AppSpace.md),
-          decoration: BoxDecoration(
-            gradient: active ? AppGradients.accent(accent) : null,
-            color: active ? null : AppColors.surface,
-            borderRadius: BorderRadius.circular(AppRadius.md),
-            border: active ? null : Border.all(color: AppColors.line),
-          ),
-          child: Row(
-            children: [
-              Icon(icon, color: active ? Colors.white : accent, size: 22),
-              const SizedBox(width: AppSpace.md),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                        color: active ? Colors.white : AppColors.ink,
-                        fontSize: 13.5,
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                    Text(
-                      subtitle,
-                      style: TextStyle(
-                        color: active ? Colors.white70 : AppColors.inkSoft,
-                        fontSize: 11,
-                      ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 void _lockedSnack(BuildContext context, TrackLesson lesson) {
+  final l = AppLocalizations.of(context);
   ScaffoldMessenger.of(context).showSnackBar(
     SnackBar(
       content: Text(
         lesson.isPremium
-            ? 'This lesson is part of Premium.'
-            : 'Reach ${lesson.cefrMin} to unlock this lesson.',
+            ? l.speakingLessonPremium
+            : l.speakingReachToUnlock(lesson.cefrMin),
       ),
     ),
   );
@@ -343,6 +266,7 @@ class _ContinueHero extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final cont = home.continueLesson;
     // Nothing started yet → a friendly first-lesson prompt.
     if (cont == null) {
@@ -353,11 +277,11 @@ class _ContinueHero extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const _HeroEyebrow(icon: Icons.rocket_launch_rounded, text: 'Get started'),
+            _HeroEyebrow(icon: Icons.bolt_rounded, text: l.welcomeStart),
             const SizedBox(height: 12),
-            const Text(
-              'Start your first lesson',
-              style: TextStyle(
+            Text(
+              l.speakingStartFirstLesson,
+              style: const TextStyle(
                 color: Colors.white,
                 fontWeight: FontWeight.w800,
                 fontSize: 22,
@@ -366,13 +290,13 @@ class _ContinueHero extends StatelessWidget {
             const SizedBox(height: 6),
             Text(
               rec != null
-                  ? '${rec.title} · ${rec.estMinutes} min'
-                  : 'Pick a goal and begin speaking in seconds.',
+                  ? '${rec.title} · ${l.speakingMinutesShort(rec.estMinutes)}'
+                  : l.speakingPickGoal,
               style: const TextStyle(color: Colors.white70, fontSize: 14),
             ),
             const SizedBox(height: 16),
             _HeroButton(
-              label: 'Start now',
+              label: l.speakingStartNow,
               accent: accent,
               onTap: () {
                 if (rec != null && !rec.isLocked) {
@@ -395,15 +319,15 @@ class _ContinueHero extends StatelessWidget {
         children: [
           Row(
             children: [
-              const _HeroEyebrow(
+              _HeroEyebrow(
                 icon: Icons.play_circle_fill_rounded,
-                text: 'Continue learning',
+                text: l.speakingContinueLearning,
               ),
               const SizedBox(width: 8),
               if (cont.lastOpened != null)
                 Expanded(
                   child: Text(
-                    _relativeDay(cont.lastOpened!),
+                    _relativeDay(l, cont.lastOpened!),
                     textAlign: TextAlign.right,
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
@@ -458,9 +382,68 @@ class _ContinueHero extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           _HeroButton(
-            label: cont.isCompleted ? 'Practice again' : 'Continue',
+            label: cont.isCompleted ? l.speakingPracticeAgain : l.continueAction,
             accent: accent,
             onTap: () => onLaunch(cont.lessonKey, cont.backdrop, cont.title),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// "You have a conversation open" — the way back into an interrupted session.
+///
+/// Offered, never resumed automatically: the learner may have left on purpose,
+/// and dropping them mid-conversation without asking is disorienting. What must
+/// not happen is the silent loss that used to occur — the session abandoned
+/// along with the speaking minutes it had already consumed.
+class _ResumeCard extends ConsumerWidget {
+  const _ResumeCard({required this.resumable});
+
+  final ResumableSession resumable;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l = AppLocalizations.of(context);
+    final theme = backdropForKey(resumable.backdropKey);
+    return _HeroShell(
+      accent: theme.accent,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _HeroEyebrow(icon: Icons.history, text: l.resumeTitle),
+          const SizedBox(height: 10),
+          Text(
+            resumable.title.isEmpty ? l.resumeTitle : resumable.title,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.w800,
+            ),
+          ),
+          const SizedBox(height: 6),
+          Text(
+            l.resumeSubtitle(resumable.session.turnCount),
+            style: const TextStyle(color: Colors.white70, fontSize: 13.5, height: 1.35),
+          ),
+          const SizedBox(height: 14),
+          _HeroButton(
+            label: l.resumeAction,
+            accent: theme.accent,
+            onTap: () async {
+              await context.push(
+                '/speaking/chat',
+                extra: resumable.toLaunch(),
+              );
+              // The home screen stays mounted behind a push, so its providers
+              // are never re-read on the way back — without this the card
+              // would linger over a session that has since ended.
+              if (context.mounted) {
+                ref.invalidate(speakingHomeProvider);
+                ref.invalidate(speakingQuotaProvider);
+              }
+            },
           ),
         ],
       ),
@@ -692,9 +675,9 @@ class _DailyMissionCard extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    "Today's Speaking Mission",
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(context).speakingTodaysMission,
+                    style: const TextStyle(
                       color: Colors.white54,
                       fontSize: 11.5,
                       fontWeight: FontWeight.w700,
@@ -721,7 +704,7 @@ class _DailyMissionCard extends StatelessWidget {
                       DifficultyBadge(difficulty: mission.difficulty),
                       MetaChip(
                         icon: Icons.schedule_rounded,
-                        label: '${mission.estMinutes} min',
+                        label: AppLocalizations.of(context).speakingMinutesShort(mission.estMinutes),
                       ),
                       MetaChip(
                         icon: Icons.bolt_rounded,
@@ -826,7 +809,8 @@ class _TrackCard extends StatelessWidget {
                     ),
                     const SizedBox(width: 10),
                     Text(
-                      '${track.lessonsDone}/${track.lessonsTotal} lessons',
+                      AppLocalizations.of(context)
+                          .speakingLessonsShort(track.lessonsDone, track.lessonsTotal),
                       style: const TextStyle(
                         color: Colors.white70,
                         fontSize: 12,
@@ -842,11 +826,12 @@ class _TrackCard extends StatelessWidget {
         if (track.isRecommended)
           Positioned(top: -10, right: 16, child: _Badge(
             accent: accent, icon: Icons.auto_awesome_rounded,
-            text: 'Recommended for you',
+            text: AppLocalizations.of(context).speakingRecommended,
           )),
         if (!track.isRecommended && isContinuing)
           Positioned(top: -10, right: 16, child: _Badge(
-            accent: accent, icon: Icons.play_arrow_rounded, text: 'Continue',
+            accent: accent, icon: Icons.play_arrow_rounded,
+            text: AppLocalizations.of(context).continueAction,
           )),
       ],
     );
@@ -907,7 +892,7 @@ class _ProgressSummary extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  '$done of $total lessons completed',
+                  AppLocalizations.of(context).speakingLessonsCompleted(done, total),
                   style: const TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.w700,
@@ -966,18 +951,19 @@ class _HomeError extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text(
-              "Couldn't load Speaking.",
-              style: TextStyle(color: Colors.white70),
+            Text(
+              l.speakingLoadError,
+              style: const TextStyle(color: Colors.white70),
             ),
             const SizedBox(height: 12),
-            FilledButton(onPressed: onRetry, child: const Text('Retry')),
+            FilledButton(onPressed: onRetry, child: Text(l.retry)),
           ],
         ),
       ),
@@ -995,14 +981,14 @@ IconData _iconFor(String key) => switch (key) {
 };
 
 /// "today" / "yesterday" / "N days ago" for the Continue card's last-opened hint.
-String _relativeDay(DateTime when) {
+String _relativeDay(AppLocalizations l, DateTime when) {
   final now = DateTime.now();
   final days = DateTime(now.year, now.month, now.day)
       .difference(DateTime(when.year, when.month, when.day))
       .inDays;
   return switch (days) {
-    <= 0 => 'Last opened today',
-    1 => 'Last opened yesterday',
-    _ => 'Last opened $days days ago',
+    <= 0 => l.speakingLastToday,
+    1 => l.speakingLastYesterday,
+    _ => l.speakingLastDaysAgo(days),
   };
 }

@@ -34,15 +34,35 @@ class PlacementQuestion {
 }
 
 class PlacementResult {
-  const PlacementResult({required this.resultCefr, required this.breakdown});
+  const PlacementResult({
+    required this.resultCefr,
+    required this.breakdown,
+    this.score,
+    this.completedAt,
+  });
 
   final String? resultCefr;
   final Map<String, dynamic> breakdown;
+
+  /// Only sent by `/placement/result`, never by a fresh submission — the two
+  /// endpoints share this shape but not every field.
+  final int? score;
+
+  /// When the level was measured. A level with no date behind it is a claim;
+  /// with one, the learner can judge for themselves whether it is still true.
+  final DateTime? completedAt;
+
+  /// Whether a level has ever been measured. `null` here is not "A1" — it is
+  /// "we have never asked", and the two must not be confused, because the
+  /// second is what the whole retake prompt exists to distinguish.
+  bool get hasLevel => resultCefr != null && resultCefr!.isNotEmpty;
 
   factory PlacementResult.fromJson(Map<String, dynamic> json) => PlacementResult(
     resultCefr: json['result_cefr'] as String?,
     breakdown: Map<String, dynamic>.from(
       (json['breakdown'] as Map?) ?? const {},
     ),
+    score: json['score'] as int?,
+    completedAt: DateTime.tryParse(json['completed_at'] as String? ?? ''),
   );
 }

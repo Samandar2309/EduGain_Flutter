@@ -8,8 +8,6 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/ui/tokens.dart';
 import '../application/providers.dart';
-import '../application/pronounce_service.dart';
-import '../application/vocab_sfx.dart';
 import '../domain/game.dart';
 import '../domain/spell_game.dart';
 import 'widgets/game_widgets.dart';
@@ -71,7 +69,6 @@ class _SpellGameScreenState extends ConsumerState<SpellGameScreen> {
   void _check() {
     final correct = _answer == _c.word;
     HapticFeedback.lightImpact();
-    final sfx = ref.read(vocabSfxProvider);
     setState(() {
       _checked = true;
       _wasCorrect = correct;
@@ -84,14 +81,16 @@ class _SpellGameScreenState extends ConsumerState<SpellGameScreen> {
         _combo = 0;
       }
     });
-    if (correct) {
-      (_combo > 0 && _combo % 5 == 0) ? sfx.streak() : sfx.correct();
-    } else {
-      sfx.wrong();
-    }
-    Future.delayed(const Duration(milliseconds: 380), () {
-      if (mounted) ref.read(pronouncerProvider).speak(_c.word);
-    });
+    // Silent, on purpose.
+    //
+    // The game used to chime on every answer and then read the word aloud a
+    // third of a second later. Somebody playing on a bus, or beside a sleeping
+    // child, had no way to stop it — and the pronunciation arrived while they
+    // were already reading the next question, which is the moment it teaches
+    // least. Hearing a word is worth a deliberate tap, and that is what the
+    // word list is for.
+    //
+    // Haptics stay: they answer "did that register?" without making a sound.
     Future.delayed(Duration(milliseconds: correct ? 700 : 1300), () {
       if (!mounted) return;
       if (_index + 1 >= _deck.length) {

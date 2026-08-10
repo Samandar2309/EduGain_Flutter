@@ -1,16 +1,108 @@
 {
   "@@locale": "ru",
-
   "save": "Сохранить",
   "cancel": "Отмена",
   "retry": "Повторить",
+  "peerQuotaTitle": "Время живого общения на сегодня закончилось",
+  "peerQuotaBody": "Оформите подписку — живое общение без ограничений.",
+  "resumeTitle": "Незавершённый разговор",
+  "resumeSubtitle": "Пройдено реплик: {turns} — продолжите с того же места",
+  "resumeAction": "Продолжить",
+  "networkError": "Проблема с подключением. Попробуйте ещё раз.",
+  "feedbackNotReadyTitle": "Отчёт не готов",
+  "feedbackNotReadyBody": "Ваш разговор сохранён. Сервис оценки сейчас не ответил — отчёт можно собрать заново.",
   "continueAction": "Продолжить",
-
+  "minutesShort": "{count} мин",
+  "@minutesShort": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "groupRoomHoldsUpTo": "В комнату поместится до {count} человек",
+  "@groupRoomHoldsUpTo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "cannotHearYou": "Мы вас не слышим — говорите громче или напишите",
+  "micBlockedTapToAllow": "Микрофон закрыт — нажмите, чтобы разрешить",
+  "minutesLeft": "осталось {count} мин",
+  "@minutesLeft": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "actionEnd": "Завершить",
+  "questionsTitle": "Вопросы",
+  "workedTitle": "Как отвечать",
+  "workedWeak": "Так отвечает большинство",
+  "workedStrong": "А так — лучше",
+  "workedMoves": "Что изменилось",
+  "workedLocked": "Разбор ответа — в Premium",
+  "workedLockedWhy": "Вопросы открыты для всех. Разбор — слабый и сильный ответ рядом, с отмеченной разницей — в Premium.",
+  "workedOpen": "Открыть разбор",
+  "questionsFollows": "После карточки «{title}»",
+  "@questionsFollows": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "questionsPart3Hint": "Эти вопросы не о вас лично, а об обществе. Высказывайте мнение и обосновывайте его, не ограничивайтесь парой фраз.",
+  "cueCardLabel": "Карточка",
+  "cueCardYouShouldSay": "Вы должны рассказать:",
+  "cueCardHint": "Готовьтесь 1 минуту, затем говорите 2 минуты без остановки. В паре: один читает карточку и следит за временем, потом меняетесь.",
+  "cueCardPrep": "{count} мин на подготовку",
+  "@cueCardPrep": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "cueCardTalk": "{count} мин говорить",
+  "@cueCardTalk": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "questionsModeSubtitle": "Готовые вопросы для разговора",
+  "questionsIntro": "Задавайте их друг другу в живом разговоре или готовьтесь заранее.",
+  "questionsUseHint": "Выберите вопрос и задайте партнёру — потом ответьте сами.",
+  "questionsSaved": "Сохранённые",
+  "questionsNoneSaved": "Вы пока ничего не сохранили.\nОтмечайте вопросы закладкой.",
+  "questionsNew": "НОВОЕ",
+  "questionsError": "Не удалось загрузить вопросы.",
+  "speakingSectionPrepare": "Подготовка",
+  "questionsCount": "{count} вопр.",
+  "@questionsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "questionsTopicCount": "{count} тем",
+  "@questionsTopicCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "languageTitle": "Язык",
   "languageEnglish": "English",
   "languageRussian": "Русский",
   "languageUzbek": "O‘zbekcha",
-
   "welcomeTitle": "Добро пожаловать 👋",
   "phoneSubtitle": "Введите номер телефона, чтобы продолжить",
   "phoneLabel": "Номер телефона",
@@ -19,7 +111,6 @@
   "googleSignIn": "Войти через Google",
   "termsNotice": "Продолжая, вы соглашаетесь с Условиями использования и Политикой конфиденциальности",
   "phoneInvalid": "Введите корректный номер телефона (+998XXXXXXXXX)",
-
   "otpTitle": "Код подтверждения",
   "otpSentTo": "Код отправлен на: {phone}",
   "verify": "Подтвердить",
@@ -27,15 +118,32 @@
   "resendCode": "Отправить код повторно",
   "otpEnter6": "Введите 6-значный код",
   "otpResent": "Новый код отправлен",
-
   "nameTitle": "Давайте познакомимся",
   "nameSubtitle": "Как к вам обращаться?",
   "nameLabel": "Ваше имя",
   "nameHint": "например, Азиз",
   "nameEmpty": "Пожалуйста, введите имя",
-
+  "learnLangComingSoon": "Скоро",
+  "learnLangNotifyMe": "Сообщим",
+  "learnLangInterestSaved": "Записали. Расскажем вам первым, когда откроется {language}.",
+  "feedbackSendTitle": "Оставить отзыв",
+  "feedbackSendSubtitle": "Что не сработало, чего не хватает — напишите. Мы читаем всё.",
+  "feedbackHint": "Опишите проблему или предложение…",
+  "feedbackSend": "Отправить",
+  "feedbackEmpty": "Пожалуйста, сначала напишите отзыв",
+  "feedbackThanks": "Спасибо! Мы получили ваше сообщение.",
+  "feedbackTooMany": "На сегодня сообщений достаточно. Продолжим завтра.",
+  "rateSessionQuestion": "Как прошёл этот разговор?",
+  "rateSessionCommentHint": "Хотите добавить комментарий? (необязательно)",
+  "rateSessionCommentSent": "Комментарий отправлен. Спасибо!",
+  "rateSessionThanks": "Спасибо — это нам поможет.",
+  "channelTitle": "Подпишитесь на наш канал",
+  "channelSubtitle": "Новые уроки, полезные советы и новости — всё там. Подпишитесь один раз, и продолжим.",
+  "channelOpenAction": "Перейти в канал",
+  "channelJoinedAction": "Я подписался",
+  "channelNotYet": "Подписку пока не видно. Присоединитесь к каналу и попробуйте ещё раз.",
   "greeting": "Привет, {name} 👋",
-  "levelLabel": "Уровень: {level}",
+  "levelLabel": "Английский: {level}",
   "letsLearnToday": "Давайте поучимся сегодня!",
   "modules": "Модули",
   "statXp": "XP",
@@ -51,7 +159,6 @@
   "moduleSpeakingSubtitle": "Живой диалог с ИИ",
   "moduleVocabSubtitle": "Расширяйте словарный запас",
   "moduleGrammarSubtitle": "Тренируйте грамматику",
-
   "navHome": "Главная",
   "navLessons": "Уроки",
   "navProfile": "Профиль",
@@ -61,7 +168,6 @@
   "lessonGrammarSubtitle": "Закрепляйте грамматику правилами и упражнениями",
   "lessonPlacementTitle": "Тест на уровень",
   "lessonPlacementSubtitle": "Определите свой уровень CEFR",
-
   "profileTitle": "Профиль",
   "logout": "Выйти",
   "subscription": "Подписка",
@@ -72,18 +178,16 @@
   "dailyGoalTitle": "Дневная цель (XP)",
   "dailyGoalHint": "например, 50",
   "dailyGoalLabel": "Дневная цель",
-
   "close": "Закрыть",
+  "details": "Подробнее",
   "yes": "Да",
   "no": "Нет",
   "loadFailed": "Не удалось загрузить",
   "check": "Проверить",
   "yourAnswer": "Ваш ответ",
-
   "premiumContent": "Премиум-контент",
   "paywallCtaDefault": "Продолжить с Premium",
   "premiumButton": "Premium",
-
   "freeTopic": "Свободная тема",
   "freeTopicHint": "например, путешествия",
   "freeTopicCardSubtitle": "Беседа на любую тему",
@@ -91,12 +195,10 @@
   "scenariosLoadError": "Не удалось загрузить сценарии. Проверьте подключение.",
   "limitReachedTitle": "Лимит исчерпан",
   "startConversation": "Начать",
-
   "feedbackTitle": "Результат",
   "strengths": "Сильные стороны",
   "mistakes": "Ошибки",
   "feedbackLocked": "Полный разбор (все ошибки и советы) открывается с Premium.",
-
   "micPermission": "Нужен доступ к микрофону — включите его в настройках телефона.",
   "recordStartError": "Не удалось начать запись.",
   "audioCaptureError": "Аудио не записано.",
@@ -112,7 +214,6 @@
   "composerHint": "Напишите сообщение или говорите…",
   "recordingLabel": "Идёт запись",
   "tapToSend": "Нажмите, чтобы отправить",
-
   "chooseVoice": "Выберите голос",
   "voicesLoadError": "Не удалось загрузить список голосов.",
   "noVoices": "Голосов пока нет.",
@@ -120,7 +221,6 @@
   "voicePreviewError": "Не удалось воспроизвести голос.",
   "genderFemale": "Женский",
   "genderMale": "Мужской",
-
   "noSets": "Пока нет наборов",
   "noWords": "Нет слов",
   "tapCardToFlip": "Нажмите на карточку, чтобы увидеть",
@@ -128,7 +228,14 @@
   "know": "Знаю",
   "congrats": "Поздравляем! 🎉",
   "vocabResult": "Вы знали {learned} из {total} слов.",
-
+  "gamesTitle": "Игры",
+  "gamesVocabTitle": "Игры со словами",
+  "gamesVocabSubtitle": "Одному, против Gainsy или с живым соперником",
+  "gamesGrammarTitle": "Грамматика",
+  "gamesGrammarSubtitle": "Выучите правило и потренируйтесь",
+  "gamesBrowseTitle": "Посмотреть слова",
+  "gamesBrowseSubtitle": "С переводом и примером",
+  "gamesReviewSubtitle": "Слова, которые вот-вот забудутся",
   "reviewTitle": "Повторение",
   "allReviewed": "Всё повторено! 🎉",
   "noReviewWords": "Сейчас нет слов для повторения.\nПродолжайте учить новые слова.",
@@ -138,19 +245,65 @@
   "tapToSeeMeaning": "Нажмите на карточку, чтобы увидеть значение",
   "couldntRecall": "Не вспомнил",
   "recalled": "Вспомнил",
-
   "noTopics": "Пока нет тем",
   "atLeastOneAnswer": "Дайте хотя бы один ответ",
   "grammarScore": "Результат: {score} / {total}",
-
   "placementTestTitle": "Тест на уровень",
   "noQuestions": "Вопросы не найдены",
   "resultReady": "Результат готов 🎯",
   "yourEnglishLevel": "Ваш уровень английского",
+  "placementResultBody": "Теперь преподаватель будет говорить на этом уровне — он изменится по мере вашего прогресса.",
+  "placementLastResultTitle": "Ваш последний результат",
+  "placementTakenToday": "Пройден сегодня",
+  "placementTakenYesterday": "Пройден вчера",
+  "placementTakenDaysAgo": "Пройден {days} дн. назад",
+  "@placementTakenDaysAgo": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "placementRetakeQuestion": "Хотите пройти тест заново?",
+  "placementRetakeReplaces": "Новый результат заменит текущий уровень.",
+  "placementRetakeAction": "Да, начать заново",
+  "placementKeepAction": "Нет, оставить уровень",
+  "levelInviteTitle": "Сначала определим ваш уровень",
+  "levelInviteBody": "Несколько коротких вопросов. После этого преподаватель будет говорить на понятном вам уровне, а не наугад.",
+  "levelInviteMeta": "18 вопросов · около 2 минут",
+  "levelInviteStart": "Определить уровень",
+  "levelInviteSkip": "Не сейчас",
+  "leaderboardTitle": "Рейтинг",
+  "navLeaderboard": "Рейтинг",
+  "leaderboardThisWeek": "Эта неделя",
+  "leaderboardLastWeek": "Прошлая",
+  "leaderboardEmpty": "На этой неделе ещё никто не набрал XP.",
+  "leaderboardEmptyLastWeek": "На прошлой неделе никто не набрал XP.",
+  "leaderboardFirstPlaceOpen": "Первый разговор — первое место.",
+  "leaderboardNotRankedYet": "Пройдите один урок, чтобы попасть в рейтинг.",
+  "leaderboardYou": "Вы",
+  "leaderboardYouAreFirst": "Вы первый — удержите место.",
+  "leaderboardPlaceSuffix": "-е место —",
+  "leaderboardStreakDays": "{days} дн.",
+  "@leaderboardStreakDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "leaderboardResetsMonday": "Рейтинг обновляется каждый понедельник.",
+  "tierFree": "Бесплатно",
+  "homeLevelUnknown": "Уровень: не определён",
+  "statStreak": "Дней подряд",
+  "statGoal": "Цель",
+  "homeAiKicker": "Рекомендуем",
+  "homeAiTitle": "Начните разговор с AI",
+  "homeAiSubtitle": "Развивайте разговорную речь",
+  "homeAiLocked": "Откроется после определения уровня",
   "startAction": "Начать",
   "finishAction": "Завершить",
   "nextAction": "Далее",
-
   "choosePayment": "Выберите способ оплаты",
   "paymentPageError": "Не удалось открыть страницу оплаты",
   "finishPaymentTitle": "Завершите оплату",
@@ -162,13 +315,11 @@
   "cancelAction": "Отменить",
   "pricePerMonth": "{price} / мес",
   "choosePlan": "Выбрать",
-
   "quotaTitle": "Дневное время разговора",
   "quotaMinutesLeft": "Осталось {minutes} мин",
   "quotaUsedOf": "Использовано {used} из {total} мин",
   "quotaExhausted": "Минуты на сегодня закончились",
   "quotaUpgrade": "Увеличить лимит",
-
   "commProfileTitle": "Профиль общения",
   "commProfileEmpty": "Проведите несколько бесед с ИИ-репетитором — профиль построится сам из вашей живой речи.",
   "focusTagsTitle": "Сейчас работаем над",
@@ -179,7 +330,6 @@
   "wordsSpoken": "Сказано слов",
   "basedOnSessions": "на основе {count} бесед",
   "settingsTitle": "Настройки",
-
   "paywallReportTitle": "Откройте полный отчёт",
   "paywallReportBody": "Каждая ошибка, исправление и личный совет — с Premium.",
   "paywallSeePlans": "Смотреть тарифы",
@@ -187,9 +337,7 @@
   "planPopular": "Самый популярный",
   "premiumHeroTitle": "EduGain Premium",
   "premiumHeroBody": "Говорите больше каждый день, откройте все треки и получайте полный анализ своей речи.",
-
   "appTagline": "Английский с искусственным интеллектом",
-
   "welcomeChooseLanguage": "Выберите язык",
   "welcomeSkip": "Пропустить",
   "welcomeStart": "Начать",
@@ -199,35 +347,597 @@
   "welcomeCoachBody": "Мягкие исправления после каждой фразы и понятный отчёт о грамматике, лексике и беглости.",
   "welcomeGoalTitle": "Путь к вашей цели",
   "welcomeGoalBody": "IELTS, карьера, путешествия или повседневная речь — трек подстраивается под ваши слабые места.",
-
   "xpSourceDailyGoal": "Дневная цель",
   "xpSourceStreak": "Бонус за серию",
-
   "coachCorrection": "Исправление",
   "coachNatural": "Естественный вариант",
   "coachGrammar": "Грамматика",
   "coachVocabulary": "Лексика",
   "coachPronunciation": "Произношение",
-
   "statusSpeaking": "Говорит…",
   "statusListening": "Слушает…",
   "statusThinking": "Думает…",
-
   "scoreOverall": "Итог",
   "scoreGrammar": "Грамматика",
   "scoreVocabulary": "Лексика",
   "scoreFluency": "Беглость",
   "scorePronunciation": "Произношение",
   "scoresEstimatedNote": "Беглость и произношение оценены по тексту.",
-
   "voiceUnavailable": "Голос временно недоступен.",
-
-  "listenModeOn": "Режим аудирования — текст скрыт",
-  "listenModeOff": "Показать текст",
   "tapToReveal": "Нажмите, чтобы показать",
-
   "actionTranslate": "Перевод",
   "actionHint": "Подсказка",
   "hintTitle": "Как ответить",
-  "hintTip": "Ответьте полным предложением и задайте встречный вопрос, чтобы продолжить разговор."
+  "hintTip": "Ответьте полным предложением и задайте встречный вопрос, чтобы продолжить разговор.",
+  "groupChatTitle": "Групповой разговор",
+  "groupCreateRoom": "Создать комнату",
+  "groupNewRoom": "Новый групповой разговор",
+  "groupTopicLabel": "Тема",
+  "groupVisibilityLabel": "Видимость",
+  "groupPublicOption": "Открытая",
+  "groupPrivateOption": "Закрытая",
+  "groupPublicHint": "Любой может зайти из лобби",
+  "groupPrivateHint": "Войти можно только по коду или ссылке",
+  "groupParticipantsCount": "Участники: {count}",
+  "@groupParticipantsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "groupCreateAndStart": "Создать и начать",
+  "groupCreateFailed": "Не удалось создать комнату",
+  "groupEmptyTitle": "Пока нет открытых разговоров",
+  "groupEmptySubtitle": "Создайте первую комнату!",
+  "groupJoinByCode": "Войти по коду",
+  "groupCodeHint": "например: ABC123",
+  "groupInviteFriends": "Пригласите друзей",
+  "groupShareTelegram": "Поделиться в Telegram",
+  "groupCopyCode": "Копировать код",
+  "groupCodeCopied": "Код скопирован",
+  "inviteCopied": "Приглашение скопировано — отправьте его другу",
+  "groupInvite": "Пригласить",
+  "groupInviteShareText": "Присоединяйтесь к разговорной комнате в EduGain! 🎙\n\nКод комнаты: {code}\n\nОткройте @edugain_bot → Speaking → Групповая комната → «Войти по коду»",
+  "@groupInviteShareText": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "groupConnected": "Подключён",
+  "groupConnectingStatus": "Подключение…",
+  "groupYou": "Вы",
+  "groupMicOff": "Микрофон выключен",
+  "groupRemove": "Удалить",
+  "groupRoomNotFound": "Комната не найдена",
+  "groupFull": "Заполнено",
+  "groupJoin": "Присоединиться",
+  "groupKickedMsg": "Вас удалили из комнаты",
+  "groupConnectErrorMsg": "Ошибка подключения",
+  "groupChatEmpty": "Сообщений пока нет — напишите первым",
+  "groupModeratorNote": "AI-модератор ведёт тему",
+  "groupRule4b": "Следуйте указаниям AI-модератора",
+  "groupCallTime": "Время разговора",
+  "groupLeaveRoom": "Покинуть комнату",
+  "groupOthers": "Другие",
+  "groupWriteMessage": "Напишите сообщение…",
+  "groupParticipants": "Участники",
+  "groupSeeAll": "Показать всех",
+  "groupRulesTitle": "Правила комнаты",
+  "groupRule1": "Слушайте друг друга",
+  "groupRule2": "Будьте вежливы",
+  "groupRule3": "Говорите по-английски",
+  "groupRule4": "Без спама",
+  "groupSettingsTitle": "Настройки разговора",
+  "groupSettingMic": "Микрофон",
+  "groupSettingNotify": "Уведомления",
+  "groupSettingRules": "Правила",
+  "groupSpeakNow": "Говорить",
+  "groupMuteMic": "Выключить микрофон",
+  "groupSpeakingNow": "СЕЙЧАС ГОВОРЯТ",
+  "groupNobodySpeaking": "Никто не говорит",
+  "groupInRoom": "В КОМНАТЕ",
+  "groupMuteMember": "Выключить микрофон",
+  "groupMakeHost": "Передать роль хоста",
+  "groupMuteEveryone": "Выключить всем микрофон",
+  "groupMutedByHost": "Хост выключил ваш микрофон",
+  "groupMicBlocked": "Нет доступа к микрофону",
+  "groupHostBadge": "Хост",
+  "groupMore": "ещё",
+  "grammarTitle": "Грамматика",
+  "grammarChooseLevel": "Выберите свой уровень",
+  "grammarLevelsSubtitle": "От A1 до C2 — грамматика шаг за шагом",
+  "grammarTopicCount": "{count} тем",
+  "@grammarTopicCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "comingSoon": "Скоро",
+  "grammarLevelA1": "Начальный",
+  "grammarLevelA2": "Элементарный",
+  "grammarLevelB1": "Средний",
+  "grammarLevelB2": "Выше среднего",
+  "grammarLevelC1": "Продвинутый",
+  "grammarLevelC2": "Профессиональный",
+  "grammarRulePlusPractice": "Правило + практика",
+  "grammarLearnRule": "Изучить правило",
+  "grammarRuleExamplesPattern": "Правило, примеры и шаблон",
+  "grammarPractice": "Практика",
+  "grammarPracticeSubtitle": "Игры «заполни пропуск» и «составь предложение»",
+  "grammarStartPractice": "Начать практику",
+  "grammarRuleLabel": "Правило",
+  "grammarRuleReadySpeaking": "Теперь попробуйте применить это правило в практике Speaking 🎯",
+  "grammarNotEnoughExercises": "Недостаточно заданий по этой теме.",
+  "grammarChooseForm": "ВЫБЕРИТЕ ПРАВИЛЬНУЮ ФОРМУ",
+  "grammarBuildSentence": "СОСТАВЬТЕ ПРЕДЛОЖЕНИЕ",
+  "answerCorrectExcl": "Правильно!",
+  "answerWrongLabel": "Неправильно",
+  "correctAnswerLabel": "Правильный ответ: {answer}",
+  "@correctAnswerLabel": {
+    "placeholders": {
+      "answer": {
+        "type": "String"
+      }
+    }
+  },
+  "vocabWhatToDo": "Что будем делать?",
+  "vocabLearnTitle": "Учить слова",
+  "vocabLearnSubtitle": "Смотрите новые слова с переводом и примерами",
+  "vocabTestKnowledge": "Проверить знания",
+  "vocabTestSubtitle": "Проверьте выученное в играх",
+  "vocabDailyReview": "Ежедневное повторение",
+  "vocabDueReady": "{count} слов готовы к повторению — закрепите их.",
+  "@vocabDueReady": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vocabStartReview": "Начать повторение",
+  "vocabNotEnoughReview": "Недостаточно слов для повторения",
+  "vocabWordCount": "{count} слов",
+  "@vocabWordCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vocabWordSet": "Набор слов",
+  "vocabHowToPlay": "Как играем?",
+  "vocabSoloTitle": "Соло-игра",
+  "vocabSoloSubtitle": "Учите слова в своём темпе",
+  "vocabSpellTitle": "Собери слово",
+  "vocabSpellSubtitle": "Соберите слово по памяти",
+  "vocabDuelBotTitle": "Дуэль с Gainsy",
+  "vocabDuelBotSubtitle": "Гонка на скорость против бота",
+  "vocabDuelOnlineTitle": "Игра с человеком",
+  "vocabDuelOnlineSubtitle": "Гонка на скорость с живым соперником",
+  "vocabNotEnoughWords": "В этом наборе недостаточно слов для игры.",
+  "loadRetryError": "Ошибка загрузки. Повторите попытку.",
+  "vocabGainsyAnswering": "Gainsy отвечает…",
+  "vocabFindingOpponent": "Ищем соперника…",
+  "vocabDuelWaitHint": "Вы подключитесь автоматически, когда другой ученик выберет эту игру",
+  "vocabNoOpponent": "Сейчас нет соперников онлайн.",
+  "vocabPlayWithGainsy": "Играть с Gainsy",
+  "vocabPartnerAnswering": "{name} отвечает…",
+  "@vocabPartnerAnswering": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "vocabConnLostPlayBot": "Проблема с подключением. Сыграть с Gainsy?",
+  "backAction": "Назад",
+  "vocabSpellInstruction": "СОБЕРИТЕ СЛОВО ПО БУКВАМ",
+  "vocabNoSpellWords": "В этом наборе нет подходящих слов для сборки.",
+  "gameChooseTranslation": "Выберите перевод",
+  "gameChooseWord": "Выберите слово",
+  "gameWordsReadySpeaking": "Эти слова теперь готовы к практике Speaking 🎯",
+  "gameYouWon": "Вы победили!",
+  "gameOpponentAhead": "{name} впереди на этот раз",
+  "@gameOpponentAhead": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "gameNiceWork": "Отличная работа!",
+  "youLabel": "Вы",
+  "gameCorrectAnswers": "Верно",
+  "gameCombo": "Комбо",
+  "gameAccuracy": "Точность",
+  "gamePlayAgain": "Играть снова",
+  "vocabTitle": "Словарь",
+  "speakingSectionAi": "С ИИ-репетитором · всегда доступно",
+  "speakingSectionLive": "С людьми · вживую",
+  "speakingFreeTitle": "Свободный разговор",
+  "speakingFreeSubtitle": "С ИИ на любую тему",
+  "speakingTopicsTitle": "Готовые уроки",
+  "speakingTopicsSubtitle": "С ИИ по вашему уровню",
+  "speakingGroupSubtitle": "Зайдите в открытую комнату или создайте свою",
+  "speakingOneToOneTitle": "Разговор 1:1",
+  "speakingOneToOneSubtitle": "Практика один на один",
+  "peerLiveChat": "Живой разговор",
+  "peerFriendRoom": "Комната с другом",
+  "peerJoinByCode": "Войти по коду",
+  "peerHistory": "История разговоров",
+  "peerConvCount": "{count} разговоров",
+  "@peerConvCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "peerRoomCode": "Код комнаты",
+  "peerEnter": "Войти",
+  "peerOnlineCount": "{count} человек онлайн",
+  "@peerOnlineCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "peerFindPartner": "Найти собеседника",
+  "peerFindPartnerSubtitle": "Случайно подключитесь к ученику онлайн\nи проведите живой разговор на английском",
+  "peerNoHistoryTitle": "Разговоров пока нет",
+  "peerNoHistorySubtitle": "Найдите первого собеседника — каждый разговор\nсохраняется здесь.",
+  "peerToday": "Сегодня",
+  "peerYesterday": "Вчера",
+  "peerDurMinSec": "{m} мин {s} с",
+  "@peerDurMinSec": {
+    "placeholders": {
+      "m": {
+        "type": "int"
+      },
+      "s": {
+        "type": "int"
+      }
+    }
+  },
+  "peerDurSec": "{s} с",
+  "@peerDurSec": {
+    "placeholders": {
+      "s": {
+        "type": "int"
+      }
+    }
+  },
+  "peerStatusConnecting": "Подключение…",
+  "peerStatusSearching": "Ищем собеседника…",
+  "peerStatusWaitingFriend": "Ждём вашего друга",
+  "peerStatusConnectingVoice": "Подключаем звук…",
+  "peerStatusLiveChat": "Живой разговор · {time}",
+  "@peerStatusLiveChat": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "peerStatusEnded": "Разговор завершён",
+  "peerSearchingTitle": "Ищем подходящего собеседника…",
+  "peerSearchingSubtitle": "Вы подключитесь автоматически, как только другой\nученик начнёт поиск",
+  "peerYourPartner": "Ваш собеседник",
+  "peerInviteTelegram": "Пригласить через Telegram",
+  "peerInviteShareText": "Присоединяйтесь ко мне на живой разговор на английском в EduGain! Введите этот код в разделе «Живой разговор»: {code}",
+  "@peerInviteShareText": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "peerYourRole": "Ваша роль",
+  "peerPartnerRole": "Роль собеседника",
+  "peerStopSearching": "Остановить поиск",
+  "peerEndedPartnerLeft": "Собеседник покинул разговор.",
+  "peerEndedYouEnded": "Разговор завершён. Хорошая практика! 👏",
+  "peerEndedFailed": "Возникла проблема с подключением. Повторите попытку.",
+  "peerEndedDefault": "Разговор завершён.",
+  "speakingDailyMission": "Ежедневная миссия",
+  "speakingRecommended": "Рекомендуем вам",
+  "seeAll": "Все",
+  "tracksSectionTitle": "Направления",
+  "lessonsOf": "{done} из {total} уроков",
+  "@lessonsOf": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "speakingExploreByGoal": "По целям",
+  "speakingLessonPremium": "Этот урок входит в Premium.",
+  "speakingReachToUnlock": "Достигните {level}, чтобы открыть этот урок.",
+  "@speakingReachToUnlock": {
+    "placeholders": {
+      "level": {
+        "type": "String"
+      }
+    }
+  },
+  "speakingStartFirstLesson": "Начните первый урок",
+  "speakingPickGoal": "Выберите цель и начните говорить за секунды.",
+  "speakingStartNow": "Начать сейчас",
+  "speakingContinueLearning": "Продолжить обучение",
+  "speakingPracticeAgain": "Повторить",
+  "speakingTodaysMission": "Сегодняшняя миссия Speaking",
+  "speakingLoadError": "Не удалось загрузить Speaking.",
+  "speakingLastToday": "Открыто сегодня",
+  "speakingLastYesterday": "Открыто вчера",
+  "speakingLastDaysAgo": "Открыто {days} дн. назад",
+  "@speakingLastDaysAgo": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "speakingMinutesShort": "{minutes} мин",
+  "@speakingMinutesShort": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "speakingLessonsShort": "{done}/{total} уроков",
+  "@speakingLessonsShort": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "speakingLessonsCompleted": "{done} из {total} уроков пройдено",
+  "@speakingLessonsCompleted": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "turnFailedRetry": "Ваш ответ не отправлен",
+  "assistTooFast": "Секунду — попробуйте ещё раз.",
+  "sayAgain": "Повторить",
+  "saySlower": "Медленнее",
+  "youSaidLabel": "Вы сказали",
+  "sttMisheardHint": "Не то, что вы сказали? Нажмите микрофон и повторите.",
+  "switchToTyping": "Написать текстом",
+  "switchToSpeaking": "Говорить",
+  "sendAction": "Отправить",
+  "sendingLabel": "Отправка",
+  "speakingHistoryTitle": "Прошлые разговоры",
+  "speakingHistoryEmpty": "Разговоров пока нет",
+  "speakingHistoryEmptyBody": "Завершите разговор — он сохранится здесь вместе с отчётом.",
+  "speakingTurnsCount": "{count} реплик",
+  "@speakingTurnsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "speakingUnfinished": "Не завершён",
+  "speakingNoReport": "Для этого разговора нет отчёта",
+  "speakingFreeTopicLabel": "Свободная тема",
+  "a11yMicReady": "Микрофон. Нажмите, чтобы говорить",
+  "a11yMicRecording": "Идёт запись. Нажмите, чтобы отправить",
+  "a11yMicBusy": "Подождите — репетитор отвечает",
+  "speakingUnclearAudio": "Плохо слышно — попробуйте сказать чуть чётче",
+  "tapToHide": "Нажмите, чтобы скрыть текст",
+  "groupReply": "Ответить",
+  "questionsDraw": "Случайный вопрос",
+  "questionsDrawHint": "Не о чем говорить? Нажмите «Случайный вопрос» — придёт тот, на который вы ещё не отвечали.",
+  "questionsAllSeen": "Все пройдены — начинаем заново",
+  "courseUnitLocked": "Этот раздел ещё закрыт — завершите предыдущий",
+  "courseUnitsDone": "{done} из {total} разделов завершено",
+  "courseStart": "Начать",
+  "courseLessons": "Уроки",
+  "courseRule": "Правило",
+  "courseYouWillLearn": "В ЭТОМ РАЗДЕЛЕ ВЫ ИЗУЧИТЕ",
+  "courseStartLesson": "Начать",
+  "courseContinueLesson": "Продолжить урок {n}",
+  "courseLessonN": "Урок {n}",
+  "courseItemCount": "{n} упражнений",
+  "courseMastery": "Мастерство {level} из {max}",
+  "drillPickMeaning": "Выберите значение слова",
+  "drillPickWord": "Выберите английское слово",
+  "drillMatchPairs": "Нажмите слева, затем пару справа",
+  "drillPickAnswer": "Выберите правильный ответ",
+  "drillOrderWords": "Нажимайте на слова, чтобы составить предложение",
+  "drillTypeMissing": "Впишите пропущенное слово",
+  "drillRewrite": "Перепишите предложение",
+  "courseCheck": "Проверить",
+  "courseContinue": "Продолжить",
+  "courseCorrect": "Верно!",
+  "courseNotQuite": "Не в этот раз",
+  "courseTheAnswerWas": "Правильный ответ: {answer}",
+  "courseLessonDone": "Урок завершён!",
+  "courseUnitDone": "Раздел завершён!",
+  "courseCorrectCount": "Верных",
+  "courseBackToPath": "Вернуться к пути",
+  "courseQuitTitle": "Выйти из урока?",
+  "courseQuitBody": "Ваши ответы не сохранятся.",
+  "courseQuitStay": "Продолжить",
+  "courseQuitLeave": "Выйти",
+  "lessonCourseTitle": "Words & Rules",
+  "lessonCourseSubtitle": "Учите правила, запоминайте слова",
+  "lessonPracticeTitle": "Практика",
+  "lessonPracticeSubtitle": "Ваши ошибки",
+  "courseWillReturn": "Этот вопрос вернётся в конце",
+  "courseTestFinish": "Завершить",
+  "courseTestPassed": "Открыто разделов: {n}!",
+  "courseTestFailed": "Пока рано — начните с уроков",
+  "courseTestNoXp": "Пропуск не даёт XP. За уроки XP начисляется как обычно.",
+  "courseJumpTitle": "Уже знаете это?",
+  "courseJumpBody": "Ответьте на {n} вопросов из предыдущих разделов. Больше {pass}% верных — они откроются, но без XP.",
+  "courseJumpStart": "Пройти тест",
+  "courseJumpCancel": "Нет, пойду по порядку",
+  "courseReview": "ПОВТОРЕНИЕ",
+  "courseQuitBodyKept": "Ваши ответы сохранятся, но урок останется незавершённым.",
+  "homeSpeakLive": "Живое общение",
+  "homeGroupTitle": "Групповая комната",
+  "homeGroupSubtitle": "Говорите в открытой комнате до 50 человек",
+  "homePeerTitle": "Разговор с партнёром",
+  "homePeerSubtitle": "Один на один, с живым человеком",
+  "peerFindTap": "Найти партнёра",
+  "profilePhotoTitle": "Фото профиля",
+  "profilePhotoPick": "Выбрать из галереи",
+  "profilePhotoCamera": "Сделать фото",
+  "profilePhotoReset": "Вернуть фото из Telegram",
+  "profilePhotoSaved": "Фото обновлено",
+  "profilePhotoTooLarge": "Фото слишком большое — не более 2 МБ",
+  "commProfileIntro": "По вашим последним разговорам. Каждая оценка — из 100.",
+  "bandStrong": "Уверенно",
+  "bandGood": "Хорошо",
+  "bandMiddle": "В процессе",
+  "bandStarting": "Только начало",
+  "trendUp": "растёт",
+  "trendDown": "снижается",
+  "trendSteady": "стабильно",
+  "paceExplain": "Свободная речь обычно 120–160 слов в минуту. Скорость сама по себе не цель — важнее говорить понятно.",
+  "focusTagsHint": "Преподаватель будет следить за этим в следующих разговорах.",
+  "tagVerbTense": "Времена глаголов",
+  "tagWordChoice": "Выбор слов",
+  "tagWordOrder": "Порядок слов",
+  "tagArticles": "Артикли (a / the)",
+  "tagPreposition": "Предлоги",
+  "tagPlural": "Множественное число",
+  "tagAgreement": "Согласование подлежащего и сказуемого",
+  "tagPronoun": "Местоимения",
+  "tagComparative": "Сравнительная степень",
+  "tagConditional": "Условные предложения",
+  "tagQuestionForm": "Построение вопросов",
+  "tagCollocation": "Сочетаемость слов",
+  "accountTitle": "Аккаунт",
+  "xpSourceCourse": "Урок курса",
+  "developerTitle": "Поддержка",
+  "developerCopied": "Telegram скопирован",
+  "speakingTopicsTag": "CEFR · IELTS",
+  "peerWhoTitle": "С кем хотите поговорить?",
+  "peerWhoFemale": "Женщины",
+  "peerWhoMale": "Мужчины",
+  "peerWhoAny": "Не важно",
+  "peerWhoFemaleSub": "Вас соединят только с женщинами",
+  "peerWhoMaleSub": "Вас соединят только с мужчинами",
+  "peerWhoAnySub": "Быстрее всего",
+  "peerWhoStart": "Найти собеседника",
+  "peerWhoNarrowHint": "С фильтром ожидание может быть дольше.",
+  "peerWhoOnline": "{count} сейчас онлайн",
+  "@peerWhoOnline": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "accountName": "Имя",
+  "accountUsername": "Telegram",
+  "accountPhone": "Телефон",
+  "accountGender": "Пол",
+  "accountGenderUnset": "Не указан",
+  "accountGenderFemale": "Женский",
+  "accountGenderMale": "Мужской",
+  "accountGenderWhy": "Используется для подбора собеседника в живом разговоре.",
+  "accountNoUsername": "Нет",
+  "accountSaved": "Сохранено",
+  "quizTitle": "Живая викторина",
+  "quizHubTitle": "Живая викторина",
+  "quizHubSubtitle": "Заходите когда угодно — новый матч каждые 3 минуты",
+  "quizPlaying": "{count} играют",
+  "@quizPlaying": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "quizAlone": "Заходите первым",
+  "quizQuestionOf": "{index} из {total}",
+  "@quizQuestionOf": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "quizPickMeaning": "Выберите значение",
+  "quizPickWord": "Выберите слово",
+  "quizFillGap": "Заполните пропуск",
+  "quizGrammar": "Грамматика",
+  "quizCorrect": "Верно",
+  "quizWrong": "Не в этот раз",
+  "quizTimeUp": "Время вышло",
+  "quizPoints": "+{points}",
+  "@quizPoints": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "quizMatchBoard": "Этот матч",
+  "quizNextMatch": "Новый матч через {seconds} с",
+  "@quizNextMatch": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "quizMatchOver": "Матч окончен",
+  "quizYouPlaceholder": "Вы",
+  "quizNoScoreYet": "Ответьте, чтобы попасть в таблицу",
+  "quizEmpty": "Викторина готовится. Попробуйте через минуту.",
+  "quizJoinedMidMatch": "Вы вошли в середине матча — скоро начнётся новый",
+  "quizStart": "Начать викторину",
+  "quizStartHint": "Сейчас никто не играет — откройте игру, и всем придёт приглашение",
+  "quizLobbyTitle": "Ждём начала",
+  "quizWaitingFor": "Ещё {count}, и начинаем",
+  "@quizWaitingFor": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "quizStartingNow": "Начинаем…",
+  "quizImReady": "Я готов",
+  "quizYouAreReady": "Вы в игре",
+  "quizInLobby": "В лобби",
+  "quizHostedBy": "{name} открыл игру",
+  "@quizHostedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "quizLeave": "Выйти",
+  "peerNoMicBody": "Микрофон выключен — нажмите ещё раз",
+  "peerListening": "Нажмите на микрофон, чтобы говорить"
 }

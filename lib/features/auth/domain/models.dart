@@ -31,9 +31,12 @@ class AppUser {
     this.avatarUrl,
     this.cefrLevel,
     this.nativeLang = 'uz',
+    this.learningLanguage,
     this.currentXp = 0,
     this.level = 1,
     this.streakCount = 0,
+    this.telegramUsername,
+    this.gender,
   });
 
   final String id;
@@ -43,7 +46,22 @@ class AppUser {
   final String? fullName;
   final String? avatarUrl;
   final String? cefrLevel;
+
+  /// Their @handle, or null. Plenty of Telegram accounts have none.
+  final String? telegramUsername;
+
+  /// Self-declared during bot onboarding, correctable from the account screen.
+  /// Null means never answered — which satisfies no gendered match filter.
+  final String? gender;
   final String nativeLang;
+
+  /// Which language they came here to learn — null until they are asked.
+  ///
+  /// Nullable with no default on purpose. Defaulting to 'en' would make a
+  /// learner who chose English indistinguishable from one who was never asked,
+  /// and the router needs to tell those apart: read one way the step never
+  /// appears, read the other it appears on every launch.
+  final String? learningLanguage;
   final int currentXp;
   final int level;
   final int streakCount;
@@ -59,9 +77,14 @@ class AppUser {
     avatarUrl: json['avatar_url'] as String?,
     cefrLevel: json['cefr_level'] as String?,
     nativeLang: json['native_lang'] as String? ?? 'uz',
+    learningLanguage: json['learning_language'] as String?,
     currentXp: (json['current_xp'] as num?)?.toInt() ?? 0,
     level: (json['level'] as num?)?.toInt() ?? 1,
     streakCount: (json['streak_count'] as num?)?.toInt() ?? 0,
+    telegramUsername: (json['telegram_username'] as String?)?.trim().isNotEmpty == true
+        ? json['telegram_username'] as String
+        : null,
+    gender: json['gender'] as String?,
   );
 }
 

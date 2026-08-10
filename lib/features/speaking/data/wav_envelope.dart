@@ -9,6 +9,26 @@ import 'dart:typed_data';
 /// Returns an empty list if the bytes aren't a PCM-16 WAV we can parse; the
 /// caller then falls back to a synthetic mouth motion so playback still looks
 /// alive. Never throws.
+/// How many samples we actually read out of each window.
+///
+/// The window for a 30 fps envelope at 24 kHz is ~800 samples, and reading all
+/// of them was what froze the UI: a 15-second reply meant ~360 000 bounds-
+/// checked reads on the main thread, with no isolate to put them on — Dart on
+/// web has none, so `compute()` would have changed nothing. Making the work
+/// small was the only fix available.
+///
+/// 64 evenly-spaced samples estimate a window's RMS closely enough that the
+/// mouth moves identically; the result is peak-normalised afterwards, which
+/// washes out what little error remains.
+const int _samplesPerWindow = 64;
+
+/// Distance between the samples actually read inside one window.
+///
+/// Exposed for tests: it is the whole of the fix, and a well-meaning tidy-up
+/// back to "read everything" would restore the freeze silently.
+int envelopeStride(int framesPerWindow) =>
+    math.max(1, framesPerWindow ~/ _samplesPerWindow);
+
 List<double> amplitudeEnvelope(Uint8List bytes, {int fps = 30}) {
   try {
     return _envelope(bytes, fps);
@@ -62,13 +82,15 @@ List<double> _envelope(Uint8List bytes, int fps) {
   final windows = (totalFrames / framesPerWindow).ceil();
   final rms = List<double>.filled(windows, 0);
 
+  final stride = envelopeStride(framesPerWindow);
+
   var maxRms = 1e-9;
   for (var w = 0; w < windows; w++) {
     final start = w * framesPerWindow;
     final end = math.min(start + framesPerWindow, totalFrames);
     var sumSq = 0.0;
     var n = 0;
-    for (var f = start; f < end; f++) {
+    for (var f = start; f < end; f += stride) {
       // Channel 0 only — mono mouth signal is plenty.
       final s = data.getInt16(dataStart + f * bytesPerSample, Endian.little);
       final v = s / 32768.0;

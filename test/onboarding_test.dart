@@ -134,7 +134,7 @@ void main() {
 
       await tester.tap(find.text('Русский'));
       await tester.pumpAndSettle();
-      expect(container.read(localeProvider), const Locale('ru'));
+      expect(container.read(localeProvider).locale, const Locale('ru'));
       expect(
         container.read(localeProvider.notifier).current,
         AppLanguage.russian,

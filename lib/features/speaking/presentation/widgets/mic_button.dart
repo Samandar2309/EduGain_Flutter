@@ -3,6 +3,7 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 
 import '../../../../core/ui/tokens.dart';
+import '../../../../l10n/app_localizations.dart';
 
 /// The mic's stage in the turn cycle — drives the button's look + animation.
 enum MicState { ready, recording, processing, aiSpeaking }
@@ -59,7 +60,16 @@ class _MicButtonState extends State<MicButton>
     final s = widget.size;
     final enabled = widget.onTap != null;
     final color = _color;
-    return GestureDetector(
+    final l = AppLocalizations.of(context);
+    // The mic is a shape-shifting circle with no text: without a spoken label a
+    // screen-reader user cannot tell "tap to speak" from "sending" from
+    // "wait". Announce the state, not the icon.
+    final semantic = switch (widget.state) {
+      MicState.recording => l.a11yMicRecording,
+      MicState.ready => l.a11yMicReady,
+      MicState.processing || MicState.aiSpeaking => l.a11yMicBusy,
+    };
+    final button = GestureDetector(
       onTap: enabled ? widget.onTap : null,
       behavior: HitTestBehavior.opaque,
       child: SizedBox(
@@ -123,6 +133,12 @@ class _MicButtonState extends State<MicButton>
           },
         ),
       ),
+    );
+    return Semantics(
+      button: true,
+      enabled: enabled,
+      label: semantic,
+      child: button,
     );
   }
 

@@ -2,76 +2,128 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../features/games/presentation/games_hub_screen.dart';
+import '../features/quiz/presentation/quiz_screen.dart';
+import '../features/vocabulary/domain/game.dart';
+import '../features/vocabulary/presentation/game_modes_screen.dart';
+import '../features/vocabulary/presentation/spell_game_screen.dart';
+import '../features/vocabulary/presentation/words_to_learn_screen.dart';
+import '../features/vocabulary/presentation/vocab_duel_screen.dart';
+import '../features/vocabulary/presentation/vocab_game_screen.dart';
 import '../features/auth/application/auth_controller.dart';
 import '../features/auth/presentation/name_screen.dart';
 import '../features/auth/presentation/otp_screen.dart';
 import '../features/auth/presentation/phone_screen.dart';
-import '../features/auth/presentation/register_in_bot_screen.dart';
+import '../features/auth/presentation/sign_in_failed_screen.dart';
 import '../features/auth/presentation/splash_screen.dart';
-import '../features/grammar/domain/models.dart';
-import '../features/grammar/presentation/grammar_learn_screen.dart';
-import '../features/grammar/presentation/grammar_practice_screen.dart';
-import '../features/grammar/presentation/grammar_topic_list_screen.dart';
-import '../features/grammar/presentation/grammar_topic_screen.dart';
+import '../features/feedback/presentation/feedback_form_screen.dart';
+import '../features/course/presentation/lesson_screen.dart';
+import '../features/course/presentation/path_screen.dart';
+import '../features/course/presentation/test_out_screen.dart';
+import '../features/course/presentation/unit_screen.dart';
 import '../features/home/presentation/main_shell.dart';
+import '../features/onboarding/application/channel_gate_controller.dart';
 import '../features/onboarding/application/onboarding_controller.dart';
+import '../features/onboarding/presentation/channel_screen.dart';
+import '../features/onboarding/presentation/language_screen.dart';
+import '../features/onboarding/presentation/learning_language_screen.dart';
 import '../features/onboarding/presentation/welcome_screen.dart';
 import '../features/peer/application/peer_call_controller.dart';
 import '../features/peer/presentation/peer_call_screen.dart';
 import '../features/peer/presentation/peer_hub_screen.dart';
 import '../features/placement/presentation/placement_screen.dart';
+import '../features/profile/presentation/account_screen.dart';
 import '../features/profile/presentation/profile_screen.dart';
+import '../features/questions/domain/models.dart';
+import '../features/questions/presentation/cue_card_screen.dart';
+import '../features/questions/presentation/question_list_screen.dart';
+import '../features/questions/presentation/question_parts_screen.dart';
+import '../features/questions/presentation/question_topics_screen.dart';
 import '../features/speaking/domain/models.dart';
 import '../features/speaking/presentation/speaking_chat_screen.dart';
+import '../features/speaking/presentation/speaking_history_screen.dart';
 import '../features/speaking/presentation/speaking_home_screen.dart';
+import '../features/group/presentation/group_call_screen.dart';
+import '../features/group/presentation/group_lobby_screen.dart';
+import '../features/speaking/presentation/speaking_modes_screen.dart';
 import '../features/speaking/presentation/track_detail_screen.dart';
 import '../features/subscriptions/presentation/plans_screen.dart';
-import '../features/vocabulary/domain/game.dart';
-import '../features/vocabulary/domain/models.dart';
-import '../features/vocabulary/presentation/review_screen.dart';
-import '../features/vocabulary/presentation/spell_game_screen.dart';
-import '../features/vocabulary/presentation/vocab_duel_screen.dart';
-import '../features/vocabulary/presentation/vocab_game_screen.dart';
-import '../features/vocabulary/presentation/vocab_landing_screen.dart';
-import '../features/vocabulary/presentation/vocab_set_list_screen.dart';
-import '../features/vocabulary/presentation/vocab_study_screen.dart';
-import '../features/vocabulary/presentation/vocab_words_screen.dart';
+import 'locale_controller.dart';
 import 'providers.dart';
 import 'telegram_webapp.dart';
 
 /// App router. Redirects are driven by the auth status; the router refreshes
 /// whenever that status changes.
+/// The deep-link destination, held for one trip through the gates.
+///
+/// A plain variable rather than a provider: it is written and read inside the
+/// router's own redirect, lives for a few hundred milliseconds, and belongs to
+/// nothing else.
+String? _intended;
+
+bool _isGate(String loc) =>
+    loc == '/splash' ||
+    loc == '/welcome' ||
+    loc.startsWith('/login') ||
+    loc == '/signin-failed' ||
+    loc.startsWith('/onboarding/');
+
 final routerProvider = Provider<GoRouter>((ref) {
   final refresh = ValueNotifier<int>(0);
   ref.listen(authControllerProvider, (_, _) => refresh.value++);
   ref.listen(onboardingProvider, (_, _) => refresh.value++);
+  ref.listen(localeProvider, (_, _) => refresh.value++);
+  ref.listen(channelGateProvider, (_, _) => refresh.value++);
   ref.onDispose(refresh.dispose);
 
   return GoRouter(
     initialLocation: '/splash',
+    // Where the learner was actually heading, held across the gates.
+    //
+    // A notification opens the Mini App at a URL — `/peer`, or a room. The
+    // redirect below then sends them to `/splash` while auth resolves, and by
+    // the time it clears, `state.matchedLocation` says `/splash` and the
+    // destination is gone: everyone lands on home no matter what they tapped.
+    //
+    // So the first non-gate location seen is remembered, and handed back once
+    // the gates are done with. Consumed on use — a destination that survived
+    // would drag the learner back to it every time they reached home.
     refreshListenable: refresh,
     redirect: (context, state) {
       final auth = ref.read(authControllerProvider);
       final seenWelcome = ref.read(onboardingProvider);
+      final language = ref.watch(localeProvider);
       final status = auth.status;
       final loc = state.matchedLocation;
+      // Captured before any gate can overwrite it. Only a real destination —
+      // `/home` and the gates themselves are what we would have done anyway.
+      if (_intended == null && !_isGate(loc) && loc != '/home') {
+        _intended = state.uri.toString();
+      }
 
       // Hold the splash until BOTH auth and the first-launch flag are known,
       // so the welcome flow never flashes for returning users.
-      if (status == AuthStatus.unknown || seenWelcome == null) {
+      if (status == AuthStatus.unknown ||
+          seenWelcome == null ||
+          !language.isLoaded) {
         return loc == '/splash' ? null : '/splash';
       }
-      // Telegram Mini App: registration happens in the bot (phone-number share).
-      // A learner who slipped in without registering — no phone on file, or
-      // whose silent login failed — is sent back to the bot; the in-app
-      // phone/Google/OTP flow is never shown inside Telegram.
+      // Telegram Mini App. The only thing that can stop someone here is not
+      // having a session at all.
+      //
+      // There used to be a second condition — no phone on file — which sent
+      // them back to the bot to press /start. It is gone, and deliberately:
+      // the bot's own /start now asks for the phone before it will show the
+      // button into the app, so this was a second gate on something already
+      // enforced upstream. When the two disagreed the learner was stuck in a
+      // loop with no way out, which is exactly what happened. Telegram vouches
+      // for whoever opens the Mini App, so an account without a phone is worth
+      // letting in far more than a registered learner is worth bouncing.
       if (TelegramWebApp.isTelegram) {
-        final registered = status == AuthStatus.authenticated &&
-            (auth.user?.phone ?? '').trim().isNotEmpty;
-        if (!registered) {
-          return loc == '/register-in-bot' ? null : '/register-in-bot';
+        if (status != AuthStatus.authenticated) {
+          return loc == '/signin-failed' ? null : '/signin-failed';
         }
-        if (loc == '/register-in-bot') return '/home';
+        if (loc == '/signin-failed') return '/home';
       }
       if (status == AuthStatus.unauthenticated) {
         // First launch on this device → the welcome flow (language + story).
@@ -80,25 +132,67 @@ final routerProvider = Provider<GoRouter>((ref) {
         }
         return loc.startsWith('/login') ? null : '/login';
       }
+      // Ask for the interface language before showing an interface. This has
+      // to sit ahead of the name step and the home screen: those are the very
+      // screens that would otherwise be rendered in a language the learner may
+      // not read. Only reached when we KNOW nothing was saved, so it is asked
+      // once and never again.
+      if (language.needsChoosing) {
+        return loc == '/onboarding/language' ? null : '/onboarding/language';
+      }
+      if (loc == '/onboarding/language') return '/home';
+
       // authenticated — but a brand-new user must set their name first.
       final needsName = (auth.user?.fullName ?? '').trim().isEmpty;
       if (needsName) {
         return loc == '/onboarding/name' ? null : '/onboarding/name';
       }
-      // has a name: keep them out of the gates and the name step.
-      final atGate = loc == '/splash' ||
+      // ...and then what they came here to learn. Null means never asked — the
+      // column has no default precisely so this question can be asked exactly
+      // once. Placed after the name because that step is the lighter one, and
+      // because this answer lands better right before the app opens.
+      final needsLearningLanguage = (auth.user?.learningLanguage ?? '')
+          .trim()
+          .isEmpty;
+      if (needsLearningLanguage) {
+        return loc == '/onboarding/learn' ? null : '/onboarding/learn';
+      }
+      // Last: our Telegram channel. Held on the splash rather than let through
+      // provisionally, because the alternative — showing home and yanking them
+      // back a moment later — reads as a broken app. The controller resolves
+      // within a few seconds no matter what, and resolves to "no gate" on any
+      // failure, so this cannot strand anyone.
+      final channel = ref.watch(channelGateProvider);
+      if (!channel.isLoaded) {
+        return loc == '/splash' ? null : '/splash';
+      }
+      if (channel.mustJoin) {
+        return loc == '/onboarding/channel' ? null : '/onboarding/channel';
+      }
+      // past every gate: keep them out of all of them.
+      final atGate =
+          loc == '/splash' ||
           loc == '/welcome' ||
           loc.startsWith('/login') ||
-          loc == '/onboarding/name';
-      return atGate ? '/home' : null;
+          loc == '/onboarding/name' ||
+          loc == '/onboarding/learn' ||
+          loc == '/onboarding/channel';
+      if (!atGate) return null;
+      final wanted = _intended;
+      _intended = null;
+      return wanted ?? '/home';
     },
     routes: [
       GoRoute(path: '/splash', builder: (_, _) => const SplashScreen()),
       GoRoute(
-        path: '/register-in-bot',
-        builder: (_, _) => const RegisterInBotScreen(),
+        path: '/signin-failed',
+        builder: (_, _) => const SignInFailedScreen(),
       ),
       GoRoute(path: '/welcome', builder: (_, _) => const WelcomeScreen()),
+      GoRoute(
+        path: '/onboarding/language',
+        builder: (_, _) => const LanguageScreen(),
+      ),
       GoRoute(
         path: '/login',
         builder: (_, _) => const PhoneScreen(),
@@ -109,15 +203,94 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
         ],
       ),
+      GoRoute(path: '/onboarding/name', builder: (_, _) => const NameScreen()),
       GoRoute(
-        path: '/onboarding/name',
-        builder: (_, _) => const NameScreen(),
+        path: '/onboarding/learn',
+        builder: (_, _) => const LearningLanguageScreen(),
+      ),
+      GoRoute(
+        path: '/onboarding/channel',
+        builder: (_, _) => const ChannelScreen(),
       ),
       GoRoute(path: '/home', builder: (_, _) => const MainShell()),
       GoRoute(path: '/placement', builder: (_, _) => const PlacementScreen()),
-      GoRoute(path: '/review', builder: (_, _) => const ReviewScreen()),
+      GoRoute(path: '/games', builder: (_, _) => const GamesHubScreen()),
+      // A sibling of the hub, not a child of it: a parent route's
+      // redirect runs for every route in the matched stack, which is how
+      // every card in this hub once reopened the hub.
+      GoRoute(path: '/games/quiz', builder: (_, _) => const QuizScreen()),
+      // ── the games ────────────────────────────────────────────────────
+      //
+      // Restored, not rebuilt. The screens were removed when Vocabulary and
+      // Grammar were folded into one course path — the right call for a study
+      // path, and the wrong one to have applied to play: a duel against
+      // another learner is not half a curriculum. The engine, the content and
+      // the matchmaking relay were all still here.
+      // Flat, not nested under a `/vocabulary` parent.
+      //
+      // There was one, and it carried `redirect: () => '/games'` so the old
+      // landing URL would not dead-end. go_router runs the redirect of EVERY
+      // route in a matched stack, parents included — so `/vocabulary/play` and
+      // `/vocabulary/learn` were bounced to the hub as well, and every card in
+      // the games hub reopened the games hub. Nothing in the app can redirect
+      // a route it is also a prefix of.
+      //
+      // Straight into a game: the deck comes from the words the learner is
+      // already working on, so no set has to be chosen first.
+      GoRoute(
+        path: '/vocabulary/play',
+        builder: (_, _) => const GameModesScreen(),
+      ),
+      GoRoute(
+        path: '/vocabulary/learn',
+        builder: (_, _) => const WordsToLearnScreen(),
+      ),
+      GoRoute(
+        path: '/vocabulary/game',
+        builder: (_, state) =>
+            VocabGameScreen(launch: state.extra as VocabGameLaunch),
+      ),
+      GoRoute(
+        path: '/vocabulary/duel',
+        builder: (_, state) =>
+            VocabDuelScreen(launch: state.extra as VocabGameLaunch),
+      ),
+      GoRoute(
+        path: '/vocabulary/spell',
+        builder: (_, state) =>
+            SpellGameScreen(launch: state.extra as VocabGameLaunch),
+      ),
       GoRoute(path: '/subscriptions', builder: (_, _) => const PlansScreen()),
       GoRoute(path: '/profile', builder: (_, _) => const ProfileScreen()),
+      GoRoute(
+        path: '/questions',
+        builder: (_, _) => const QuestionPartsScreen(),
+        routes: [
+          GoRoute(
+            path: 'part',
+            builder: (_, state) =>
+                QuestionTopicsScreen(part: state.extra as QuestionPart),
+          ),
+          GoRoute(
+            path: 'topic',
+            // One route, two screens: Part 2 carries a card rather than a
+            // question list, and which one to show is a property of the
+            // topic — not something the caller should have to know.
+            builder: (_, state) {
+              final topic = state.extra as QuestionTopic;
+              return topic.isCueCard
+                  ? CueCardScreen(topic: topic)
+                  : QuestionListScreen(topic: topic);
+            },
+          ),
+          GoRoute(
+            path: 'saved',
+            builder: (_, _) => const SavedQuestionsScreen(),
+          ),
+        ],
+      ),
+      GoRoute(path: '/feedback', builder: (_, _) => const FeedbackFormScreen()),
+      GoRoute(path: '/account', builder: (_, _) => const AccountScreen()),
       GoRoute(
         path: '/peer',
         builder: (_, _) => const PeerHubScreen(),
@@ -132,8 +305,24 @@ final routerProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/speaking',
-        builder: (_, _) => const SpeakingHomeScreen(),
+        builder: (_, _) => const SpeakingModesScreen(),
         routes: [
+          GoRoute(path: 'ai', builder: (_, _) => const SpeakingHomeScreen()),
+          GoRoute(
+            path: 'group',
+            builder: (_, _) => const GroupLobbyScreen(),
+            routes: [
+              GoRoute(
+                path: 'call/:code',
+                builder: (_, state) =>
+                    GroupCallScreen(code: state.pathParameters['code']!),
+              ),
+            ],
+          ),
+          GoRoute(
+            path: 'history',
+            builder: (_, _) => const SpeakingHistoryScreen(),
+          ),
           GoRoute(
             path: 'track',
             builder: (_, state) =>
@@ -146,63 +335,27 @@ final routerProvider = Provider<GoRouter>((ref) {
           ),
         ],
       ),
+      // The course path — one walk that replaces the separate Grammar and
+      // Vocabulary sections. Both of those taught half a thing each and left
+      // the learner to decide which half to do today.
       GoRoute(
-        path: '/vocabulary',
-        builder: (_, _) => const VocabLandingScreen(),
-        routes: [
-          GoRoute(
-            path: 'sets',
-            builder: (_, state) => VocabSetListScreen(
-              intent: state.extra as VocabIntent? ?? VocabIntent.play,
-            ),
-          ),
-          GoRoute(
-            path: 'words',
-            builder: (_, state) =>
-                VocabWordsScreen(set: state.extra as VocabSet),
-          ),
-          GoRoute(
-            path: 'study',
-            builder: (_, state) =>
-                VocabStudyScreen(set: state.extra as VocabSet),
-          ),
-          GoRoute(
-            path: 'game',
-            builder: (_, state) =>
-                VocabGameScreen(launch: state.extra as VocabGameLaunch),
-          ),
-          GoRoute(
-            path: 'duel',
-            builder: (_, state) =>
-                VocabDuelScreen(launch: state.extra as VocabGameLaunch),
-          ),
-          GoRoute(
-            path: 'spell',
-            builder: (_, state) =>
-                SpellGameScreen(launch: state.extra as VocabGameLaunch),
-          ),
-        ],
+        path: '/course',
+        builder: (context, state) => const CoursePathScreen(),
       ),
       GoRoute(
-        path: '/grammar',
-        builder: (_, _) => const GrammarTopicListScreen(),
-        routes: [
-          GoRoute(
-            path: 'learn',
-            builder: (_, state) =>
-                GrammarLearnScreen(topic: state.extra as GrammarTopic),
-          ),
-          GoRoute(
-            path: 'practice',
-            builder: (_, state) =>
-                GrammarPracticeScreen(topic: state.extra as GrammarTopic),
-          ),
-          GoRoute(
-            path: 'topic',
-            builder: (_, state) =>
-                GrammarTopicScreen(topic: state.extra as GrammarTopic),
-          ),
-        ],
+        path: '/course/unit/:id',
+        builder: (context, state) =>
+            UnitScreen(unitId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: '/course/test-out/:id',
+        builder: (context, state) =>
+            TestOutScreen(unitId: state.pathParameters['id']!),
+      ),
+      GoRoute(
+        path: '/course/lesson/:id',
+        builder: (context, state) =>
+            LessonScreen(lessonId: state.pathParameters['id']!),
       ),
     ],
   );

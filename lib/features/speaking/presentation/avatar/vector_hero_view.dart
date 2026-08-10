@@ -9,6 +9,29 @@ import 'avatar_state.dart';
 import 'photo_hero.dart';
 import 'vector_hero.dart';
 
+/// Minimum seconds between hero repaints for a given state — the avatar's
+/// frame budget.
+///
+/// Talking, listening and thinking are paid in full: lip-sync at half rate
+/// reads as badly dubbed. Idle is throttled to 30 fps because breathing, sway
+/// and the odd blink are indistinguishable at that rate, and idle is most of a
+/// lesson. Zero means "every frame"; the idle motion is throttled, never
+/// stopped — a frozen avatar reads as a crash.
+double heroRepaintBudget(AvatarState state) => switch (state) {
+  // Lip-sync is the only thing that genuinely needs every frame: the mouth
+  // shape changes with the syllable, and at half rate it reads as dubbed.
+  AvatarState.talking => 0,
+  // Everything else is breathing, sway and the occasional blink. None of it
+  // is synchronised to anything, and it reads identically at 30 — while
+  // costing half the paint, which on this hero means seven blur passes a
+  // frame instead of fourteen.
+  //
+  // This matters more than it sounds: across a lesson the avatar spends most
+  // of its time NOT talking. The learner's own turn and the wait for a reply
+  // are both in here.
+  _ => 1 / 30,
+};
+
 /// Drives the from-scratch [paintHero] character at 60 FPS from the live
 /// conversation: builds a [HeroPose] every frame from `state`, `emotion` and
 /// the voice `level`, so the hand-built hero blinks, glances, turns, reacts to
@@ -89,6 +112,9 @@ class _VectorHeroViewState extends State<VectorHeroView>
   double _blink = 0, _blinkPhase = 0, _blinkIn = 2.2;
   bool _dblBlink = false;
   static const _blinkDur = 0.34;
+
+  // repaint throttle (see the end of _tick and [heroRepaintBudget])
+  double _sinceRepaint = 0;
 
   // mouth / viseme
   double _mouth = 0, _prevLevel = 0, _visW = 1.0, _visWT = 1.0;
@@ -247,6 +273,19 @@ class _VectorHeroViewState extends State<VectorHeroView>
     _pupil += (pupilTarget - _pupil) * (1 - math.exp(-dt * 1.6));
     _emo = _Emo.lerp(_emo, _Emo.of(widget.emotion), 1 - math.exp(-dt * 7));
 
+    // Repaint budget. The maths above is cheap and always runs, so motion stays
+    // perfectly smooth in time; what we ration is the PAINT — a dozen
+    // full-screen image draws per frame, which is the avatar's real cost on a
+    // modest phone and inside the Telegram WebView.
+    //
+    // While the tutor is talking, listening or thinking, every frame counts:
+    // lip-sync at half rate looks dubbed. Idle is different — breathing, sway
+    // and the occasional blink read exactly the same at 30 fps, so the idle
+    // half of a lesson costs half as much battery. The idle motion is NEVER
+    // frozen: a still avatar reads as broken.
+    _sinceRepaint += dt;
+    if (_sinceRepaint < heroRepaintBudget(widget.state)) return;
+    _sinceRepaint = 0;
     _frame.value++;
   }
 

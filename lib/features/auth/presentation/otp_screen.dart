@@ -7,6 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/api/api_exception.dart';
 import '../../../core/providers.dart';
 import '../../../core/ui/tokens.dart';
+import '../../../core/ui/error_handling.dart';
 import '../../../l10n/app_localizations.dart';
 
 /// Step 2 — enter the 6-digit code; on success the auth status flips to
@@ -56,6 +57,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
   }
 
   Future<void> _verify() async {
+    final l = AppLocalizations.of(context);
     final code = _controller.text.trim();
     if (code.length != 6) {
       _snack(AppLocalizations.of(context).otpEnter6);
@@ -70,13 +72,14 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
       ref.read(authControllerProvider.notifier).onAuthenticated(result.user);
       // The router redirect handles navigation to /home.
     } on ApiException catch (e) {
-      _snack(e.message);
+      _snack(e.localized(l));
     } finally {
       if (mounted) setState(() => _loading = false);
     }
   }
 
   Future<void> _resend() async {
+    final l = AppLocalizations.of(context);
     if (_resendIn > 0) return;
     final resent = AppLocalizations.of(context).otpResent;
     try {
@@ -84,7 +87,7 @@ class _OtpScreenState extends ConsumerState<OtpScreen> {
       _startCooldown();
       _snack(resent);
     } on ApiException catch (e) {
-      _snack(e.message);
+      _snack(e.localized(l));
     }
   }
 

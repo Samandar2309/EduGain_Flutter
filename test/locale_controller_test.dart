@@ -3,41 +3,13 @@ import 'dart:ui';
 import 'package:edugain/core/locale_controller.dart';
 import 'package:edugain/l10n/app_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
+/// `AppLanguage` and the localisation bundles themselves.
+///
+/// `LocaleController` is covered in locale_choice_test.dart, where the question
+/// that matters — whether a language has been chosen yet — is the subject.
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-
-  group('LocaleController', () {
-    test('starts null (follow device) when nothing is persisted', () async {
-      SharedPreferences.setMockInitialValues({});
-      final c = LocaleController();
-      await pumpEventQueue();
-      expect(c.state, isNull);
-      expect(c.current, AppLanguage.uzbek); // default fallback
-    });
-
-    test('loads a persisted language on construction', () async {
-      SharedPreferences.setMockInitialValues({
-        LocaleController.prefsKey: 'ru',
-      });
-      final c = LocaleController();
-      await pumpEventQueue();
-      expect(c.state, const Locale('ru'));
-      expect(c.current, AppLanguage.russian);
-    });
-
-    test('setLanguage updates state and persists across instances', () async {
-      SharedPreferences.setMockInitialValues({});
-      final c = LocaleController();
-      await c.setLanguage(AppLanguage.english);
-      expect(c.state, const Locale('en'));
-
-      final c2 = LocaleController();
-      await pumpEventQueue();
-      expect(c2.current, AppLanguage.english);
-    });
-  });
 
   group('AppLanguage', () {
     test('fromCode maps known codes and rejects unknown', () {

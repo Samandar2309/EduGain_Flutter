@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/ui/tokens.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../feedback/presentation/session_rating_strip.dart';
 import '../domain/models.dart';
 
 Color _scoreColor(int v) => v >= 75
@@ -14,19 +15,28 @@ Color _scoreColor(int v) => v >= 75
     ? AppColors.warning
     : AppColors.danger;
 
-Future<void> showFeedbackSheet(BuildContext context, FeedbackReport report) {
+/// [sessionId] is what makes the rating at the foot of this sheet worth
+/// collecting: "it went badly" is nearly useless on its own, while the same
+/// words against a session can be traced to a transcript, a model and a
+/// latency.
+Future<void> showFeedbackSheet(
+  BuildContext context,
+  FeedbackReport report, {
+  required String sessionId,
+}) {
   return showModalBottomSheet<void>(
     context: context,
     isScrollControlled: true,
     showDragHandle: true,
-    builder: (_) => _FeedbackSheet(report: report),
+    builder: (_) => _FeedbackSheet(report: report, sessionId: sessionId),
   );
 }
 
 class _FeedbackSheet extends StatelessWidget {
-  const _FeedbackSheet({required this.report});
+  const _FeedbackSheet({required this.report, required this.sessionId});
 
   final FeedbackReport report;
+  final String sessionId;
 
   @override
   Widget build(BuildContext context) {
@@ -124,6 +134,9 @@ class _FeedbackSheet extends StatelessWidget {
             const SizedBox(height: 4),
             const _LockedReportTeaser(),
           ],
+          // Last, under the result they came for — never in front of it.
+          const SizedBox(height: 20),
+          SessionRatingStrip(sessionId: sessionId),
         ],
       ),
     );

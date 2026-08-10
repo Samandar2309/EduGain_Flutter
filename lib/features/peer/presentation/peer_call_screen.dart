@@ -5,11 +5,16 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_webrtc/flutter_webrtc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:url_launcher/url_launcher.dart';
 
+import '../../../core/providers.dart';
+import '../../../core/share.dart';
 import '../../../core/ui/tokens.dart';
+import '../../../core/ui/user_photo.dart';
+import '../../questions/application/providers.dart';
+import '../../questions/presentation/question_home.dart';
+import '../../questions/presentation/questions_sheet.dart';
+import '../../../l10n/app_localizations.dart';
 import '../application/peer_call_controller.dart';
-import '../data/peer_models.dart';
 
 /// The live 1:1 call. Three journeys share this screen:
 /// - match: searching animation → partner found → call
@@ -47,12 +52,16 @@ class _PeerCallScreenState extends ConsumerState<PeerCallScreen> {
   }
 
   Future<void> _shareInvite(String code) async {
-    final text = Uri.encodeComponent(
-      'EduGain’da men bilan jonli ingliz tili suhbatiga qo‘shiling! '
-      'Ilovadagi “Jonli suhbat” bo‘limida shu kodni kiriting: $code',
+    final l = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final api = ref.read(apiClientProvider);
+    final text = l.peerInviteShareText(code);
+    final outcome = await shareInvite(
+      text,
+      prepare: () => prepareInvite(api, text: text),
     );
-    final uri = Uri.parse('https://t.me/share/url?url=&text=$text');
-    await launchUrl(uri, mode: LaunchMode.externalApplication);
+    if (!mounted || outcome != ShareOutcome.copied) return;
+    messenger.showSnackBar(SnackBar(content: Text(l.inviteCopied)));
   }
 
   String _fmt(Duration d) {
@@ -98,14 +107,33 @@ class _PeerCallScreenState extends ConsumerState<PeerCallScreen> {
                     if (state.partnerName.isNotEmpty &&
                         (state.phase == PeerPhase.rtcConnecting ||
                             state.phase == PeerPhase.inCall)) ...[
-                      _PartnerBadge(name: state.partnerName),
+                      _PartnerBadge(
+                        name: state.partnerName,
+                        avatar: state.partnerAvatar,
+                      ),
                       const SizedBox(height: AppSpace.md),
                     ],
-                    if (state.topic != null) ...[
-                      const SizedBox(height: AppSpace.md),
-                      _TopicCard(topic: state.topic!),
-                    ],
-                    const Spacer(),
+                    // Everything between the partner and the controls scrolls.
+                    // The parts panel is four tiles tall and the role-play card
+                    // is not short; pinned in a Column they would push the
+                    // hang-up button off a small phone.
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            const SizedBox(height: AppSpace.sm),
+                            // On the screen rather than behind the ? button.
+                            // Someone whose conversation has just stalled will
+                            // not go looking through a menu for a way out of
+                            // the silence — the way out has to be in front of
+                            // them before they need it.
+                            const _QuestionPanel(),
+                            const SizedBox(height: AppSpace.md),
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
                   if (state.phase == PeerPhase.ended)
                     _EndedPanel(reason: state.endReason)
@@ -113,7 +141,11 @@ class _PeerCallScreenState extends ConsumerState<PeerCallScreen> {
                     _CallControls(
                       searching: state.phase == PeerPhase.searching,
                       muted: state.muted,
-                      onMute: controller.toggleMute,
+                      micDenied: state.micDenied,
+                      // Nothing to unmute when there is no microphone. A
+                      // control that looks live and does nothing is worse than
+                      // one that is plainly disabled.
+                      onMute: state.micDenied ? null : controller.toggleMute,
                       onHangUp: controller.hangUp,
                     ),
                 ],
@@ -134,13 +166,14 @@ class _StatusHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     final (label, color) = switch (state.phase) {
-      PeerPhase.connecting => ('Ulanmoqda…', AppColors.inkFaint),
-      PeerPhase.searching => ('Partner qidirilmoqda…', AppColors.warning),
-      PeerPhase.waiting => ('Do‘stingiz kutilmoqda', AppColors.warning),
-      PeerPhase.rtcConnecting => ('Ovoz ulanmoqda…', AppColors.warning),
-      PeerPhase.inCall => ('Jonli suhbat · $elapsed', AppColors.success),
-      PeerPhase.ended => ('Suhbat tugadi', AppColors.inkFaint),
+      PeerPhase.connecting => (l.peerStatusConnecting, AppColors.inkFaint),
+      PeerPhase.searching => (l.peerStatusSearching, AppColors.warning),
+      PeerPhase.waiting => (l.peerStatusWaitingFriend, AppColors.warning),
+      PeerPhase.rtcConnecting => (l.peerStatusConnectingVoice, AppColors.warning),
+      PeerPhase.inCall => (l.peerStatusLiveChat(elapsed), AppColors.success),
+      PeerPhase.ended => (l.peerStatusEnded, AppColors.inkFaint),
     };
     return Row(
       children: [
@@ -226,19 +259,19 @@ class _SearchingViewState extends State<_SearchingView>
           },
         ),
         const SizedBox(height: AppSpace.xxl),
-        const Text(
-          'Sizga mos partner qidirilmoqda…',
-          style: TextStyle(
+        Text(
+          AppLocalizations.of(context).peerSearchingTitle,
+          style: const TextStyle(
             color: Colors.white,
             fontSize: 16,
             fontWeight: FontWeight.w600,
           ),
         ),
         const SizedBox(height: AppSpace.sm),
-        const Text(
-          'Boshqa o‘quvchi qidiruvni boshlashi bilan\navtomatik ulanasiz',
+        Text(
+          AppLocalizations.of(context).peerSearchingSubtitle,
           textAlign: TextAlign.center,
-          style: TextStyle(color: Colors.white54, fontSize: 13, height: 1.4),
+          style: const TextStyle(color: Colors.white54, fontSize: 13, height: 1.4),
         ),
       ],
     );
@@ -260,9 +293,12 @@ class _SearchingViewState extends State<_SearchingView>
 }
 
 class _PartnerBadge extends StatelessWidget {
-  const _PartnerBadge({required this.name});
+  const _PartnerBadge({required this.name, this.avatar = ''});
 
   final String name;
+
+  /// Their picture, or empty. Empty is ordinary — the initial stands in.
+  final String avatar;
 
   @override
   Widget build(BuildContext context) {
@@ -275,15 +311,21 @@ class _PartnerBadge extends StatelessWidget {
       ),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 22,
-            backgroundColor: AppColors.speaking.withValues(alpha: 0.2),
-            child: Text(
-              name[0].toUpperCase(),
-              style: const TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.w700,
-                fontSize: 17,
+          // The photo sits on the letter rather than replacing it, so a slow
+          // or expired URL degrades to a coloured initial instead of a hole.
+          UserPhoto(
+            url: avatar,
+            size: 44,
+            fallback: CircleAvatar(
+              radius: 22,
+              backgroundColor: AppColors.speaking.withValues(alpha: 0.2),
+              child: Text(
+                name[0].toUpperCase(),
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.w700,
+                  fontSize: 17,
+                ),
               ),
             ),
           ),
@@ -300,9 +342,9 @@ class _PartnerBadge extends StatelessWidget {
                     fontWeight: FontWeight.w700,
                   ),
                 ),
-                const Text(
-                  'Suhbat partneringiz',
-                  style: TextStyle(color: AppColors.inkFaint, fontSize: 12),
+                Text(
+                  AppLocalizations.of(context).peerYourPartner,
+                  style: const TextStyle(color: AppColors.inkFaint, fontSize: 12),
                 ),
               ],
             ),
@@ -321,6 +363,7 @@ class _WaitingCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
     return Container(
       padding: const EdgeInsets.all(AppSpace.xl),
       decoration: BoxDecoration(
@@ -330,16 +373,16 @@ class _WaitingCard extends StatelessWidget {
       ),
       child: Column(
         children: [
-          const Text(
-            'Xona kodi',
-            style: TextStyle(color: AppColors.inkFaint, fontSize: 12.5),
+          Text(
+            l.peerRoomCode,
+            style: const TextStyle(color: AppColors.inkFaint, fontSize: 12.5),
           ),
           const SizedBox(height: AppSpace.sm),
           GestureDetector(
             onTap: () {
               Clipboard.setData(ClipboardData(text: code));
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Kod nusxalandi')),
+                SnackBar(content: Text(l.groupCodeCopied)),
               );
             },
             child: Text(
@@ -363,7 +406,7 @@ class _WaitingCard extends StatelessWidget {
             ),
             onPressed: onShare,
             icon: const Icon(Icons.send_rounded),
-            label: const Text('Telegram orqali taklif qilish'),
+            label: Text(l.peerInviteTelegram),
           ),
         ],
       ),
@@ -371,103 +414,21 @@ class _WaitingCard extends StatelessWidget {
   }
 }
 
-class _TopicCard extends StatelessWidget {
-  const _TopicCard({required this.topic});
 
-  final PeerTopic topic;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(AppSpace.xl),
-      decoration: BoxDecoration(
-        color: AppColors.surfaceDark,
-        borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: AppColors.lineDark),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            children: [
-              const Icon(Icons.theater_comedy_rounded,
-                  color: AppColors.speaking, size: 20),
-              const SizedBox(width: AppSpace.sm),
-              Expanded(
-                child: Text(
-                  topic.title,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 16,
-                    fontWeight: FontWeight.w700,
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppSpace.md),
-          _RoleLine(label: 'Sizning rolingiz', text: topic.yourRole),
-          const SizedBox(height: AppSpace.sm),
-          _RoleLine(label: 'Partner roli', text: topic.partnerRole),
-          if (topic.starters.isNotEmpty) ...[
-            const SizedBox(height: AppSpace.md),
-            Container(
-              padding: const EdgeInsets.all(AppSpace.md),
-              decoration: BoxDecoration(
-                color: AppColors.speaking.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(AppRadius.sm),
-              ),
-              child: Text(
-                '💬 “${topic.starters.first}”',
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 13,
-                  fontStyle: FontStyle.italic,
-                  height: 1.35,
-                ),
-              ),
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-class _RoleLine extends StatelessWidget {
-  const _RoleLine({required this.label, required this.text});
-
-  final String label;
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(label,
-            style: const TextStyle(color: AppColors.inkFaint, fontSize: 11.5)),
-        const SizedBox(height: 2),
-        Text(
-          text,
-          style: const TextStyle(color: Colors.white, fontSize: 13.5, height: 1.35),
-        ),
-      ],
-    );
-  }
-}
 
 class _CallControls extends StatelessWidget {
   const _CallControls({
     required this.searching,
     required this.muted,
+    required this.micDenied,
     required this.onMute,
     required this.onHangUp,
   });
 
   final bool searching;
   final bool muted;
-  final VoidCallback onMute;
+  final bool micDenied;
+  final VoidCallback? onMute;
   final VoidCallback onHangUp;
 
   @override
@@ -486,11 +447,31 @@ class _CallControls extends StatelessWidget {
           ),
           onPressed: onHangUp,
           icon: const Icon(Icons.close_rounded, size: 18),
-          label: const Text('Qidiruvni to‘xtatish'),
+          label: Text(AppLocalizations.of(context).peerStopSearching),
         ),
       );
     }
-    return Row(
+    final l = AppLocalizations.of(context);
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Only when there is something to say. With a working microphone —
+        // which is the ordinary case — the controls look exactly as they did
+        // before any of this, because that is the version that worked.
+        if (micDenied) ...[
+          Text(
+            l.peerNoMicBody,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              fontSize: 12.5,
+              height: 1.3,
+              fontWeight: FontWeight.w600,
+              color: AppColors.warning,
+            ),
+          ),
+          const SizedBox(height: AppSpace.md),
+        ],
+        Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         _RoundButton(
@@ -499,13 +480,15 @@ class _CallControls extends StatelessWidget {
           iconColor: muted ? Colors.white : Colors.white70,
           onTap: onMute,
         ),
-        const SizedBox(width: AppSpace.xxl),
+        const SizedBox(width: AppSpace.lg),
         _RoundButton(
           icon: Icons.call_end_rounded,
           color: AppColors.danger,
           iconColor: Colors.white,
           size: 68,
           onTap: onHangUp,
+        ),
+      ],
         ),
       ],
     );
@@ -524,7 +507,10 @@ class _RoundButton extends StatelessWidget {
   final IconData icon;
   final Color color;
   final Color iconColor;
-  final VoidCallback onTap;
+
+  /// Null disables the button — used for the mic when there is no microphone
+  /// to toggle.
+  final VoidCallback? onTap;
   final double size;
 
   @override
@@ -552,11 +538,17 @@ class _EndedPanel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    // Running out of daily minutes is not a failure, and must not read like
+    // one: "the call failed" invites a retry that will fail identically, while
+    // the real answer is a plan.
+    final outOfMinutes = reason == 'peer_quota';
     final message = switch (reason) {
-      'partner_left' => 'Partner suhbatni tark etdi.',
-      'you_ended' => 'Suhbat yakunlandi. Yaxshi mashq! 👏',
-      'failed' => 'Ulanishda muammo yuz berdi. Qayta urinib ko‘ring.',
-      _ => 'Suhbat tugadi.',
+      'partner_left' => l.peerEndedPartnerLeft,
+      'you_ended' => l.peerEndedYouEnded,
+      'peer_quota' => l.peerQuotaTitle,
+      'failed' => l.peerEndedFailed,
+      _ => l.peerEndedDefault,
     };
     return Column(
       children: [
@@ -565,19 +557,86 @@ class _EndedPanel extends StatelessWidget {
           textAlign: TextAlign.center,
           style: const TextStyle(color: Colors.white, fontSize: 15, height: 1.4),
         ),
-        const SizedBox(height: AppSpace.lg),
-        FilledButton(
-          style: FilledButton.styleFrom(
-            backgroundColor: AppColors.speaking,
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpace.xxxl,
-              vertical: 14,
+        if (outOfMinutes) ...[
+          const SizedBox(height: AppSpace.sm),
+          Text(
+            l.peerQuotaBody,
+            textAlign: TextAlign.center,
+            style: const TextStyle(
+              color: Colors.white70,
+              fontSize: 13.5,
+              height: 1.4,
             ),
           ),
-          onPressed: () => context.pop(),
-          child: const Text('Orqaga'),
-        ),
+        ],
+        const SizedBox(height: AppSpace.lg),
+        if (outOfMinutes)
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: AppColors.speaking,
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpace.xxxl,
+                vertical: 14,
+              ),
+            ),
+            onPressed: () {
+              context.pop();
+              context.push('/subscriptions');
+            },
+            child: Text(l.premiumButton),
+          )
+        else
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: AppColors.speaking,
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppSpace.xxxl,
+                vertical: 14,
+              ),
+            ),
+            onPressed: () => context.pop(),
+            child: Text(l.backAction),
+          ),
+        if (outOfMinutes)
+          TextButton(
+            onPressed: () => context.pop(),
+            child: Text(
+              l.backAction,
+              style: const TextStyle(color: Colors.white54),
+            ),
+          ),
       ],
+    );
+  }
+}
+
+/// The question parts, on the call screen itself.
+///
+/// The bank is fetched once per session and kept, so this costs a request the
+/// first time a learner opens a call and nothing afterwards. While it is in
+/// flight, and if it fails, this draws nothing at all rather than a spinner or
+/// an error: the call is the thing on this screen, and a failed side-panel must
+/// not become something to read about mid-conversation.
+class _QuestionPanel extends ConsumerWidget {
+  const _QuestionPanel();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final bank = ref.watch(questionBankProvider);
+    return bank.maybeWhen(
+      data: (parts) => parts.isEmpty
+          ? const SizedBox.shrink()
+          : QuestionHome(
+              parts: parts,
+              embedded: true,
+              onDark: true,
+              savedCount: ref.watch(bookmarksProvider).length,
+              // Browsing is still the sheet's job — it can go full height and
+              // scroll, which a panel wedged above the call controls cannot.
+              onSaved: () => showQuestionsSheet(context),
+              onPart: (i) => showQuestionsSheet(context, partIndex: i),
+            ),
+      orElse: () => const SizedBox.shrink(),
     );
   }
 }

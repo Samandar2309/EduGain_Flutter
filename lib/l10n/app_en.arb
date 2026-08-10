@@ -1,16 +1,115 @@
 {
   "@@locale": "en",
-
   "save": "Save",
   "cancel": "Cancel",
   "retry": "Retry",
+  "peerQuotaTitle": "Today's live conversation time is used up",
+  "peerQuotaBody": "Upgrade for unlimited live conversations with other learners.",
+  "resumeTitle": "Unfinished conversation",
+  "resumeSubtitle": "{turns} turns in — pick up where you left off",
+  "@resumeSubtitle": {
+    "placeholders": {
+      "turns": {
+        "type": "int"
+      }
+    }
+  },
+  "resumeAction": "Continue",
+  "networkError": "Connection problem. Please try again.",
+  "feedbackNotReadyTitle": "Report isn't ready",
+  "feedbackNotReadyBody": "Your conversation is saved. The scoring service didn't answer just now — you can build the report again.",
   "continueAction": "Continue",
-
+  "minutesShort": "{count}m",
+  "@minutesShort": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "groupRoomHoldsUpTo": "The room holds up to {count} people",
+  "@groupRoomHoldsUpTo": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "cannotHearYou": "We can't hear you — speak up, or type instead",
+  "micBlockedTapToAllow": "Microphone blocked — tap to allow",
+  "minutesLeft": "{count} min left",
+  "@minutesLeft": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "actionEnd": "End",
+  "questionsTitle": "Questions",
+  "workedTitle": "How to answer this",
+  "workedWeak": "What most people say",
+  "workedStrong": "What works better",
+  "workedMoves": "What changed",
+  "workedLocked": "Answer breakdowns are in Premium",
+  "workedLockedWhy": "The questions are free for everyone. The breakdown — a weak and a strong answer side by side, with the difference marked — is in Premium.",
+  "workedOpen": "Open the breakdown",
+  "questionsFollows": "Follows the card: {title}",
+  "@questionsFollows": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "questionsPart3Hint": "These are not about you but about people in general. Give a view and a reason for it — a sentence or two will not be enough.",
+  "cueCardLabel": "Cue card",
+  "cueCardYouShouldSay": "You should say:",
+  "cueCardHint": "Prepare for one minute, then speak for two without stopping. Practising in a pair: one reads the card and keeps time, then you swap.",
+  "cueCardPrep": "{count} min to prepare",
+  "@cueCardPrep": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "cueCardTalk": "{count} min to talk",
+  "@cueCardTalk": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "questionsModeSubtitle": "Ready-made questions to talk about",
+  "questionsIntro": "Ask each other in a live conversation, or prepare on your own.",
+  "questionsUseHint": "Pick one and ask your partner — then answer it yourself.",
+  "questionsSaved": "Saved",
+  "questionsNoneSaved": "Nothing saved yet.\nBookmark the questions you like.",
+  "questionsNew": "NEW",
+  "questionsError": "Could not load the questions.",
+  "speakingSectionPrepare": "Prepare",
+  "questionsCount": "{count} questions",
+  "@questionsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "questionsTopicCount": "{count} topics",
+  "@questionsTopicCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "languageTitle": "Language",
   "languageEnglish": "English",
   "languageRussian": "Русский",
   "languageUzbek": "O‘zbekcha",
-
   "welcomeTitle": "Welcome 👋",
   "phoneSubtitle": "Enter your phone number to continue",
   "phoneLabel": "Phone number",
@@ -19,27 +118,74 @@
   "googleSignIn": "Sign in with Google",
   "termsNotice": "By continuing you agree to the Terms of Use and Privacy Policy",
   "phoneInvalid": "Enter a valid phone number (+998XXXXXXXXX)",
-
   "otpTitle": "Verification code",
   "otpSentTo": "Code sent to: {phone}",
-  "@otpSentTo": { "placeholders": { "phone": { "type": "String" } } },
+  "@otpSentTo": {
+    "placeholders": {
+      "phone": {
+        "type": "String"
+      }
+    }
+  },
   "verify": "Verify",
   "resendCountdown": "Resend in {time}",
-  "@resendCountdown": { "placeholders": { "time": { "type": "String" } } },
+  "@resendCountdown": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
   "resendCode": "Resend code",
   "otpEnter6": "Enter the 6-digit code",
   "otpResent": "A new code has been sent",
-
   "nameTitle": "Let’s get acquainted",
   "nameSubtitle": "What should we call you?",
   "nameLabel": "Your name",
   "nameHint": "e.g. Aziz",
   "nameEmpty": "Please enter your name",
-
+  "learnLangComingSoon": "Coming soon",
+  "learnLangNotifyMe": "We'll tell you",
+  "learnLangInterestSaved": "Noted. You'll be the first to hear when {language} opens.",
+  "@learnLangInterestSaved": {
+    "placeholders": {
+      "language": {
+        "type": "String"
+      }
+    }
+  },
+  "feedbackSendTitle": "Send feedback",
+  "feedbackSendSubtitle": "What broke, what's missing — tell us. We read every one.",
+  "feedbackHint": "Describe the problem or your suggestion…",
+  "feedbackSend": "Send",
+  "feedbackEmpty": "Please write something first",
+  "feedbackThanks": "Thank you — we've got it.",
+  "feedbackTooMany": "That's enough messages for today. Let's carry on tomorrow.",
+  "rateSessionQuestion": "How was that conversation?",
+  "rateSessionCommentHint": "Anything you'd like to add? (optional)",
+  "rateSessionCommentSent": "Comment sent. Thank you!",
+  "rateSessionThanks": "Thanks — that helps.",
+  "channelTitle": "Join our channel",
+  "channelSubtitle": "New lessons, tips and announcements all land there. Subscribe once and we'll carry on.",
+  "channelOpenAction": "Open the channel",
+  "channelJoinedAction": "I've subscribed",
+  "channelNotYet": "We can't see your subscription yet. Join the channel and try again.",
   "greeting": "Hi, {name} 👋",
-  "@greeting": { "placeholders": { "name": { "type": "String" } } },
-  "levelLabel": "Level: {level}",
-  "@levelLabel": { "placeholders": { "level": { "type": "String" } } },
+  "@greeting": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "levelLabel": "English: {level}",
+  "@levelLabel": {
+    "placeholders": {
+      "level": {
+        "type": "String"
+      }
+    }
+  },
   "letsLearnToday": "Let’s learn something today!",
   "modules": "Modules",
   "statXp": "XP",
@@ -47,7 +193,13 @@
   "statDay": "Days",
   "reviewTime": "Time to review",
   "wordsWaiting": "{count} words are waiting for you",
-  "@wordsWaiting": { "placeholders": { "count": { "type": "int" } } },
+  "@wordsWaiting": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "featuredBadge": "FEATURED",
   "featuredTitle": "Start a conversation with AI",
   "featuredSubtitle": "Practise in a real conversation",
@@ -56,7 +208,6 @@
   "moduleSpeakingSubtitle": "Live conversation with AI",
   "moduleVocabSubtitle": "Grow your vocabulary",
   "moduleGrammarSubtitle": "Practise your grammar",
-
   "navHome": "Home",
   "navLessons": "Lessons",
   "navProfile": "Profile",
@@ -66,7 +217,6 @@
   "lessonGrammarSubtitle": "Reinforce grammar with rules and exercises",
   "lessonPlacementTitle": "Level test",
   "lessonPlacementSubtitle": "Determine your CEFR level",
-
   "profileTitle": "Profile",
   "logout": "Log out",
   "subscription": "Subscription",
@@ -77,18 +227,16 @@
   "dailyGoalTitle": "Daily goal (XP)",
   "dailyGoalHint": "e.g. 50",
   "dailyGoalLabel": "Daily goal",
-
   "close": "Close",
+  "details": "Details",
   "yes": "Yes",
   "no": "No",
   "loadFailed": "Couldn’t load",
   "check": "Check",
   "yourAnswer": "Your answer",
-
   "premiumContent": "Premium content",
   "paywallCtaDefault": "Continue with Premium",
   "premiumButton": "Premium",
-
   "freeTopic": "Free topic",
   "freeTopicHint": "e.g. travel",
   "freeTopicCardSubtitle": "Have a conversation on any topic",
@@ -96,12 +244,10 @@
   "scenariosLoadError": "Couldn’t load scenarios. Check your connection.",
   "limitReachedTitle": "Limit reached",
   "startConversation": "Start",
-
   "feedbackTitle": "Result",
   "strengths": "Strengths",
   "mistakes": "Mistakes",
   "feedbackLocked": "The full analysis (all mistakes and tips) unlocks with Premium.",
-
   "micPermission": "Microphone access needed — enable it in phone settings.",
   "recordStartError": "Couldn’t start recording.",
   "audioCaptureError": "Audio not captured.",
@@ -109,7 +255,16 @@
   "turnLimitReached": "Conversation limit reached. Get your result.",
   "speechNotRecognized": "Speech not recognised — please try again.",
   "chatTurnCounter": "Chat · {turn}/{max} turns",
-  "@chatTurnCounter": { "placeholders": { "turn": { "type": "int" }, "max": { "type": "int" } } },
+  "@chatTurnCounter": {
+    "placeholders": {
+      "turn": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
   "finishSession": "Finish",
   "selectVoice": "Choose voice",
   "turnLimitBanner": "Conversation limit reached — tap “Finish” for your result.",
@@ -118,7 +273,6 @@
   "composerHint": "Type a message or speak…",
   "recordingLabel": "Recording",
   "tapToSend": "Tap to send",
-
   "chooseVoice": "Choose a voice",
   "voicesLoadError": "Couldn’t load the voice list.",
   "noVoices": "No voices available yet.",
@@ -126,7 +280,6 @@
   "voicePreviewError": "Couldn’t play the voice.",
   "genderFemale": "Female",
   "genderMale": "Male",
-
   "noSets": "No sets yet",
   "noWords": "No words",
   "tapCardToFlip": "Tap the card to see it",
@@ -134,32 +287,112 @@
   "know": "Knew it",
   "congrats": "Congratulations! 🎉",
   "vocabResult": "You knew {learned} of {total} words.",
-  "@vocabResult": { "placeholders": { "learned": { "type": "int" }, "total": { "type": "int" } } },
-
+  "@vocabResult": {
+    "placeholders": {
+      "learned": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "gamesTitle": "Games",
+  "gamesVocabTitle": "Word games",
+  "gamesVocabSubtitle": "Alone, against Gainsy, or a live opponent",
+  "gamesGrammarTitle": "Grammar",
+  "gamesGrammarSubtitle": "Learn the rule, then drill it",
+  "gamesBrowseTitle": "Browse words",
+  "gamesBrowseSubtitle": "With translation and an example",
+  "gamesReviewSubtitle": "Words you are about to forget",
   "reviewTitle": "Review",
   "allReviewed": "All reviewed! 🎉",
   "noReviewWords": "No words to review right now.\nKeep learning new words.",
   "wordSets": "Word sets",
   "greatJob": "Great job! 🎉",
   "reviewResult": "You recalled {correct} of {reviewed} words.",
-  "@reviewResult": { "placeholders": { "correct": { "type": "int" }, "reviewed": { "type": "int" } } },
+  "@reviewResult": {
+    "placeholders": {
+      "correct": {
+        "type": "int"
+      },
+      "reviewed": {
+        "type": "int"
+      }
+    }
+  },
   "tapToSeeMeaning": "Tap the card to see the meaning",
   "couldntRecall": "Didn’t recall",
   "recalled": "Recalled",
-
   "noTopics": "No topics yet",
   "atLeastOneAnswer": "Give at least one answer",
   "grammarScore": "Result: {score} / {total}",
-  "@grammarScore": { "placeholders": { "score": { "type": "int" }, "total": { "type": "int" } } },
-
+  "@grammarScore": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "placementTestTitle": "Level test",
   "noQuestions": "No questions found",
   "resultReady": "Result ready 🎯",
   "yourEnglishLevel": "Your English level",
+  "placementResultBody": "Your tutor will speak at this level from now on, and it moves as you improve.",
+  "placementLastResultTitle": "Your last result",
+  "placementTakenToday": "Taken today",
+  "placementTakenYesterday": "Taken yesterday",
+  "placementTakenDaysAgo": "Taken {days} days ago",
+  "@placementTakenDaysAgo": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "placementRetakeQuestion": "Do you want to take the test again?",
+  "placementRetakeReplaces": "Your new result will replace this level.",
+  "placementRetakeAction": "Yes, start again",
+  "placementKeepAction": "No, keep my level",
+  "levelInviteTitle": "First, let's find your level",
+  "levelInviteBody": "A few quick questions. After that your tutor speaks at a level you can follow, instead of guessing.",
+  "levelInviteMeta": "18 questions · about 2 minutes",
+  "levelInviteStart": "Find my level",
+  "levelInviteSkip": "Not now",
+  "leaderboardTitle": "Leaderboard",
+  "navLeaderboard": "Leaderboard",
+  "leaderboardThisWeek": "This week",
+  "leaderboardLastWeek": "Last week",
+  "leaderboardEmpty": "Nobody has earned XP this week yet.",
+  "leaderboardEmptyLastWeek": "Nobody earned XP last week.",
+  "leaderboardFirstPlaceOpen": "First conversation, first place.",
+  "leaderboardNotRankedYet": "Finish one lesson to join this week's board.",
+  "leaderboardYou": "You",
+  "leaderboardYouAreFirst": "You are first — hold it.",
+  "leaderboardPlaceSuffix": "th place —",
+  "leaderboardStreakDays": "{days} days",
+  "@leaderboardStreakDays": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "leaderboardResetsMonday": "The board starts again every Monday.",
+  "tierFree": "Free",
+  "homeLevelUnknown": "Level: not set",
+  "statStreak": "Day streak",
+  "statGoal": "Goal",
+  "homeAiKicker": "Recommended",
+  "homeAiTitle": "Start a conversation with AI",
+  "homeAiSubtitle": "Sharpen your speaking",
+  "homeAiLocked": "Opens once your level is set",
   "startAction": "Start",
   "finishAction": "Finish",
   "nextAction": "Next",
-
   "choosePayment": "Choose a payment method",
   "paymentPageError": "Couldn’t open the payment page",
   "finishPaymentTitle": "Complete the payment",
@@ -168,34 +401,76 @@
   "cancelSubscriptionBody": "Benefits stay until the period ends. Continue?",
   "currentPlan": "Current plan",
   "validUntil": "Valid until: {date}",
-  "@validUntil": { "placeholders": { "date": { "type": "String" } } },
+  "@validUntil": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
   "cancelAction": "Cancel",
   "pricePerMonth": "{price} / month",
-  "@pricePerMonth": { "placeholders": { "price": { "type": "String" } } },
+  "@pricePerMonth": {
+    "placeholders": {
+      "price": {
+        "type": "String"
+      }
+    }
+  },
   "choosePlan": "Choose",
-
   "quotaTitle": "Daily speaking time",
   "quotaMinutesLeft": "{minutes} min left",
-  "@quotaMinutesLeft": { "placeholders": { "minutes": { "type": "int" } } },
+  "@quotaMinutesLeft": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
   "quotaUsedOf": "{used} of {total} min used",
-  "@quotaUsedOf": { "placeholders": { "used": { "type": "int" }, "total": { "type": "int" } } },
+  "@quotaUsedOf": {
+    "placeholders": {
+      "used": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
   "quotaExhausted": "Today's minutes are used up",
   "quotaUpgrade": "Increase limit",
-
   "commProfileTitle": "Communication Profile",
   "commProfileEmpty": "Have a few conversations with the AI tutor — your profile builds itself from your real speech.",
   "focusTagsTitle": "Working on now",
   "paceLabel": "Speaking pace",
   "paceValue": "{wpm} words/min",
-  "@paceValue": { "placeholders": { "wpm": { "type": "int" } } },
+  "@paceValue": {
+    "placeholders": {
+      "wpm": {
+        "type": "int"
+      }
+    }
+  },
   "paceTarget": "goal {target}",
-  "@paceTarget": { "placeholders": { "target": { "type": "int" } } },
+  "@paceTarget": {
+    "placeholders": {
+      "target": {
+        "type": "int"
+      }
+    }
+  },
   "minutesSpoken": "Minutes spoken",
   "wordsSpoken": "Words spoken",
   "basedOnSessions": "based on {count} sessions",
-  "@basedOnSessions": { "placeholders": { "count": { "type": "int" } } },
+  "@basedOnSessions": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "settingsTitle": "Settings",
-
   "paywallReportTitle": "Unlock your full report",
   "paywallReportBody": "Every mistake, correction and personal tip — with Premium.",
   "paywallSeePlans": "See plans",
@@ -203,9 +478,7 @@
   "planPopular": "Most popular",
   "premiumHeroTitle": "EduGain Premium",
   "premiumHeroBody": "Speak more every day, open every track and get the full analysis of your speech.",
-
   "appTagline": "English with artificial intelligence",
-
   "welcomeChooseLanguage": "Choose your language",
   "welcomeSkip": "Skip",
   "welcomeStart": "Get started",
@@ -215,35 +488,662 @@
   "welcomeCoachBody": "Gentle corrections after every sentence and a clear report on your grammar, vocabulary and fluency.",
   "welcomeGoalTitle": "A path to your goal",
   "welcomeGoalBody": "IELTS, career, travel or everyday talk — follow a track that adapts to your weak spots.",
-
   "xpSourceDailyGoal": "Daily goal",
   "xpSourceStreak": "Streak bonus",
-
   "coachCorrection": "Correction",
   "coachNatural": "Natural version",
   "coachGrammar": "Grammar",
   "coachVocabulary": "Vocabulary",
   "coachPronunciation": "Pronunciation",
-
   "statusSpeaking": "Speaking…",
   "statusListening": "Listening…",
   "statusThinking": "Thinking…",
-
   "scoreOverall": "Overall",
   "scoreGrammar": "Grammar",
   "scoreVocabulary": "Vocabulary",
   "scoreFluency": "Fluency",
   "scorePronunciation": "Pronunciation",
   "scoresEstimatedNote": "Fluency & pronunciation are estimated from your text.",
-
   "voiceUnavailable": "Voice is temporarily unavailable.",
-
-  "listenModeOn": "Listening mode — text hidden",
-  "listenModeOff": "Show text",
   "tapToReveal": "Tap to reveal",
-
   "actionTranslate": "Translate",
   "actionHint": "Hint",
   "hintTitle": "How to respond",
-  "hintTip": "Answer in a full sentence and ask a question back to keep the conversation going."
+  "hintTip": "Answer in a full sentence and ask a question back to keep the conversation going.",
+  "groupChatTitle": "Group chat",
+  "groupCreateRoom": "Create room",
+  "groupNewRoom": "New group chat",
+  "groupTopicLabel": "Topic",
+  "groupVisibilityLabel": "Visibility",
+  "groupPublicOption": "Public",
+  "groupPrivateOption": "Private",
+  "groupPublicHint": "Anyone can join from the lobby",
+  "groupPrivateHint": "Join only by code or link",
+  "groupParticipantsCount": "Participants: {count}",
+  "@groupParticipantsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "groupCreateAndStart": "Create and start",
+  "groupCreateFailed": "Couldn’t create the room",
+  "groupEmptyTitle": "No open chats yet",
+  "groupEmptySubtitle": "Be the first to create a room!",
+  "groupJoinByCode": "Join by code",
+  "groupCodeHint": "e.g. ABC123",
+  "groupInviteFriends": "Invite your friends",
+  "groupShareTelegram": "Share on Telegram",
+  "groupCopyCode": "Copy code",
+  "groupCodeCopied": "Code copied",
+  "inviteCopied": "Invite copied — paste it to a friend",
+  "groupInvite": "Invite",
+  "groupInviteShareText": "Join our group speaking room on EduGain! 🎙\n\nRoom code: {code}\n\nOpen @edugain_bot → Speaking → Group room → “Join by code”",
+  "@groupInviteShareText": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "groupConnected": "Connected",
+  "groupConnectingStatus": "Connecting…",
+  "groupYou": "You",
+  "groupMicOff": "Mic off",
+  "groupRemove": "Remove",
+  "groupRoomNotFound": "Room not found",
+  "groupFull": "Full",
+  "groupJoin": "Join",
+  "groupKickedMsg": "You were removed from the room",
+  "groupConnectErrorMsg": "Connection error",
+  "groupChatEmpty": "No messages yet — be the first to write",
+  "groupModeratorNote": "The AI moderator keeps the topic on track",
+  "groupRule4b": "Follow the AI moderator",
+  "groupCallTime": "Call time",
+  "groupLeaveRoom": "Leave the room",
+  "groupOthers": "Others",
+  "groupWriteMessage": "Write a message…",
+  "groupParticipants": "Participants",
+  "groupSeeAll": "See all",
+  "groupRulesTitle": "Room rules",
+  "groupRule1": "Listen to each other",
+  "groupRule2": "Be respectful",
+  "groupRule3": "Speak in English",
+  "groupRule4": "No spam",
+  "groupSettingsTitle": "Call settings",
+  "groupSettingMic": "Microphone",
+  "groupSettingNotify": "Alerts",
+  "groupSettingRules": "Rules",
+  "groupSpeakNow": "Speak",
+  "groupMuteMic": "Turn microphone off",
+  "groupSpeakingNow": "SPEAKING NOW",
+  "groupNobodySpeaking": "Nobody is speaking",
+  "groupInRoom": "IN THE ROOM",
+  "groupMuteMember": "Mute",
+  "groupMakeHost": "Make host",
+  "groupMuteEveryone": "Mute everyone",
+  "groupMutedByHost": "The host muted you",
+  "groupMicBlocked": "Microphone not allowed",
+  "groupHostBadge": "Host",
+  "groupMore": "more",
+  "grammarTitle": "Grammar",
+  "grammarChooseLevel": "Choose your level",
+  "grammarLevelsSubtitle": "From A1 to C2 — step-by-step grammar",
+  "grammarTopicCount": "{count} topics",
+  "@grammarTopicCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "comingSoon": "Coming soon",
+  "grammarLevelA1": "Beginner",
+  "grammarLevelA2": "Elementary",
+  "grammarLevelB1": "Intermediate",
+  "grammarLevelB2": "Upper-intermediate",
+  "grammarLevelC1": "Advanced",
+  "grammarLevelC2": "Proficient",
+  "grammarRulePlusPractice": "Rule + practice",
+  "grammarLearnRule": "Learn the rule",
+  "grammarRuleExamplesPattern": "Rule, examples and pattern",
+  "grammarPractice": "Practice",
+  "grammarPracticeSubtitle": "Fill-in-the-blank + sentence-building games",
+  "grammarStartPractice": "Start practice",
+  "grammarRuleLabel": "Rule",
+  "grammarRuleReadySpeaking": "Now try using this rule in your Speaking practice 🎯",
+  "grammarNotEnoughExercises": "Not enough exercises for this topic.",
+  "grammarChooseForm": "CHOOSE THE CORRECT FORM",
+  "grammarBuildSentence": "BUILD THE SENTENCE",
+  "answerCorrectExcl": "Correct!",
+  "answerWrongLabel": "Wrong",
+  "correctAnswerLabel": "Correct answer: {answer}",
+  "@correctAnswerLabel": {
+    "placeholders": {
+      "answer": {
+        "type": "String"
+      }
+    }
+  },
+  "vocabWhatToDo": "What shall we do?",
+  "vocabLearnTitle": "Learn words",
+  "vocabLearnSubtitle": "See new words with translations and examples",
+  "vocabTestKnowledge": "Test your knowledge",
+  "vocabTestSubtitle": "Check what you’ve learned through games",
+  "vocabDailyReview": "Daily review",
+  "vocabDueReady": "{count} words are ready to review — reinforce them.",
+  "@vocabDueReady": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vocabStartReview": "Start review",
+  "vocabNotEnoughReview": "Not enough words to review",
+  "vocabWordCount": "{count} words",
+  "@vocabWordCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "vocabWordSet": "Word set",
+  "vocabHowToPlay": "How shall we play?",
+  "vocabSoloTitle": "Solo play",
+  "vocabSoloSubtitle": "Learn words at your own pace",
+  "vocabSpellTitle": "Spell it",
+  "vocabSpellSubtitle": "Spell the word from memory",
+  "vocabDuelBotTitle": "Duel with Gainsy",
+  "vocabDuelBotSubtitle": "A speed race against the bot",
+  "vocabDuelOnlineTitle": "Play with a person",
+  "vocabDuelOnlineSubtitle": "A speed race against a live opponent",
+  "vocabNotEnoughWords": "Not enough words in this set to play.",
+  "loadRetryError": "Loading error. Please try again.",
+  "vocabGainsyAnswering": "Gainsy is answering…",
+  "vocabFindingOpponent": "Finding an opponent…",
+  "vocabDuelWaitHint": "You’ll be matched automatically when another learner picks this game",
+  "vocabNoOpponent": "No online opponent right now.",
+  "vocabPlayWithGainsy": "Play with Gainsy",
+  "vocabPartnerAnswering": "{name} is answering…",
+  "@vocabPartnerAnswering": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "vocabConnLostPlayBot": "Connection problem. Play with Gainsy instead?",
+  "backAction": "Back",
+  "vocabSpellInstruction": "SPELL THE WORD",
+  "vocabNoSpellWords": "No suitable words in this set to spell.",
+  "gameChooseTranslation": "Choose the translation",
+  "gameChooseWord": "Choose the word",
+  "gameWordsReadySpeaking": "These words are now ready for your Speaking practice 🎯",
+  "gameYouWon": "You won!",
+  "gameOpponentAhead": "{name} is ahead this time",
+  "@gameOpponentAhead": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "gameNiceWork": "Nice work!",
+  "youLabel": "You",
+  "gameCorrectAnswers": "Correct",
+  "gameCombo": "Combo",
+  "gameAccuracy": "Accuracy",
+  "gamePlayAgain": "Play again",
+  "vocabTitle": "Vocabulary",
+  "speakingSectionAi": "With the AI tutor · always available",
+  "speakingSectionLive": "With people · live",
+  "speakingFreeTitle": "Free talk",
+  "speakingFreeSubtitle": "With the AI, any topic",
+  "speakingTopicsTitle": "Ready lessons",
+  "speakingTopicsSubtitle": "With the AI, at your level",
+  "speakingGroupSubtitle": "Join an open room or create your own",
+  "speakingOneToOneTitle": "1:1 live chat",
+  "speakingOneToOneSubtitle": "Face-to-face practice with one person",
+  "peerLiveChat": "Live conversation",
+  "peerFriendRoom": "Room with a friend",
+  "peerJoinByCode": "Join by code",
+  "peerHistory": "Conversation history",
+  "peerConvCount": "{count} conversations",
+  "@peerConvCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "peerRoomCode": "Room code",
+  "peerEnter": "Enter",
+  "peerOnlineCount": "{count} people online",
+  "@peerOnlineCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "peerFindPartner": "Find a partner",
+  "peerFindPartnerSubtitle": "Connect randomly with a learner online\nand have a live English conversation",
+  "peerNoHistoryTitle": "No conversations yet",
+  "peerNoHistorySubtitle": "Find your first partner — every conversation\nis saved here.",
+  "peerToday": "Today",
+  "peerYesterday": "Yesterday",
+  "peerDurMinSec": "{m} min {s} s",
+  "@peerDurMinSec": {
+    "placeholders": {
+      "m": {
+        "type": "int"
+      },
+      "s": {
+        "type": "int"
+      }
+    }
+  },
+  "peerDurSec": "{s} s",
+  "@peerDurSec": {
+    "placeholders": {
+      "s": {
+        "type": "int"
+      }
+    }
+  },
+  "peerStatusConnecting": "Connecting…",
+  "peerStatusSearching": "Looking for a partner…",
+  "peerStatusWaitingFriend": "Waiting for your friend",
+  "peerStatusConnectingVoice": "Connecting audio…",
+  "peerStatusLiveChat": "Live conversation · {time}",
+  "@peerStatusLiveChat": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "peerStatusEnded": "Conversation ended",
+  "peerSearchingTitle": "Looking for a suitable partner…",
+  "peerSearchingSubtitle": "You’ll connect automatically once another\nlearner starts searching",
+  "peerYourPartner": "Your conversation partner",
+  "peerInviteTelegram": "Invite via Telegram",
+  "peerInviteShareText": "Join me for a live English conversation on EduGain! Enter this code in the app’s “Live conversation” section: {code}",
+  "@peerInviteShareText": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "peerYourRole": "Your role",
+  "peerPartnerRole": "Partner’s role",
+  "peerStopSearching": "Stop searching",
+  "peerEndedPartnerLeft": "Your partner left the conversation.",
+  "peerEndedYouEnded": "Conversation ended. Good practice! 👏",
+  "peerEndedFailed": "A connection problem occurred. Please try again.",
+  "peerEndedDefault": "Conversation ended.",
+  "speakingDailyMission": "Daily mission",
+  "speakingRecommended": "Recommended for you",
+  "seeAll": "See all",
+  "tracksSectionTitle": "Tracks",
+  "lessonsOf": "{done} of {total} lessons",
+  "@lessonsOf": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "speakingExploreByGoal": "Explore by goal",
+  "speakingLessonPremium": "This lesson is part of Premium.",
+  "speakingReachToUnlock": "Reach {level} to unlock this lesson.",
+  "@speakingReachToUnlock": {
+    "placeholders": {
+      "level": {
+        "type": "String"
+      }
+    }
+  },
+  "speakingStartFirstLesson": "Start your first lesson",
+  "speakingPickGoal": "Pick a goal and begin speaking in seconds.",
+  "speakingStartNow": "Start now",
+  "speakingContinueLearning": "Continue learning",
+  "speakingPracticeAgain": "Practice again",
+  "speakingTodaysMission": "Today’s Speaking Mission",
+  "speakingLoadError": "Couldn’t load Speaking.",
+  "speakingLastToday": "Last opened today",
+  "speakingLastYesterday": "Last opened yesterday",
+  "speakingLastDaysAgo": "Last opened {days} days ago",
+  "@speakingLastDaysAgo": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "speakingMinutesShort": "{minutes} min",
+  "@speakingMinutesShort": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "speakingLessonsShort": "{done}/{total} lessons",
+  "@speakingLessonsShort": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "speakingLessonsCompleted": "{done} of {total} lessons completed",
+  "@speakingLessonsCompleted": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "turnFailedRetry": "Your answer wasn’t sent",
+  "assistTooFast": "One moment — try again in a second.",
+  "sayAgain": "Say again",
+  "saySlower": "Slower",
+  "youSaidLabel": "You said",
+  "sttMisheardHint": "Not what you said? Tap the mic and try again.",
+  "switchToTyping": "Type instead",
+  "switchToSpeaking": "Speak instead",
+  "sendAction": "Send",
+  "sendingLabel": "Sending",
+  "speakingHistoryTitle": "Past conversations",
+  "speakingHistoryEmpty": "No conversations yet",
+  "speakingHistoryEmptyBody": "Finish a speaking session and it will be saved here with its report.",
+  "speakingTurnsCount": "{count} turns",
+  "@speakingTurnsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "speakingUnfinished": "Unfinished",
+  "speakingNoReport": "No report for this conversation",
+  "speakingFreeTopicLabel": "Free topic",
+  "a11yMicReady": "Microphone. Tap to start speaking",
+  "a11yMicRecording": "Recording. Tap to send your answer",
+  "a11yMicBusy": "Please wait — the tutor is answering",
+  "speakingUnclearAudio": "Hard to hear — try saying it again a bit clearer",
+  "tapToHide": "Tap to hide the text",
+  "groupReply": "Reply",
+  "questionsDraw": "Random question",
+  "questionsDrawHint": "Run out of things to say? Tap Random question for one you have not answered yet.",
+  "questionsAllSeen": "All answered — starting over",
+  "courseUnitLocked": "This unit is not open yet — finish the one before it",
+  "courseUnitsDone": "{done} of {total} units done",
+  "@courseUnitsDone": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "courseStart": "Start",
+  "courseLessons": "Lessons",
+  "courseRule": "The rule",
+  "courseYouWillLearn": "THIS UNIT TEACHES",
+  "courseStartLesson": "Start",
+  "courseContinueLesson": "Continue lesson {n}",
+  "courseLessonN": "Lesson {n}",
+  "courseItemCount": "{n} exercises",
+  "courseMastery": "Mastery {level} of {max}",
+  "@courseContinueLesson": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@courseLessonN": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@courseItemCount": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@courseMastery": {
+    "placeholders": {
+      "level": {
+        "type": "int"
+      },
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "drillPickMeaning": "Choose the meaning of the word",
+  "drillPickWord": "Choose the English word",
+  "drillMatchPairs": "Tap on the left, then its pair on the right",
+  "drillPickAnswer": "Choose the correct answer",
+  "drillOrderWords": "Tap the words to build the sentence",
+  "drillTypeMissing": "Type the missing word",
+  "drillRewrite": "Rewrite the sentence",
+  "courseCheck": "Check",
+  "courseContinue": "Continue",
+  "courseCorrect": "Correct!",
+  "courseNotQuite": "Not this time",
+  "courseTheAnswerWas": "The answer: {answer}",
+  "courseLessonDone": "Lesson complete!",
+  "courseUnitDone": "Unit complete!",
+  "courseCorrectCount": "Correct",
+  "courseBackToPath": "Back to the path",
+  "courseQuitTitle": "Leave the lesson?",
+  "courseQuitBody": "Your answers so far will not be saved.",
+  "courseQuitStay": "Keep going",
+  "courseQuitLeave": "Leave",
+  "@courseTheAnswerWas": {
+    "placeholders": {
+      "answer": {
+        "type": "String"
+      }
+    }
+  },
+  "lessonCourseTitle": "Words & Rules",
+  "lessonCourseSubtitle": "Learn the rules, memorise the words",
+  "lessonPracticeTitle": "Practice",
+  "lessonPracticeSubtitle": "What you got wrong",
+  "courseWillReturn": "This one comes back at the end",
+  "courseTestFinish": "Finish",
+  "courseTestPassed": "{n} units unlocked!",
+  "courseTestFailed": "Not yet — start from the lessons",
+  "courseTestNoXp": "Jumping ahead earns no XP. Do the lessons and they pay normally.",
+  "courseJumpTitle": "Already know this?",
+  "courseJumpBody": "Answer {n} questions from the earlier units. Score above {pass}% and they open — but they earn no XP.",
+  "courseJumpStart": "Take the test",
+  "courseJumpCancel": "No, I will go in order",
+  "@courseTestPassed": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      }
+    }
+  },
+  "@courseJumpBody": {
+    "placeholders": {
+      "n": {
+        "type": "int"
+      },
+      "pass": {
+        "type": "int"
+      }
+    }
+  },
+  "courseReview": "REVIEW",
+  "courseQuitBodyKept": "What you answered is kept, but the lesson stays unfinished.",
+  "homeSpeakLive": "Speak live",
+  "homeGroupTitle": "Group room",
+  "homeGroupSubtitle": "Talk in an open room of up to 50",
+  "homePeerTitle": "Talk to a partner",
+  "homePeerSubtitle": "One to one, with a real person",
+  "peerFindTap": "Find a partner",
+  "profilePhotoTitle": "Profile picture",
+  "profilePhotoPick": "Choose from gallery",
+  "profilePhotoCamera": "Take a photo",
+  "profilePhotoReset": "Use my Telegram picture",
+  "profilePhotoSaved": "Picture updated",
+  "profilePhotoTooLarge": "That picture is too large — 2 MB at most",
+  "commProfileIntro": "From your recent conversations. Each score is out of 100.",
+  "bandStrong": "Strong",
+  "bandGood": "Good",
+  "bandMiddle": "Getting there",
+  "bandStarting": "Just starting",
+  "trendUp": "improving",
+  "trendDown": "slipping",
+  "trendSteady": "steady",
+  "paceExplain": "Fluent conversation usually runs 120–160 words a minute. Speed is not the goal on its own — being clear matters more.",
+  "focusTagsHint": "Your tutor will watch for these in your next conversations.",
+  "tagVerbTense": "Verb tenses",
+  "tagWordChoice": "Word choice",
+  "tagWordOrder": "Word order",
+  "tagArticles": "Articles (a / the)",
+  "tagPreposition": "Prepositions",
+  "tagPlural": "Plurals",
+  "tagAgreement": "Subject–verb agreement",
+  "tagPronoun": "Pronouns",
+  "tagComparative": "Comparatives",
+  "tagConditional": "Conditionals",
+  "tagQuestionForm": "Question forms",
+  "tagCollocation": "Word pairings",
+  "accountTitle": "Account",
+  "xpSourceCourse": "Course lesson",
+  "developerTitle": "Support",
+  "developerCopied": "Telegram handle copied",
+  "speakingTopicsTag": "CEFR · IELTS",
+  "peerWhoTitle": "Who would you like to talk to?",
+  "peerWhoFemale": "Women",
+  "peerWhoMale": "Men",
+  "peerWhoAny": "Anyone",
+  "peerWhoFemaleSub": "You will only be matched with women",
+  "peerWhoMaleSub": "You will only be matched with men",
+  "peerWhoAnySub": "Matches fastest",
+  "peerWhoStart": "Find a partner",
+  "peerWhoNarrowHint": "Narrowing the search can mean a longer wait.",
+  "peerWhoOnline": "{count} online now",
+  "@peerWhoOnline": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "accountName": "Name",
+  "accountUsername": "Telegram",
+  "accountPhone": "Phone",
+  "accountGender": "Gender",
+  "accountGenderUnset": "Not set",
+  "accountGenderFemale": "Female",
+  "accountGenderMale": "Male",
+  "accountGenderWhy": "Used to find you a suitable partner in live conversation.",
+  "accountNoUsername": "None",
+  "accountSaved": "Saved",
+  "quizTitle": "Live quiz",
+  "quizHubTitle": "Live quiz",
+  "quizHubSubtitle": "Join any time — a new match every 3 minutes",
+  "quizPlaying": "{count} playing",
+  "@quizPlaying": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "quizAlone": "Be the first in",
+  "quizQuestionOf": "{index} of {total}",
+  "@quizQuestionOf": {
+    "placeholders": {
+      "index": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "quizPickMeaning": "Choose the meaning",
+  "quizPickWord": "Choose the word",
+  "quizFillGap": "Fill the gap",
+  "quizGrammar": "Grammar",
+  "quizCorrect": "Correct",
+  "quizWrong": "Not this time",
+  "quizTimeUp": "Time up",
+  "quizPoints": "+{points}",
+  "@quizPoints": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      }
+    }
+  },
+  "quizMatchBoard": "This match",
+  "quizNextMatch": "Next match in {seconds}s",
+  "@quizNextMatch": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "quizMatchOver": "Match over",
+  "quizYouPlaceholder": "You",
+  "quizNoScoreYet": "Answer one to get on the board",
+  "quizEmpty": "The quiz is warming up. Try again in a moment.",
+  "quizJoinedMidMatch": "You joined mid-match — a new one starts soon",
+  "quizStart": "Start a quiz",
+  "quizStartHint": "Nobody is playing yet — open a game and everyone gets a nudge",
+  "quizLobbyTitle": "Waiting to start",
+  "quizWaitingFor": "{count} more to begin",
+  "@quizWaitingFor": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "quizStartingNow": "Starting…",
+  "quizImReady": "I'm ready",
+  "quizYouAreReady": "You're in",
+  "quizInLobby": "In the lobby",
+  "quizHostedBy": "{name} opened this game",
+  "@quizHostedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "quizLeave": "Leave",
+  "peerNoMicBody": "Microphone is off — tap to try again",
+  "peerListening": "Tap the mic when you want to speak"
 }

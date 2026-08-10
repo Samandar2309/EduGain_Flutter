@@ -234,7 +234,7 @@ class _PremiumHero extends StatelessWidget {
               borderRadius: BorderRadius.circular(18),
             ),
             child: const Icon(
-              Icons.workspace_premium_rounded,
+              Icons.military_tech,
               color: Colors.white,
               size: 30,
             ),
