@@ -2172,4 +2172,45 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get peerListening => 'Tap the mic when you want to speak';
+
+  @override
+  String get homeLiveOpen => 'Open now';
+
+  @override
+  String get homeLiveQuiet => 'Nobody yet';
+
+  @override
+  String homeOnlineN(int count) {
+    return '$count online';
+  }
+
+  @override
+  String get homeJoinChat => 'Join the chat';
+
+  @override
+  String get homeSeeAll => 'See all';
+
+  @override
+  String homeLessonsN(int count) {
+    return '$count lessons';
+  }
+
+  @override
+  String homeGamesN(int count) {
+    return '$count games';
+  }
+
+  @override
+  String get homeWordsTitle => 'Words & Rules';
+
+  @override
+  String get homeWordsSub => 'New words, rules and practice';
+
+  @override
+  String get homeGamesSub => 'Play and sharpen your English';
+
+  @override
+  String homeLessonsAt(int done, int total) {
+    return '$done of $total';
+  }
 }

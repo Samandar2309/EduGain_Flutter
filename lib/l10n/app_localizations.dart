@@ -4053,6 +4053,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Tap the mic when you want to speak'**
   String get peerListening;
+
+  /// No description provided for @homeLiveOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open now'**
+  String get homeLiveOpen;
+
+  /// No description provided for @homeLiveQuiet.
+  ///
+  /// In en, this message translates to:
+  /// **'Nobody yet'**
+  String get homeLiveQuiet;
+
+  /// No description provided for @homeOnlineN.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} online'**
+  String homeOnlineN(int count);
+
+  /// No description provided for @homeJoinChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Join the chat'**
+  String get homeJoinChat;
+
+  /// No description provided for @homeSeeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'See all'**
+  String get homeSeeAll;
+
+  /// No description provided for @homeLessonsN.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} lessons'**
+  String homeLessonsN(int count);
+
+  /// No description provided for @homeGamesN.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} games'**
+  String homeGamesN(int count);
+
+  /// No description provided for @homeWordsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Words & Rules'**
+  String get homeWordsTitle;
+
+  /// No description provided for @homeWordsSub.
+  ///
+  /// In en, this message translates to:
+  /// **'New words, rules and practice'**
+  String get homeWordsSub;
+
+  /// No description provided for @homeGamesSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Play and sharpen your English'**
+  String get homeGamesSub;
+
+  /// No description provided for @homeLessonsAt.
+  ///
+  /// In en, this message translates to:
+  /// **'{done} of {total}'**
+  String homeLessonsAt(int done, int total);
 }
 
 class _AppLocalizationsDelegate

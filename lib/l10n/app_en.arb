@@ -1145,5 +1145,47 @@
   },
   "quizLeave": "Leave",
   "peerNoMicBody": "Microphone is off — tap to try again",
-  "peerListening": "Tap the mic when you want to speak"
+  "peerListening": "Tap the mic when you want to speak",
+  "homeLiveOpen": "Open now",
+  "homeLiveQuiet": "Nobody yet",
+  "homeOnlineN": "{count} online",
+  "@homeOnlineN": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeJoinChat": "Join the chat",
+  "homeSeeAll": "See all",
+  "homeLessonsN": "{count} lessons",
+  "@homeLessonsN": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeGamesN": "{count} games",
+  "@homeGamesN": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeWordsTitle": "Words & Rules",
+  "homeWordsSub": "New words, rules and practice",
+  "homeGamesSub": "Play and sharpen your English",
+  "homeLessonsAt": "{done} of {total}",
+  "@homeLessonsAt": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  }
 }

@@ -939,5 +939,47 @@
   },
   "quizLeave": "Выйти",
   "peerNoMicBody": "Микрофон выключен — нажмите ещё раз",
-  "peerListening": "Нажмите на микрофон, чтобы говорить"
+  "peerListening": "Нажмите на микрофон, чтобы говорить",
+  "homeLiveOpen": "Открыто",
+  "homeLiveQuiet": "Пока никого",
+  "homeOnlineN": "{count} онлайн",
+  "@homeOnlineN": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeJoinChat": "Войти в чат",
+  "homeSeeAll": "Все",
+  "homeLessonsN": "{count} урока",
+  "@homeLessonsN": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeGamesN": "{count} игр",
+  "@homeGamesN": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeWordsTitle": "Слова и правила",
+  "homeWordsSub": "Новые слова, правила и упражнения",
+  "homeGamesSub": "Играйте и улучшайте английский",
+  "homeLessonsAt": "{done} из {total}",
+  "@homeLessonsAt": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  }
 }

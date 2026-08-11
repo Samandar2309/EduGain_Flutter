@@ -2188,4 +2188,45 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get peerListening => 'Gapirish uchun mikrofonni bosing';
+
+  @override
+  String get homeLiveOpen => 'Hozir ochiq';
+
+  @override
+  String get homeLiveQuiet => 'Hozircha bo\'sh';
+
+  @override
+  String homeOnlineN(int count) {
+    return '$count online';
+  }
+
+  @override
+  String get homeJoinChat => 'Suhbatga qo\'shilish';
+
+  @override
+  String get homeSeeAll => 'Barchasini ko\'rish';
+
+  @override
+  String homeLessonsN(int count) {
+    return '$count dars';
+  }
+
+  @override
+  String homeGamesN(int count) {
+    return '$count o\'yin';
+  }
+
+  @override
+  String get homeWordsTitle => 'So\'zlar va grammatika';
+
+  @override
+  String get homeWordsSub => 'Yangi so\'zlar, qoidalar va mashqlar';
+
+  @override
+  String get homeGamesSub => 'O\'ynang va ingliz tilini yaxshilang';
+
+  @override
+  String homeLessonsAt(int done, int total) {
+    return '$done / $total dars';
+  }
 }

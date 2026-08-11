@@ -5,6 +5,10 @@ import 'package:go_router/go_router.dart';
 import '../../../core/providers.dart';
 import '../../../core/ui/components.dart';
 import '../../../core/ui/coming_soon.dart';
+import '../../course/application/providers.dart';
+import '../../course/domain/models.dart';
+import '../../group/application/group_providers.dart';
+import '../../peer/application/peer_call_controller.dart';
 import '../../../core/ui/tokens.dart';
 import '../../../core/ui/user_photo.dart';
 import '../../../l10n/app_localizations.dart';
@@ -648,7 +652,7 @@ class _Modules extends ConsumerWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _SectionRow(title: l.homeSpeakLive),
+        _SectionRow(title: l.homeSpeakLive, trailing: l.homeSeeAll),
         const SizedBox(height: AppSpace.sm),
         IntrinsicHeight(
           child: Row(
@@ -660,6 +664,19 @@ class _Modules extends ConsumerWidget {
                   title: l.homeGroupTitle,
                   subtitle: l.homeGroupSubtitle,
                   colours: const [Color(0xFF6D4BE8), Color(0xFF9F7BFF)],
+                  // Real occupancy of the busiest open room, or nothing. The
+                  // badge is the answer to "who is in there" and a made-up one
+                  // would be found out the moment somebody walked in.
+                  badge: ref
+                      .watch(groupLobbyProvider)
+                      .whenOrNull(
+                        data: (rooms) {
+                          final open = rooms.where((r) => r.isPublic).toList();
+                          if (open.isEmpty) return null;
+                          open.sort((a, b) => b.count.compareTo(a.count));
+                          return '${open.first.count} / ${open.first.max}';
+                        },
+                      ),
                   onTap: () => context.push('/speaking/group'),
                 ),
               ),
@@ -670,58 +687,80 @@ class _Modules extends ConsumerWidget {
                   title: l.homePeerTitle,
                   subtitle: l.homePeerSubtitle,
                   colours: const [Color(0xFF0EA5E9), Color(0xFF38BDF8)],
-                  onTap: () => context.push('/peer'),
+                  badge: ref
+                      .watch(peerHubProvider)
+                      .whenOrNull(
+                        data: (hub) =>
+                            hub.online > 0 ? l.homeOnlineN(hub.online) : null,
+                      ),
+                  // Straight into the search, not into a hub with a filter
+                  // sheet in front of it. The preference was already answered
+                  // once during onboarding, so asking again every time was a
+                  // question with a known answer standing between a learner
+                  // and the thing they tapped.
+                  onTap: () => context.push(
+                    '/peer/call',
+                    extra: const PeerLaunchMatch(),
+                  ),
                 ),
               ),
             ],
           ),
         ),
         const SizedBox(height: AppSpace.xl),
-        _SectionRow(title: l.modules),
+        _SectionRow(title: l.modules, trailing: l.homeSeeAll),
         const SizedBox(height: AppSpace.sm),
-        Row(
-          children: [
-            Expanded(
-              // The third way in, and the one easiest to forget: the hero and
-              // the Darslar tile are obvious, this small tile is not. A locked
-              // feature with one live door left is worse than no lock — the
-              // learner finds it, taps it, and meets a 423 nobody designed for.
-              child: ComingSoonVeil(
-                enabled: !ref.watch(aiUnlockedProvider),
-                label: l.comingSoon,
-                radius: AppRadius.lg,
-                compact: true,
+        // Two, not three. Speaking used to sit here as well — the same locked
+        // tutor already filling the hero above, so the first two things on the
+        // screen were both things nobody can open yet.
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(
                 child: _ModuleTile(
-                  icon: Icons.record_voice_over_rounded,
-                  colour: AppColors.speaking,
-                  title: 'Speaking',
-                  onTap: () => context.push('/speaking'),
+                  icon: Icons.menu_book_rounded,
+                  colour: AppColors.brand,
+                  title: l.homeWordsTitle,
+                  subtitle: l.homeWordsSub,
+                  // Where this learner has got to, not how big the catalogue
+                  // is. "91 dars" describes the app; "12 / 91" describes them,
+                  // and only the second is a reason to open it.
+                  chip: ref
+                      .watch(coursePathProvider)
+                      .whenOrNull(
+                        data: (levels) {
+                          var done = 0;
+                          var total = 0;
+                          for (final level in levels) {
+                            for (final unit in level.units) {
+                              total += 1;
+                              if (unit.state == UnitState.done) done += 1;
+                            }
+                          }
+                          return total > 0
+                              ? l.homeLessonsAt(done, total)
+                              : null;
+                        },
+                      ),
+                  onTap: () => context.push('/course'),
                 ),
               ),
-            ),
-            const SizedBox(width: AppSpace.sm),
-            // One tile where Vocabulary and Grammar used to be two. Each of
-            // them taught half of what a sentence needs, and asked the learner
-            // to decide which half to do today.
-            Expanded(
-              child: _ModuleTile(
-                icon: Icons.school_rounded,
-                colour: AppColors.brand,
-                title: AppLocalizations.of(context).lessonCourseTitle,
-                onTap: () => context.push('/course'),
+              const SizedBox(width: AppSpace.md),
+              Expanded(
+                child: _ModuleTile(
+                  icon: Icons.sports_esports_rounded,
+                  colour: AppColors.placement,
+                  title: l.gamesTitle,
+                  subtitle: l.homeGamesSub,
+                  // Solo, against Gainsy, the online duel, spelling, and the
+                  // live quiz. A fixed fact about the app, not a guess.
+                  chip: l.homeGamesN(5),
+                  onTap: () => context.push('/games'),
+                ),
               ),
-            ),
-            const SizedBox(width: AppSpace.sm),
-            Expanded(
-              child: _ModuleTile(
-                icon: Icons.sports_esports_rounded,
-                colour: AppColors.placement,
-                title: AppLocalizations.of(context).gamesTitle,
-                onTap: () => context.push('/games'),
-              ),
-            ),
-
-          ],
+            ],
+          ),
         ),
       ],
     );
@@ -734,57 +773,109 @@ class _ModuleTile extends StatelessWidget {
     required this.colour,
     required this.title,
     required this.onTap,
+    this.subtitle,
+    this.chip,
   });
 
   final IconData icon;
   final Color colour;
   final String title;
   final VoidCallback onTap;
+  final String? subtitle;
+
+  /// One concrete number — "91 dars", "5 o'yin". Omitted rather than guessed
+  /// when the real figure has not loaded.
+  final String? chip;
 
   @override
-  Widget build(BuildContext context) => GestureDetector(
-    onTap: onTap,
-    child: Container(
-      padding: const EdgeInsets.symmetric(vertical: AppSpace.md),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(AppRadius.lg),
-        border: Border.all(color: AppColors.line),
-        boxShadow: AppShadow.soft,
-      ),
-      child: Column(
-        children: [
-          Container(
-            width: 38,
-            height: 38,
-            decoration: BoxDecoration(
-              // Tinted, not saturated — see the note on the lessons tiles.
-              color: colour.withValues(alpha: 0.12),
-              borderRadius: BorderRadius.circular(13),
+  Widget build(BuildContext context) => Material(
+    borderRadius: BorderRadius.circular(AppRadius.lg),
+    clipBehavior: Clip.antiAlias,
+    color: AppColors.surface,
+    child: InkWell(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.all(AppSpace.md),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(AppRadius.lg),
+          border: Border.all(color: AppColors.line),
+          boxShadow: AppShadow.soft,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Row(
+              children: [
+                Container(
+                  width: 38,
+                  height: 38,
+                  decoration: BoxDecoration(
+                    color: colour.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(AppRadius.md),
+                  ),
+                  child: Icon(icon, color: colour, size: 20),
+                ),
+                const Spacer(),
+                const Icon(
+                  Icons.chevron_right_rounded,
+                  size: 18,
+                  color: AppColors.inkFaint,
+                ),
+              ],
             ),
-            // The glyph carries the colour now. It was white, which was right
-            // on a saturated tile and invisible on a pale one.
-            child: Icon(icon, color: colour, size: 20),
-          ),
-          const SizedBox(height: 7),
-          Text(
-            title,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-            style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w700),
-          ),
-        ],
+            const SizedBox(height: AppSpace.md),
+            Text(
+              title,
+              maxLines: 2,
+              style: const TextStyle(
+                fontSize: 14,
+                height: 1.2,
+                fontWeight: FontWeight.w800,
+                letterSpacing: -0.2,
+                color: AppColors.ink,
+              ),
+            ),
+            if (subtitle != null) ...[
+              const SizedBox(height: 3),
+              Text(
+                subtitle!,
+                maxLines: 2,
+                style: const TextStyle(
+                  fontSize: 11.5,
+                  height: 1.3,
+                  color: AppColors.inkSoft,
+                ),
+              ),
+            ],
+            if (chip != null) ...[
+              const SizedBox(height: AppSpace.md),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 9,
+                  vertical: 4,
+                ),
+                decoration: BoxDecoration(
+                  color: colour.withValues(alpha: 0.12),
+                  borderRadius: BorderRadius.circular(AppRadius.pill),
+                ),
+                child: Text(
+                  chip!,
+                  style: TextStyle(
+                    fontSize: 11,
+                    fontWeight: FontWeight.w800,
+                    color: colour,
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
       ),
     ),
   );
 }
 
-// ── leaderboard preview ───────────────────────────────────────────────────
-
-/// The top of the board, plus the learner's own row when they sit below it.
-///
-/// On the home screen rather than only behind its tab: the point of a weekly
-/// board is that a standing is seen without being sought out.
 class _LeaderboardPreview extends ConsumerWidget {
   const _LeaderboardPreview();
 
@@ -1025,6 +1116,7 @@ class _LiveCard extends StatelessWidget {
     required this.subtitle,
     required this.colours,
     required this.onTap,
+    this.badge,
   });
 
   final IconData icon;
@@ -1033,76 +1125,163 @@ class _LiveCard extends StatelessWidget {
   final List<Color> colours;
   final VoidCallback onTap;
 
+  /// Live occupancy — "7 / 50", "2 online" — or null when there is nobody.
+  ///
+  /// Never a placeholder. An invented number here is found out the moment
+  /// somebody taps through and walks into an empty room, and after that the
+  /// real numbers elsewhere stop being believed too.
+  final String? badge;
+
   @override
-  Widget build(BuildContext context) => Material(
-    borderRadius: BorderRadius.circular(AppRadius.xl),
-    clipBehavior: Clip.antiAlias,
-    color: colours.first,
-    child: InkWell(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.all(AppSpace.md),
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-            colors: colours,
+  Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context);
+    final live = badge != null;
+    return Material(
+      borderRadius: BorderRadius.circular(AppRadius.xl),
+      clipBehavior: Clip.antiAlias,
+      color: colours.first,
+      child: InkWell(
+        onTap: onTap,
+        child: Container(
+          padding: const EdgeInsets.all(AppSpace.md),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: colours,
+            ),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  Container(
+                    width: 38,
+                    height: 38,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(alpha: 0.22),
+                      borderRadius: BorderRadius.circular(AppRadius.md),
+                    ),
+                    child: Icon(icon, color: Colors.white, size: 21),
+                  ),
+                  const SizedBox(width: AppSpace.sm),
+                  Expanded(
+                    child: Text(
+                      title,
+                      maxLines: 2,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 15,
+                        height: 1.15,
+                        fontWeight: FontWeight.w900,
+                        letterSpacing: -0.2,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: AppSpace.md),
+              // Status and headcount on one line: whether there is anything
+              // going on, and how much of it.
+              Row(
+                children: [
+                  Container(
+                    width: 8,
+                    height: 8,
+                    decoration: BoxDecoration(
+                      color: live
+                          ? const Color(0xFF34D399)
+                          : Colors.white.withValues(alpha: 0.45),
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  Flexible(
+                    child: Text(
+                      live ? l.homeLiveOpen : l.homeLiveQuiet,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 11.5,
+                        fontWeight: FontWeight.w800,
+                      ),
+                    ),
+                  ),
+                  if (live) ...[
+                    const SizedBox(width: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withValues(alpha: 0.26),
+                        borderRadius: BorderRadius.circular(AppRadius.pill),
+                      ),
+                      child: Text(
+                        badge!,
+                        maxLines: 1,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 11,
+                          fontWeight: FontWeight.w800,
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              ),
+              const SizedBox(height: 7),
+              Text(
+                subtitle,
+                maxLines: 3,
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.85),
+                  fontSize: 11.5,
+                  height: 1.3,
+                ),
+              ),
+              const SizedBox(height: AppSpace.md),
+              // The action inside the card. The whole card is tappable, but a
+              // button says what happens — and for the partner card what
+              // happens is the search itself, not a menu about it.
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        l.homeJoinChat,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          fontSize: 12.5,
+                          fontWeight: FontWeight.w800,
+                          color: colours.first,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 4),
+                    Icon(
+                      Icons.chevron_right_rounded,
+                      size: 17,
+                      color: colours.first,
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              children: [
-                Container(
-                  width: 40,
-                  height: 40,
-                  decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.22),
-                    borderRadius: BorderRadius.circular(AppRadius.md),
-                  ),
-                  child: Icon(icon, color: Colors.white, size: 22),
-                ),
-                const Spacer(),
-                // A live dot rather than a chevron: these two put you in a
-                // room with people who are there now, and that is worth
-                // saying.
-                Container(
-                  width: 8,
-                  height: 8,
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF34D399),
-                    shape: BoxShape.circle,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: AppSpace.md),
-            Text(
-              title,
-              maxLines: 2,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 15,
-                height: 1.2,
-                fontWeight: FontWeight.w900,
-                letterSpacing: -0.2,
-              ),
-            ),
-            const SizedBox(height: 3),
-            Text(
-              subtitle,
-              maxLines: 3,
-              style: TextStyle(
-                color: Colors.white.withValues(alpha: 0.85),
-                fontSize: 11.5,
-                height: 1.3,
-              ),
-            ),
-          ],
-        ),
       ),
-    ),
-  );
+    );
+  }
 }

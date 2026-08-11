@@ -2178,4 +2178,45 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get peerListening => 'Нажмите на микрофон, чтобы говорить';
+
+  @override
+  String get homeLiveOpen => 'Открыто';
+
+  @override
+  String get homeLiveQuiet => 'Пока никого';
+
+  @override
+  String homeOnlineN(int count) {
+    return '$count онлайн';
+  }
+
+  @override
+  String get homeJoinChat => 'Войти в чат';
+
+  @override
+  String get homeSeeAll => 'Все';
+
+  @override
+  String homeLessonsN(int count) {
+    return '$count урока';
+  }
+
+  @override
+  String homeGamesN(int count) {
+    return '$count игр';
+  }
+
+  @override
+  String get homeWordsTitle => 'Слова и правила';
+
+  @override
+  String get homeWordsSub => 'Новые слова, правила и упражнения';
+
+  @override
+  String get homeGamesSub => 'Играйте и улучшайте английский';
+
+  @override
+  String homeLessonsAt(int done, int total) {
+    return '$done из $total';
+  }
 }

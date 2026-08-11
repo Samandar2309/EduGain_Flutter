@@ -939,5 +939,47 @@
   },
   "quizLeave": "Chiqish",
   "peerNoMicBody": "Mikrofon yoqilmadi — qayta bosing",
-  "peerListening": "Gapirish uchun mikrofonni bosing"
+  "peerListening": "Gapirish uchun mikrofonni bosing",
+  "homeLiveOpen": "Hozir ochiq",
+  "homeLiveQuiet": "Hozircha bo'sh",
+  "homeOnlineN": "{count} online",
+  "@homeOnlineN": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeJoinChat": "Suhbatga qo'shilish",
+  "homeSeeAll": "Barchasini ko'rish",
+  "homeLessonsN": "{count} dars",
+  "@homeLessonsN": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeGamesN": "{count} o'yin",
+  "@homeGamesN": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homeWordsTitle": "So'zlar va grammatika",
+  "homeWordsSub": "Yangi so'zlar, qoidalar va mashqlar",
+  "homeGamesSub": "O'ynang va ingliz tilini yaxshilang",
+  "homeLessonsAt": "{done} / {total} dars",
+  "@homeLessonsAt": {
+    "placeholders": {
+      "done": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  }
 }
