@@ -27,3 +27,13 @@ class BackOrHome extends StatelessWidget {
     tooltip: MaterialLocalizations.of(context).backButtonTooltip,
   );
 }
+
+/// Leave the current screen, from anywhere it can be reached.
+///
+/// The same rule [BackOrHome] applies, for the buttons that are not app-bar
+/// icons — a "Back" at the end of a call, a "Close" on a result panel. A bare
+/// `context.pop()` in those places does nothing at all when a notification
+/// opened the screen directly, which leaves the learner holding a button that
+/// looks like the way out and is not.
+void popOrHome(BuildContext context) =>
+    context.canPop() ? context.pop() : context.go('/home');

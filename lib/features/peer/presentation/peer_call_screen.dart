@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/providers.dart';
 import '../../../core/share.dart';
+import '../../../core/ui/back_or_home.dart';
 import '../../../core/ui/tokens.dart';
 import '../../../core/ui/user_photo.dart';
 import '../../questions/application/providers.dart';
@@ -580,7 +581,7 @@ class _EndedPanel extends StatelessWidget {
               ),
             ),
             onPressed: () {
-              context.pop();
+              popOrHome(context);
               context.push('/subscriptions');
             },
             child: Text(l.premiumButton),
@@ -594,12 +595,12 @@ class _EndedPanel extends StatelessWidget {
                 vertical: 14,
               ),
             ),
-            onPressed: () => context.pop(),
+            onPressed: () => popOrHome(context),
             child: Text(l.backAction),
           ),
         if (outOfMinutes)
           TextButton(
-            onPressed: () => context.pop(),
+            onPressed: () => popOrHome(context),
             child: Text(
               l.backAction,
               style: const TextStyle(color: Colors.white54),
