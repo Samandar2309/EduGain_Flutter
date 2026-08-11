@@ -12,17 +12,22 @@ import '../domain/models.dart';
 /// the answer, so nothing in this file knows one — an answer is collected and
 /// handed upwards, and the verdict comes back from the server.
 abstract final class LessonPalette {
-  static const canvas = Color(0xFF0E1424);
-  static const surface = Color(0xFF161E33);
-  static const raised = Color(0xFF1D2740);
-  static const line = Color(0xFF23304D);
-  static const ink = Color(0xFFF2F5FF);
-  static const soft = Color(0xFF9AA7C7);
-  static const faint = Color(0xFF5D6B8C);
-  static const right = Color(0xFF34D399);
-  static const wrong = Color(0xFFF43F5E);
-  static const gold = Color(0xFFFBBF24);
-  static const pick = Color(0xFF60A5FA);
+  // Mapped onto the app's own tokens rather than kept as a private dark
+  // set. Three screens in this section each carried an identical copy of
+  // that palette while the lesson and test-out screens next door already
+  // used AppColors — so the course was the only place in the app that
+  // went dark, and it was not even consistent with itself.
+  static const canvas = AppColors.canvas;
+  static const surface = AppColors.surface;
+  static const raised = AppColors.canvasAlt;
+  static const line = AppColors.line;
+  static const ink = AppColors.ink;
+  static const soft = AppColors.inkSoft;
+  static const faint = AppColors.inkFaint;
+  static const right = AppColors.success;
+  static const wrong = AppColors.danger;
+  static const gold = AppColors.xp;
+  static const pick = AppColors.speaking;
 }
 
 /// The line that says what is being asked.

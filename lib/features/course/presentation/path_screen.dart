@@ -52,13 +52,18 @@ class CoursePathScreen extends ConsumerWidget {
 /// a single continuous surface rather than a stack of cards, and it needs a
 /// ground of its own to sit on.
 abstract final class _Path {
-  static const canvas = Color(0xFF0E1424);
-  static const surface = Color(0xFF161E33);
-  static const line = Color(0xFF23304D);
-  static const ink = Color(0xFFF2F5FF);
-  static const soft = Color(0xFF9AA7C7);
-  static const faint = Color(0xFF5D6B8C);
-  static const gold = Color(0xFFFBBF24);
+  // Mapped onto the app's own tokens rather than kept as a private dark
+  // set. Three screens in this section each carried an identical copy of
+  // that palette while the lesson and test-out screens next door already
+  // used AppColors — so the course was the only place in the app that
+  // went dark, and it was not even consistent with itself.
+  static const canvas = AppColors.canvas;
+  static const surface = AppColors.surface;
+  static const line = AppColors.line;
+  static const ink = AppColors.ink;
+  static const soft = AppColors.inkSoft;
+  static const faint = AppColors.inkFaint;
+  static const gold = AppColors.xp;
 
   /// One hue per CEFR level, walked in order — the course visibly warms as it
   /// gets harder, which is a thing you can feel while scrolling and cannot
@@ -554,7 +559,9 @@ class _Disc extends StatelessWidget {
               color: done || current ? null : _Path.surface,
               border: Border.all(
                 color: current
-                    ? Colors.white.withValues(alpha: 0.85)
+                    // Was a white ring, which glowed against the old dark
+                    // canvas and disappears entirely against this one.
+                    ? AppColors.brand
                     : done
                         ? Colors.transparent
                         : _Path.line,

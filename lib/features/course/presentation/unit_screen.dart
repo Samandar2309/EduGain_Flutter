@@ -58,14 +58,19 @@ class UnitScreen extends ConsumerWidget {
 }
 
 abstract final class _U {
-  static const canvas = Color(0xFF0E1424);
-  static const surface = Color(0xFF161E33);
-  static const line = Color(0xFF23304D);
-  static const ink = Color(0xFFF2F5FF);
-  static const soft = Color(0xFF9AA7C7);
-  static const faint = Color(0xFF5D6B8C);
-  static const brand = Color(0xFF34D399);
-  static const gold = Color(0xFFFBBF24);
+  // Mapped onto the app's own tokens rather than kept as a private dark
+  // set. Three screens in this section each carried an identical copy of
+  // that palette while the lesson and test-out screens next door already
+  // used AppColors — so the course was the only place in the app that
+  // went dark, and it was not even consistent with itself.
+  static const canvas = AppColors.canvas;
+  static const surface = AppColors.surface;
+  static const line = AppColors.line;
+  static const ink = AppColors.ink;
+  static const soft = AppColors.inkSoft;
+  static const faint = AppColors.inkFaint;
+  static const brand = AppColors.brand;
+  static const gold = AppColors.xp;
 }
 
 class _Body extends StatelessWidget {
@@ -174,7 +179,9 @@ class _Teaches extends StatelessWidget {
       gradient: const LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: [Color(0xFF1B2A44), _U.surface],
+        // Was a dark navy fading into the old dark surface. On the light
+        // canvas it read as a hole punched through the top of the screen.
+        colors: [AppColors.brandTint, _U.surface],
       ),
       borderRadius: BorderRadius.circular(AppRadius.xl),
       border: Border.all(color: _U.line),
