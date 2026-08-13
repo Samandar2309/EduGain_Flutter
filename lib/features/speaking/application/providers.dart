@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/live_data.dart';
 import '../../../core/providers.dart';
 import '../data/audio_playback.dart';
 import '../data/audio_recorder.dart';
@@ -72,12 +72,8 @@ final speakingQuotaProvider = FutureProvider.autoDispose<SpeakingQuota>((
     );
   }
 
-  final lifecycle = AppLifecycleListener(onResume: ref.invalidateSelf);
-
-  ref.onDispose(() {
-    refill?.cancel();
-    lifecycle.dispose();
-  });
+  refreshOnResume(ref);
+  ref.onDispose(() => refill?.cancel());
   return quota;
 });
 

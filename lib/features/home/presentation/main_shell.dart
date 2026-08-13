@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../core/live_data.dart';
 import '../../../core/providers.dart';
 import '../../../core/ui/coming_soon.dart';
 import '../../../core/ui/tokens.dart';
 import '../../../l10n/app_localizations.dart';
+import '../../gamification/application/providers.dart';
 import '../../gamification/presentation/leaderboard_screen.dart';
 import '../../profile/presentation/profile_screen.dart';
 import '../../speaking/application/providers.dart';
@@ -13,14 +15,25 @@ import 'home_screen.dart';
 
 /// Root authenticated shell: a [NavigationBar] over four tabs kept alive via
 /// an [IndexedStack]. Deeper flows (speaking, vocabulary…) are pushed on top.
-class MainShell extends StatefulWidget {
+///
+/// Keeping the tabs alive is what makes switching between them instant and
+/// lossless — scroll position, a half-typed answer, an open sheet. It is also
+/// why the figures on them used to need the app restarting: nothing behind a
+/// tab is ever disposed, so `autoDispose` never fires and a provider read once
+/// at startup is read once, full stop.
+///
+/// So the shell re-reads them itself, at the two moments the learner would
+/// expect a number to be current: coming back to a tab, and coming back from
+/// an activity that changed it. (The third moment — coming back to the app —
+/// belongs to the providers, via `refreshOnResume`.)
+class MainShell extends ConsumerStatefulWidget {
   const MainShell({super.key});
 
   @override
-  State<MainShell> createState() => _MainShellState();
+  ConsumerState<MainShell> createState() => _MainShellState();
 }
 
-class _MainShellState extends State<MainShell> {
+class _MainShellState extends ConsumerState<MainShell> with RouteAware {
   int _index = 0;
 
   // Leaderboard sits in the bar rather than behind the home screen: a weekly
@@ -33,6 +46,48 @@ class _MainShellState extends State<MainShell> {
     ProfileScreen(),
   ];
 
+  /// Everything on these tabs that the server owns and an activity can move.
+  ///
+  /// Listed here rather than left to each screen because the alternative is
+  /// every flow that earns XP remembering to invalidate on its way out — and
+  /// the number of flows that remembered was zero, which is precisely how XP
+  /// came to need a restart to appear.
+  ///
+  /// Invalidating a provider nobody is watching is a no-op, so naming all of
+  /// them costs nothing on a tab that shows none.
+  static final _live = <ProviderOrFamily>[
+    gamificationProfileProvider,
+    xpHistoryProvider,
+    leaderboardProvider,
+    speakingQuotaProvider,
+  ];
+
+  void _refreshLive() {
+    for (final provider in _live) {
+      ref.invalidate(provider);
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final route = ModalRoute.of(context);
+    if (route is PageRoute) appRouteObserver.subscribe(this, route);
+  }
+
+  @override
+  void dispose() {
+    appRouteObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  /// A game, a lesson or a conversation just closed over this shell.
+  ///
+  /// Whatever it earned was earned server-side while these tabs sat untouched
+  /// underneath, so this is the moment their numbers are known to be wrong.
+  @override
+  void didPopNext() => _refreshLive();
+
   @override
   Widget build(BuildContext context) {
     final l = AppLocalizations.of(context);
@@ -40,7 +95,14 @@ class _MainShellState extends State<MainShell> {
       body: IndexedStack(index: _index, children: _tabs),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _index,
-        onDestinationSelected: (i) => setState(() => _index = i),
+        onDestinationSelected: (i) {
+          if (i == _index) return;
+          setState(() => _index = i);
+          // The tab being opened has been sitting there with its first answer
+          // since the app started. Looking at it is the moment it has to be
+          // right.
+          _refreshLive();
+        },
         destinations: [
           NavigationDestination(
             icon: const Icon(Icons.home_outlined),

@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import 'live_data.dart';
+
 import '../features/games/presentation/games_hub_screen.dart';
 import '../features/quiz/presentation/quiz_screen.dart';
 import '../features/vocabulary/domain/game.dart';
@@ -78,6 +80,9 @@ final routerProvider = Provider<GoRouter>((ref) {
 
   return GoRouter(
     initialLocation: '/splash',
+    // Lets the tab shell notice when a pushed screen — a game, a lesson, a
+    // conversation — is popped back off it. See `appRouteObserver`.
+    observers: [appRouteObserver],
     // Where the learner was actually heading, held across the gates.
     //
     // A notification opens the Mini App at a URL — `/peer`, or a room. The
