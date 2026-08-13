@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/api/api_exception.dart';
 import '../../../core/providers.dart';
+import '../../../core/ui/back_or_home.dart';
 import '../../../core/ui/components.dart';
 import '../../../core/ui/error_handling.dart';
 import '../../../core/ui/tokens.dart';
@@ -25,7 +26,16 @@ class AccountScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.canvas,
-      appBar: AppBar(title: Text(l.accountTitle)),
+      // The way out, drawn explicitly rather than left to the app bar.
+      //
+      // Flutter only implies a back arrow when the route can pop, and this
+      // screen came up bare — leaving the learner on a page with no exit but
+      // closing the Mini App. `BackOrHome` does not depend on the stack: it
+      // pops when there is something behind and goes home when there is not.
+      appBar: AppBar(
+        leading: const BackOrHome(),
+        title: Text(l.accountTitle),
+      ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(
           AppSpace.lg, AppSpace.lg, AppSpace.lg, AppSpace.xxxl,
