@@ -6,6 +6,7 @@ import 'features/speaking/presentation/avatar/photo_hero.dart';
 
 import 'core/locale_controller.dart';
 import 'core/router.dart';
+import 'core/telegram_safe_area.dart';
 import 'core/telegram_webapp.dart';
 import 'core/theme.dart';
 import 'l10n/app_localizations.dart';
@@ -24,6 +25,15 @@ Future<void> main() async {
   // and claims the full viewport height once Flutter has taken over.
   TelegramWebApp.ready();
   TelegramWebApp.expand();
+  // The whole screen on a phone, where Telegram supports it. `expand()` above
+  // still runs first and is what every other client gets — this only adds the
+  // status-bar strip on top of it, and only on Bot API 8.0+.
+  //
+  // The insets are watched whether or not the request succeeds: Telegram can
+  // enter fullscreen on its own (the user's own swipe), and an app that only
+  // measured after asking would be a header under the clock.
+  TelegramWebApp.watchInsets();
+  TelegramWebApp.requestFullscreen();
   runApp(const ProviderScope(child: EduGainApp()));
 }
 
@@ -45,6 +55,11 @@ class EduGainApp extends ConsumerWidget {
       // in dark mode — a proper dark theme is a separate, deliberate project.
       themeMode: ThemeMode.light,
       routerConfig: router,
+      // Folded in above every screen rather than inside each one: fullscreen
+      // reports its insets through Telegram, not through the browser, so
+      // `SafeArea` would otherwise be a no-op exactly when it is needed.
+      builder: (_, child) =>
+          TelegramSafeArea(child: child ?? const SizedBox.shrink()),
       locale: locale,
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
