@@ -1,10 +1,5 @@
-import 'package:flutter/foundation.dart';
-
-import 'telegram_insets.dart';
 import 'telegram_webapp_stub.dart'
     if (dart.library.js_interop) 'telegram_webapp_web.dart';
-
-export 'telegram_insets.dart' show TelegramInsets;
 
 /// Bridge to Telegram's Mini App JS SDK (`telegram-web-app.js`, loaded in
 /// `web/index.html`). On every platform except web this is entirely inert —
@@ -41,22 +36,6 @@ class TelegramWebApp {
 
   /// Requests the maximum available viewport height.
   static void expand() => TelegramWebAppPlatform.expand();
-
-  /// Take over the whole screen, status bar included (Bot API 8.0, phones
-  /// only). Older or desktop clients keep the expanded viewport instead, which
-  /// is what they already had.
-  ///
-  /// Must be paired with [insets]: fullscreen puts the page UNDER the clock
-  /// and under Telegram's own floating buttons, so an app that takes the
-  /// screen without honouring the insets has simply hidden its own header.
-  static bool requestFullscreen() => TelegramWebAppPlatform.requestFullscreen();
-
-  /// Where the app must not draw. Zero unless fullscreen is actually on.
-  static ValueListenable<TelegramInsets> get insets =>
-      TelegramWebAppPlatform.insets;
-
-  /// Begin following Telegram's inset reports. Called once from `main()`.
-  static void watchInsets() => TelegramWebAppPlatform.watchInsets();
 
   /// Opens a t.me link (the bot) inside Telegram — used to send an
   /// unregistered learner back to the bot to finish signing up.

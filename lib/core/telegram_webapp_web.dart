@@ -1,9 +1,5 @@
 import 'dart:js_interop';
 
-import 'package:flutter/foundation.dart';
-
-import 'telegram_insets.dart';
-
 extension type _JSTelegram._(JSObject _) implements JSObject {
   @JS('WebApp')
   external _JSWebApp? get webApp;
@@ -17,28 +13,6 @@ extension type _JSWebApp._(JSObject _) implements JSObject {
   external bool isVersionAtLeast(String version);
   external void shareMessage(String preparedMessageId);
   external void close();
-
-  // ── fullscreen (Bot API 8.0) ──────────────────────────────────────────
-  external void requestFullscreen();
-
-  /// Which client is running this. Fullscreen is a phone feature: the desktop
-  /// and web clients raise `WebAppMethodUnsupported` for it.
-  external String? get platform;
-
-  /// The device's own unsafe strips — notch, status bar, home indicator.
-  external _JSInsets? get safeAreaInset;
-
-  /// Where Telegram's own floating controls sit in fullscreen.
-  external _JSInsets? get contentSafeAreaInset;
-
-  external void onEvent(String type, JSFunction handler);
-}
-
-extension type _JSInsets._(JSObject _) implements JSObject {
-  external num? get top;
-  external num? get bottom;
-  external num? get left;
-  external num? get right;
 }
 
 @JS('Telegram')
@@ -120,80 +94,6 @@ class TelegramWebAppPlatform {
       _telegram?.webApp?.expand();
     } catch (_) {
       // Not running inside Telegram — nothing to expand.
-    }
-  }
-
-  /// Where the app must not draw, updated as Telegram reports changes.
-  ///
-  /// Zero until fullscreen is actually entered, and zero forever outside
-  /// Telegram — so the widget applying it needs no conditions of its own.
-  static final ValueNotifier<TelegramInsets> insets =
-      ValueNotifier(TelegramInsets.zero);
-
-  /// Take over the whole screen (Bot API 8.0).
-  ///
-  /// Only on a phone. The desktop and web clients answer
-  /// `WebAppMethodUnsupported`, and asking anyway would spend a startup on an
-  /// exception for nothing — `expand()` has already claimed the full viewport
-  /// height there, which is as fullscreen as those clients get.
-  ///
-  /// Returns whether the request was made, not whether it succeeded: Telegram
-  /// answers asynchronously via `fullscreenChanged`, which is what moves the
-  /// insets below.
-  static bool requestFullscreen() {
-    try {
-      final app = _telegram?.webApp;
-      if (app == null) return false;
-      if (!app.isVersionAtLeast('8.0')) return false;
-      final platform = app.platform ?? '';
-      if (platform != 'android' && platform != 'ios') return false;
-      app.requestFullscreen();
-      return true;
-    } catch (_) {
-      // An older client, or a shape the SDK does not have. Staying expanded is
-      // a perfectly good outcome; a startup crash is not.
-      return false;
-    }
-  }
-
-  /// Start following Telegram's inset reports.
-  ///
-  /// Read once up front and then on every change: entering fullscreen, turning
-  /// the phone, and Telegram moving its own controls all fire these, and the
-  /// values differ by device — a notch is not a guess we get to make.
-  static void watchInsets() {
-    try {
-      final app = _telegram?.webApp;
-      if (app == null) return;
-      void publish() => insets.value = _read(app);
-      publish();
-      for (final event in const [
-        'fullscreenChanged',
-        'safeAreaChanged',
-        'contentSafeAreaChanged',
-        'viewportChanged',
-      ]) {
-        app.onEvent(event, ((JSAny? _) => publish()).toJS);
-      }
-    } catch (_) {
-      // No SDK, or a client too old to report any of this. Zero insets are
-      // correct for exactly those cases.
-    }
-  }
-
-  static TelegramInsets _read(_JSWebApp app) {
-    TelegramInsets from(_JSInsets? raw) => raw == null
-        ? TelegramInsets.zero
-        : TelegramInsets(
-            top: (raw.top ?? 0).toDouble(),
-            bottom: (raw.bottom ?? 0).toDouble(),
-            left: (raw.left ?? 0).toDouble(),
-            right: (raw.right ?? 0).toDouble(),
-          );
-    try {
-      return from(app.safeAreaInset) + from(app.contentSafeAreaInset);
-    } catch (_) {
-      return TelegramInsets.zero;
     }
   }
 
