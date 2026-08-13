@@ -144,6 +144,7 @@ class UnitDetail {
     required this.vocab,
     required this.mastery,
     required this.lessons,
+    this.nextUnit,
   });
 
   final String id;
@@ -158,6 +159,18 @@ class UnitDetail {
   final int mastery;
   final List<LessonRef> lessons;
 
+  /// What to do after this unit, or null when there is nothing after it — the
+  /// course is finished, or the rest is premium.
+  ///
+  /// The server decides this. A finished unit has no `current` lesson (every
+  /// state comes back `done`), and a screen left to work out "what next" from
+  /// that on its own picked the last lesson and offered it again, forever.
+  final UnitLink? nextUnit;
+
+  /// True once every lesson here is behind the learner.
+  bool get isFinished =>
+      lessons.isNotEmpty && lessons.every((l) => l.state == LessonState.done);
+
   factory UnitDetail.fromJson(Map<String, dynamic> j) => UnitDetail(
     id: j['id'] as String,
     number: j['number'] as String? ?? '',
@@ -169,6 +182,24 @@ class UnitDetail {
     lessons: ((j['lessons'] as List?) ?? const [])
         .map((l) => LessonRef.fromJson(l as Map<String, dynamic>))
         .toList(),
+    nextUnit: j['next_unit'] == null
+        ? null
+        : UnitLink.fromJson(j['next_unit'] as Map<String, dynamic>),
+  );
+}
+
+/// Just enough of another unit to offer it: where to go and what to call it.
+class UnitLink {
+  const UnitLink({required this.id, required this.number, required this.title});
+
+  final String id;
+  final String number;
+  final String title;
+
+  factory UnitLink.fromJson(Map<String, dynamic> j) => UnitLink(
+    id: j['id'] as String,
+    number: j['number'] as String? ?? '',
+    title: j['title'] as String? ?? '',
   );
 }
 

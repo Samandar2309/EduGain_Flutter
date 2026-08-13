@@ -777,6 +777,7 @@
   "courseYouWillLearn": "В ЭТОМ РАЗДЕЛЕ ВЫ ИЗУЧИТЕ",
   "courseStartLesson": "Начать",
   "courseContinueLesson": "Продолжить урок {n}",
+  "courseNextUnit": "Следующая тема: {title}",
   "courseLessonN": "Урок {n}",
   "courseItemCount": "{n} упражнений",
   "courseMastery": "Мастерство {level} из {max}",

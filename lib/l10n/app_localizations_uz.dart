@@ -1829,6 +1829,11 @@ class AppLocalizationsUz extends AppLocalizations {
   }
 
   @override
+  String courseNextUnit(String title) {
+    return 'Keyingi mavzu: $title';
+  }
+
+  @override
   String courseLessonN(int n) {
     return '$n-dars';
   }

@@ -3388,6 +3388,12 @@ abstract class AppLocalizations {
   /// **'Continue lesson {n}'**
   String courseContinueLesson(int n);
 
+  /// No description provided for @courseNextUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'Next topic: {title}'**
+  String courseNextUnit(String title);
+
   /// No description provided for @courseLessonN.
   ///
   /// In en, this message translates to:

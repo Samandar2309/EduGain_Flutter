@@ -928,6 +928,7 @@
   "courseYouWillLearn": "THIS UNIT TEACHES",
   "courseStartLesson": "Start",
   "courseContinueLesson": "Continue lesson {n}",
+  "courseNextUnit": "Next topic: {title}",
   "courseLessonN": "Lesson {n}",
   "courseItemCount": "{n} exercises",
   "courseMastery": "Mastery {level} of {max}",
@@ -935,6 +936,13 @@
     "placeholders": {
       "n": {
         "type": "int"
+      }
+    }
+  },
+  "@courseNextUnit": {
+    "placeholders": {
+      "title": {
+        "type": "String"
       }
     }
   },

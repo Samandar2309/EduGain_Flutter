@@ -81,13 +81,16 @@ class _Body extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final next = unit.lessons.firstWhere(
-      (x) => x.state == LessonState.current,
-      orElse: () => unit.lessons.isEmpty
-          ? const LessonRef(
-              id: '', index: 0, itemCount: 0, state: LessonState.locked)
-          : unit.lessons.last,
-    );
+    // The lesson to carry on with, if there is one.
+    //
+    // There is not one when the unit is finished: every lesson comes back
+    // `done` and nothing is `current`. This used to fall back to the unit's
+    // LAST lesson, so a learner who completed a two-exercise unit was handed
+    // its second exercise again, and again — the path never moved on. Nothing
+    // left has to be sayable, which is what `null` says.
+    final next = unit.lessons
+        .where((x) => x.state == LessonState.current)
+        .firstOrNull;
     final doneCount =
         unit.lessons.where((x) => x.state == LessonState.done).length;
 
@@ -131,7 +134,7 @@ class _Body extends StatelessWidget {
         // The one button. Pinned, so it is on screen whatever the rule's
         // length — a call to action you have to scroll to find is a call to
         // action for the people who were already going to find it.
-        if (next.id.isNotEmpty)
+        if (next != null || unit.nextUnit != null)
           SafeArea(
             top: false,
             child: Padding(
@@ -145,12 +148,20 @@ class _Body extends StatelessWidget {
                     borderRadius: BorderRadius.circular(AppRadius.lg),
                   ),
                 ),
-                onPressed: () =>
-                    context.push('/course/lesson/${next.id}'),
+                // Finished here: move on. `pushReplacement`, not `push` —
+                // walking the course forward must not build a back stack of
+                // every unit already behind the learner.
+                onPressed: () => next != null
+                    ? context.push('/course/lesson/${next.id}')
+                    : context.pushReplacement(
+                        '/course/unit/${unit.nextUnit!.id}',
+                      ),
                 child: Text(
-                  doneCount == 0
-                      ? l.courseStartLesson
-                      : l.courseContinueLesson(next.index + 1),
+                  next == null
+                      ? l.courseNextUnit(unit.nextUnit!.title)
+                      : doneCount == 0
+                          ? l.courseStartLesson
+                          : l.courseContinueLesson(next.index + 1),
                   style: const TextStyle(
                     color: Color(0xFF06281C),
                     fontSize: 15.5,

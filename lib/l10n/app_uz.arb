@@ -777,6 +777,7 @@
   "courseYouWillLearn": "BU BO‘LIMDA O‘RGANASIZ",
   "courseStartLesson": "Boshlash",
   "courseContinueLesson": "{n}-darsni davom ettirish",
+  "courseNextUnit": "Keyingi mavzu: {title}",
   "courseLessonN": "{n}-dars",
   "courseItemCount": "{n} ta mashq",
   "courseMastery": "Mahorat {level} / {max}",

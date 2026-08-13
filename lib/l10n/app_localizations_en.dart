@@ -1817,6 +1817,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String courseNextUnit(String title) {
+    return 'Next topic: $title';
+  }
+
+  @override
   String courseLessonN(int n) {
     return 'Lesson $n';
   }
