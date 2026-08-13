@@ -6,6 +6,7 @@ import 'api/api_client.dart';
 import 'locale_controller.dart';
 import 'api/token_storage.dart';
 import 'google_sign_in_service.dart';
+import 'media/microphone_service.dart';
 
 /// Composition root — wires the hexagon's adapters as Riverpod providers.
 
@@ -13,6 +14,17 @@ final tokenStorageProvider = Provider<TokenStorage>((ref) => TokenStorage());
 
 final googleSignInServiceProvider = Provider<GoogleSignInService>(
   (ref) => GoogleSignInService(),
+);
+
+/// The microphone, owned in one place.
+///
+/// Not auto-disposed: the whole point is that it outlives the screen that
+/// opened it. The tap that starts a search acquires the stream, the call
+/// screen — created a navigation later — publishes it, and the call's own
+/// teardown gives it back. A provider that died with either screen would put
+/// `getUserMedia` back where it was.
+final microphoneServiceProvider = Provider<MicrophoneService>(
+  (ref) => MicrophoneService(),
 );
 
 /// The language the server should answer in, as a code it supports.

@@ -9,6 +9,7 @@ import '../../course/application/providers.dart';
 import '../../course/domain/models.dart';
 import '../../group/application/group_providers.dart';
 import '../../peer/application/peer_call_controller.dart';
+import '../../peer/presentation/mic_gate.dart';
 import '../../../core/ui/tokens.dart';
 import '../../../core/ui/user_photo.dart';
 import '../../../l10n/app_localizations.dart';
@@ -38,6 +39,10 @@ class HomeTab extends ConsumerWidget {
       onRefresh: () async {
         ref.invalidate(gamificationProfileProvider);
         ref.invalidate(leaderboardProvider(false));
+        // The minutes pill is rendered right here on this screen. Leaving it
+        // out meant the one gesture a learner makes to fix a stale number was
+        // the one that did not fix it.
+        ref.invalidate(speakingQuotaProvider);
       },
       child: ListView(
         padding: const EdgeInsets.fromLTRB(AppSpace.lg, 0, AppSpace.lg, 100),
@@ -693,15 +698,29 @@ class _Modules extends ConsumerWidget {
                         data: (hub) =>
                             hub.online > 0 ? l.homeOnlineN(hub.online) : null,
                       ),
-                  // Straight into the search, not into a hub with a filter
-                  // sheet in front of it. The preference was already answered
-                  // once during onboarding, so asking again every time was a
-                  // question with a known answer standing between a learner
-                  // and the thing they tapped.
-                  onTap: () => context.push(
-                    '/peer/call',
-                    extra: const PeerLaunchMatch(),
-                  ),
+                  // Straight into the search — but NOT straight past the
+                  // microphone.
+                  //
+                  // This card is the busiest door into a live call, and it
+                  // used to push the call route directly, so it walked around
+                  // `ensureMicrophoneReady` entirely. Two learners then met in
+                  // a room where NEITHER had ever been asked for a microphone:
+                  // both sides negotiated receive-only, both told the other
+                  // "my microphone is off", and both concluded the app was
+                  // broken. It was reported as an iPhone-versus-Android fault
+                  // and it was neither — the Android side had no microphone
+                  // either, because nothing had asked for one.
+                  //
+                  // Every gesture that can start a call has to pass the gate.
+                  // Pinned by `test/peer_mic_gate_coverage_test.dart`.
+                  onTap: () async {
+                    if (!await ensureMicrophoneReady(context, ref)) return;
+                    if (!context.mounted) return;
+                    context.push(
+                      '/peer/call',
+                      extra: const PeerLaunchMatch(),
+                    );
+                  },
                 ),
               ),
             ],

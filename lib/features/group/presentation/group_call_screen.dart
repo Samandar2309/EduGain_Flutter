@@ -12,6 +12,16 @@ import '../../../core/ui/user_photo.dart';
 import '../../../l10n/app_localizations.dart';
 import '../application/group_call_controller.dart';
 
+/// Proof that a room was entered from a tap which opened the microphone.
+///
+/// Passed as the route's `extra`, because a URL cannot carry one. That is the
+/// whole test: a page opened from a notification has no user gesture to spend
+/// on a permission prompt, so LiveKit's `setMicrophoneEnabled` is refused —
+/// silently, on WebKit — and the learner sits in a room able to hear everyone
+/// and speak to nobody. The router turns such an arrival into the lobby, where
+/// the join button is a real tap.
+const groupEnteredByTap = true;
+
 /// Share the room code so friends can join (Telegram share + copy).
 Future<void> showInviteSheet(BuildContext context, WidgetRef ref, String code) {
   final l = AppLocalizations.of(context);

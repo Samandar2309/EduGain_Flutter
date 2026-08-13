@@ -8,7 +8,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/ui/tokens.dart';
 import '../../../l10n/app_localizations.dart';
 import '../application/peer_call_controller.dart';
-import 'partner_filter_sheet.dart';
+import 'mic_gate.dart';
 import '../data/peer_models.dart';
 
 /// The live-speaking hub (Sayra-style): one big "find a partner" action, the
@@ -40,17 +40,39 @@ class PeerHubScreen extends ConsumerWidget {
               // Ask before searching, not after. A learner dropped into a
               // random live call and only then offered a filter has already
               // had the conversation they were trying to choose.
+              // One tap, one thing: microphone, then search.
+              //
+              // A gender filter used to sit between the two, and the numbers
+              // killed it. 53% of accounts carry no gender at all, and the
+              // matcher treats an unknown gender as satisfying no gendered
+              // filter — so choosing one hid every one of those learners, and
+              // choosing nothing still hid you from anyone else who chose. In
+              // a pool this size that is not a narrower search, it is no
+              // search: the queue is empty most of the day.
+              //
+              // The filter can come back when there are enough people online
+              // for it to narrow something rather than empty it.
+              //
+              // What remains is the rule that matters: the microphone is the
+              // FIRST thing this tap does. Nothing may come before it.
+              //
+              // A browser grants a tap a short window in which it will show a
+              // permission dialog, and every await spends some of it. Opening
+              // the filter sheet first spent the most expensive kind: a route
+              // push, a frame, a human reading three options, a second tap and
+              // a dismissal animation. Chrome tolerated that; WebKit's
+              // activation model is stricter, and Telegram's iOS WebView is
+              // WebKit — there the dialog never appeared and the request was
+              // refused in silence.
+              //
+              // So: microphone, then the filter, then the search. The learner
+              // answers one question before being asked to choose anything,
+              // which is also the honest order — there is nothing to choose
+              // if they cannot speak.
               onFind: () async {
-                final choice = await showPartnerFilterSheet(
-                  context,
-                  online: online,
-                );
-                if (choice == null || !context.mounted) return;
+                if (!await ensureMicrophoneReady(context, ref)) return;
                 if (!context.mounted) return;
-                context.push(
-                  '/peer/call',
-                  extra: PeerLaunchMatch(pref: choice.wire),
-                );
+                context.push('/peer/call', extra: const PeerLaunchMatch());
               },
             ),
             const SizedBox(height: AppSpace.lg),
@@ -60,8 +82,14 @@ class PeerHubScreen extends ConsumerWidget {
                   child: _SecondaryAction(
                     icon: Icons.group_add_rounded,
                     label: l.peerFriendRoom,
-                    onTap: () =>
-                        context.push('/peer/call', extra: PeerLaunch.create),
+                    // Same rule as the search: the microphone is opened on the
+                    // tap. Opening a room and then finding out you cannot speak
+                    // in it wastes the friend's time as well as your own.
+                    onTap: () async {
+                      if (!await ensureMicrophoneReady(context, ref)) return;
+                      if (!context.mounted) return;
+                      context.push('/peer/call', extra: PeerLaunch.create);
+                    },
                   ),
                 ),
                 const SizedBox(width: AppSpace.md),
@@ -69,7 +97,7 @@ class PeerHubScreen extends ConsumerWidget {
                   child: _SecondaryAction(
                     icon: Icons.pin_rounded,
                     label: l.peerJoinByCode,
-                    onTap: () => _askCode(context),
+                    onTap: () => _askCode(context, ref),
                   ),
                 ),
               ],
@@ -106,7 +134,7 @@ class PeerHubScreen extends ConsumerWidget {
     );
   }
 
-  Future<void> _askCode(BuildContext context) async {
+  Future<void> _askCode(BuildContext context, WidgetRef ref) async {
     final l = AppLocalizations.of(context);
     final controller = TextEditingController();
     final code = await showDialog<String>(
@@ -143,9 +171,12 @@ class PeerHubScreen extends ConsumerWidget {
       ),
     );
     final cleaned = code?.trim().toUpperCase() ?? '';
-    if (cleaned.length == 6 && context.mounted) {
-      context.push('/peer/call', extra: PeerLaunchJoin(cleaned));
-    }
+    if (cleaned.length != 6 || !context.mounted) return;
+    // The code is typed and confirmed; the microphone is the last thing
+    // between here and a room where somebody may already be waiting.
+    if (!await ensureMicrophoneReady(context, ref)) return;
+    if (!context.mounted) return;
+    context.push('/peer/call', extra: PeerLaunchJoin(cleaned));
   }
 }
 

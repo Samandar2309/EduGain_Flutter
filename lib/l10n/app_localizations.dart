@@ -2746,6 +2746,120 @@ abstract class AppLocalizations {
   /// **'Live conversation'**
   String get peerLiveChat;
 
+  /// No description provided for @micPrimerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on your microphone'**
+  String get micPrimerTitle;
+
+  /// No description provided for @micPrimerBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your partner needs to hear you. Your browser will now ask for permission — please choose “Allow”.'**
+  String get micPrimerBody;
+
+  /// No description provided for @micPrimerAllowWord.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow'**
+  String get micPrimerAllowWord;
+
+  /// No description provided for @micPrimerBlockWord.
+  ///
+  /// In en, this message translates to:
+  /// **'Block'**
+  String get micPrimerBlockWord;
+
+  /// No description provided for @micPrimerContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get micPrimerContinue;
+
+  /// No description provided for @micBlockedTelegramBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Microphone access was refused. Close Telegram completely, open EduGain again, and choose “Allow” this time.'**
+  String get micBlockedTelegramBody;
+
+  /// No description provided for @micBlockedBrowserBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Microphone access is blocked for this site. Tap the lock icon next to the address bar → Microphone → Allow, then reload.'**
+  String get micBlockedBrowserBody;
+
+  /// No description provided for @peerPartnerMicOff.
+  ///
+  /// In en, this message translates to:
+  /// **'Your partner’s microphone is off — they can hear you, but you cannot hear them.'**
+  String get peerPartnerMicOff;
+
+  /// No description provided for @peerNoMicRejoin.
+  ///
+  /// In en, this message translates to:
+  /// **'Your microphone isn\'t on. End the call and start again — you\'ll be asked for it first.'**
+  String get peerNoMicRejoin;
+
+  /// No description provided for @micPreparing.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing microphone…'**
+  String get micPreparing;
+
+  /// No description provided for @micNeededTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Microphone needed'**
+  String get micNeededTitle;
+
+  /// No description provided for @micDeniedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Microphone permission is required to talk with your partner.'**
+  String get micDeniedBody;
+
+  /// No description provided for @micBlockedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Microphone access is blocked. Please allow microphone access in your browser or Telegram settings, then try again.'**
+  String get micBlockedBody;
+
+  /// No description provided for @micNotFoundBody.
+  ///
+  /// In en, this message translates to:
+  /// **'No microphone was found on this device.'**
+  String get micNotFoundBody;
+
+  /// No description provided for @micBusyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your microphone is being used by another app. Close it and try again.'**
+  String get micBusyBody;
+
+  /// No description provided for @micInsecureBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The microphone only works over a secure connection. Please reopen the app from the bot.'**
+  String get micInsecureBody;
+
+  /// No description provided for @micConstraintsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your microphone does not support the settings a call needs.'**
+  String get micConstraintsBody;
+
+  /// No description provided for @micUnknownBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The microphone could not be turned on. Please try again.'**
+  String get micUnknownBody;
+
+  /// No description provided for @micRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get micRetry;
+
   /// No description provided for @peerFriendRoom.
   ///
   /// In en, this message translates to:

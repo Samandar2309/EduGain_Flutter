@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/providers.dart';
@@ -31,11 +34,52 @@ final trackLessonsProvider = FutureProvider.autoDispose
           ref.read(speakingRepositoryProvider).trackLessons(track),
     );
 
-/// Today's speaking-minutes budget (auto-disposed so the ring is fresh every
-/// time the learner returns; invalidate after a session to reflect spend).
-final speakingQuotaProvider = FutureProvider.autoDispose<SpeakingQuota>(
-  (ref) => ref.read(speakingRepositoryProvider).quota(),
-);
+/// Today's speaking-minutes budget.
+///
+/// The number has to be right whenever the learner happens to look at it, and
+/// the two ways it goes wrong are both invisible from inside a screen build:
+///
+/// **The app was in the background.** A Telegram Mini App is backgrounded and
+/// resumed constantly — a chat, a call, the phone locking. Minutes spent on
+/// another device, or simply the passage of the day, land while nobody is
+/// watching. Without this, the figure a learner sees is the one fetched
+/// whenever the app happened to start, and only fully closing and reopening
+/// the bot corrects it.
+///
+/// **Midnight passed.** The budget refills on the learner's own day boundary.
+/// An app left open across it would keep showing yesterday's remainder — the
+/// failure that reads as "my minutes never came back".
+///
+/// Both are handled by waking up exactly when something changed, rather than
+/// polling to discover it: one listener, and one timer that fires once. An
+/// endpoint this cheap is still not worth asking on a schedule when the events
+/// that move it can simply be observed.
+final speakingQuotaProvider = FutureProvider.autoDispose<SpeakingQuota>((
+  ref,
+) async {
+  final quota = await ref.read(speakingRepositoryProvider).quota();
+
+  // Fires once, just past the refill, so the ring fills itself.
+  //
+  // A second of slack because both clocks are rounding to whole seconds and
+  // arriving early would refetch the old budget and schedule zero — a spin.
+  // Zero means the server did not say; then nothing is scheduled at all.
+  Timer? refill;
+  if (quota.resetsInSeconds > 0) {
+    refill = Timer(
+      Duration(seconds: quota.resetsInSeconds + 1),
+      ref.invalidateSelf,
+    );
+  }
+
+  final lifecycle = AppLifecycleListener(onResume: ref.invalidateSelf);
+
+  ref.onDispose(() {
+    refill?.cancel();
+    lifecycle.dispose();
+  });
+  return quota;
+});
 
 /// Is the AI tutor open yet?
 ///

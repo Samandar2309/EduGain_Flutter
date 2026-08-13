@@ -12,7 +12,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-/// The two moments a learner meets the daily ten minutes.
+/// The two moments a learner meets the daily speaking budget.
 ///
 /// The header, which now counts down in real time rather than holding the
 /// figure it was handed when the screen opened; and the panel that appears when

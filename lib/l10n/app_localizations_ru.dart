@@ -1451,6 +1451,74 @@ class AppLocalizationsRu extends AppLocalizations {
   String get peerLiveChat => 'Живой разговор';
 
   @override
+  String get micPrimerTitle => 'Включите микрофон';
+
+  @override
+  String get micPrimerBody =>
+      'Собеседник должен вас слышать. Сейчас браузер запросит доступ — нажмите «Allow» (Разрешить).';
+
+  @override
+  String get micPrimerAllowWord => 'Allow';
+
+  @override
+  String get micPrimerBlockWord => 'Block';
+
+  @override
+  String get micPrimerContinue => 'Продолжить';
+
+  @override
+  String get micBlockedTelegramBody =>
+      'Доступ к микрофону был отклонён. Полностью закройте Telegram, откройте EduGain заново и на этот раз нажмите «Allow».';
+
+  @override
+  String get micBlockedBrowserBody =>
+      'Микрофон заблокирован для этого сайта. Нажмите на замок рядом с адресом → Микрофон → Разрешить, затем обновите страницу.';
+
+  @override
+  String get peerPartnerMicOff =>
+      'У собеседника выключен микрофон — он слышит вас, а вы его нет.';
+
+  @override
+  String get peerNoMicRejoin =>
+      'Микрофон не включён. Завершите звонок и начните заново — доступ спросят сразу.';
+
+  @override
+  String get micPreparing => 'Готовим микрофон…';
+
+  @override
+  String get micNeededTitle => 'Нужен микрофон';
+
+  @override
+  String get micDeniedBody =>
+      'Чтобы говорить с собеседником, нужен доступ к микрофону.';
+
+  @override
+  String get micBlockedBody =>
+      'Доступ к микрофону заблокирован. Разрешите его в настройках браузера или Telegram и попробуйте снова.';
+
+  @override
+  String get micNotFoundBody => 'Микрофон на этом устройстве не найден.';
+
+  @override
+  String get micBusyBody =>
+      'Микрофон занят другим приложением. Закройте его и попробуйте снова.';
+
+  @override
+  String get micInsecureBody =>
+      'Микрофон работает только по защищённому соединению. Откройте приложение заново из бота.';
+
+  @override
+  String get micConstraintsBody =>
+      'Ваш микрофон не поддерживает настройки, нужные для звонка.';
+
+  @override
+  String get micUnknownBody =>
+      'Не удалось включить микрофон. Попробуйте ещё раз.';
+
+  @override
+  String get micRetry => 'Попробовать снова';
+
+  @override
   String get peerFriendRoom => 'Комната с другом';
 
   @override

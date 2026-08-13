@@ -6,6 +6,8 @@ import '../../../core/ui/tokens.dart';
 import '../../../l10n/app_localizations.dart';
 import '../application/group_providers.dart';
 import '../data/group_models.dart';
+import '../../peer/presentation/mic_gate.dart';
+import 'group_call_screen.dart';
 
 /// A pre-join preview: fetch the room by code, show its topic / host / how full
 /// it is, and only THEN connect (turning on the mic). Used both by tapping a
@@ -55,9 +57,16 @@ class _JoinRoomSheetState extends ConsumerState<_JoinRoomSheet> {
     }
   }
 
-  void _join() {
+  Future<void> _join() async {
+    // Same rule as everywhere else: the microphone opens on the tap that
+    // enters the room, not on the callback that follows it. The room has
+    // already been previewed by now, so this is not a prompt for a call the
+    // learner cannot get into.
+    if (!await ensureMicrophoneReady(context, ref)) return;
+    if (!mounted) return;
     Navigator.of(context).pop();
-    context.push('/speaking/group/call/${widget.code}');
+    context.push('/speaking/group/call/${widget.code}',
+        extra: groupEnteredByTap);
   }
 
   @override

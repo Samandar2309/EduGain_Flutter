@@ -1457,6 +1457,74 @@ class AppLocalizationsUz extends AppLocalizations {
   String get peerLiveChat => 'Jonli suhbat';
 
   @override
+  String get micPrimerTitle => 'Mikrofonni yoqing';
+
+  @override
+  String get micPrimerBody =>
+      'Suhbatdoshingiz sizni eshitishi kerak. Hozir brauzer ruxsat so‘raydi — «Allow» tugmasini bosing.';
+
+  @override
+  String get micPrimerAllowWord => 'Allow';
+
+  @override
+  String get micPrimerBlockWord => 'Block';
+
+  @override
+  String get micPrimerContinue => 'Davom etish';
+
+  @override
+  String get micBlockedTelegramBody =>
+      'Mikrofonga ruxsat berilmadi. Telegram’ni butunlay yoping, EduGain’ni qaytadan oching va bu safar «Allow» tugmasini bosing.';
+
+  @override
+  String get micBlockedBrowserBody =>
+      'Bu sayt uchun mikrofon bloklangan. Manzil yonidagi qulf belgisini bosing → Mikrofon → Ruxsat berish, so‘ng sahifani yangilang.';
+
+  @override
+  String get peerPartnerMicOff =>
+      'Suhbatdoshingizning mikrofoni o‘chiq — u sizni eshitadi, siz uni eshitmaysiz.';
+
+  @override
+  String get peerNoMicRejoin =>
+      'Mikrofon yoqilmagan. Suhbatni tugatib, qaytadan boshlang — ruxsat darhol so‘raladi.';
+
+  @override
+  String get micPreparing => 'Mikrofon tayyorlanmoqda…';
+
+  @override
+  String get micNeededTitle => 'Mikrofon kerak';
+
+  @override
+  String get micDeniedBody =>
+      'Suhbatdosh bilan gaplashish uchun mikrofonga ruxsat kerak.';
+
+  @override
+  String get micBlockedBody =>
+      'Mikrofonga ruxsat bloklangan. Brauzer yoki Telegram sozlamalarida ruxsat bering va qaytadan urinib ko‘ring.';
+
+  @override
+  String get micNotFoundBody => 'Bu qurilmada mikrofon topilmadi.';
+
+  @override
+  String get micBusyBody =>
+      'Mikrofonni boshqa ilova ishlatyapti. Uni yoping va qaytadan urinib ko‘ring.';
+
+  @override
+  String get micInsecureBody =>
+      'Mikrofon faqat xavfsiz ulanishda ishlaydi. Ilovani botdan qaytadan oching.';
+
+  @override
+  String get micConstraintsBody =>
+      'Mikrofoningiz qo‘ng‘iroq uchun kerakli sozlamalarni qo‘llab-quvvatlamaydi.';
+
+  @override
+  String get micUnknownBody =>
+      'Mikrofonni yoqib bo‘lmadi. Qaytadan urinib ko‘ring.';
+
+  @override
+  String get micRetry => 'Qaytadan urinish';
+
+  @override
   String get peerFriendRoom => 'Do‘st bilan xona';
 
   @override

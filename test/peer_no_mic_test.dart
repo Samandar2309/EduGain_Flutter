@@ -1,23 +1,24 @@
 import 'package:edugain/features/peer/application/peer_call_controller.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// A peer call where the microphone was refused.
+/// A peer call whose microphone is missing by the time the handshake runs.
 ///
-/// The reported fault: the call sat on "Ovoz ulanmoqda…" forever, because
-/// `getUserMedia` threw out of the handshake with nobody catching it — no
-/// phase was ever set and nothing was said on screen.
+/// The microphone is no longer opened here. It is opened by the tap that
+/// starts the call — the filter sheet, the friend-room button, the join-by-code
+/// dialog — because a browser only shows a permission dialog while the gesture
+/// that asked for it is still live, and the handshake runs from a WebSocket
+/// frame that can arrive minutes later. Matchmaking cannot start without a live
+/// microphone, so this state is now rare rather than routine: it means the
+/// microphone died between the tap and the handshake (unplugged, revoked in
+/// settings, or taken by an incoming phone call).
 ///
-/// The microphone is asked for while the call connects, and that is not a
-/// choice: **Telegram's WebView decides about it as the page loads**, so a
-/// request made later — behind a "tap to speak" button, which was tried and
-/// deployed — shows no dialog at all and is silently refused. The button
-/// looked dead. That attempt is reverted; what survives from it is the part
-/// that was always right, that a refusal no longer breaks the call.
+/// What is pinned below is unchanged and still matters: losing the microphone
+/// must not end the call. The learner keeps hearing their partner.
 ///
-/// **What these tests do not cover:** the WebRTC branch itself. `getUserMedia`
-/// and `addTransceiver` need a real platform, so the listen-only fallback can
-/// only be proven on a device. What is pinned here is the state it produces
-/// and everything the screen decides from it.
+/// **What these tests do not cover:** the WebRTC branch itself. `addTransceiver`
+/// needs a real platform, so the listen-only fallback can only be proven on a
+/// device. What is pinned here is the state it produces and everything the
+/// screen decides from it.
 void main() {
   test('a call assumes it has a microphone until told otherwise', () {
     const state = PeerCallState();

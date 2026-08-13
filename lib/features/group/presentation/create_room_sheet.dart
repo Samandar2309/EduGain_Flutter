@@ -9,6 +9,8 @@ import '../../../core/providers.dart';
 import '../../../l10n/app_localizations.dart';
 import '../application/group_providers.dart';
 import '../data/group_models.dart';
+import '../../peer/presentation/mic_gate.dart';
+import 'group_call_screen.dart';
 
 Future<void> showCreateRoomSheet(BuildContext context, WidgetRef ref) {
   return showModalBottomSheet<void>(
@@ -44,6 +46,14 @@ class _CreateRoomSheetState extends ConsumerState<_CreateRoomSheet> {
   int get _cap => ref.read(groupTopicsProvider).valueOrNull?.maxParticipants ?? 8;
 
   Future<void> _create() async {
+    // The microphone, on this tap, before the room exists.
+    //
+    // LiveKit opens it after the room is joined, which is a callback rather
+    // than a gesture — and a gesture is what a permission prompt needs. Asked
+    // here, the host arrives able to talk; asked there, they arrive muted and
+    // the room they just opened has nobody speaking in it.
+    if (!await ensureMicrophoneReady(context, ref)) return;
+    if (!mounted) return;
     setState(() => _busy = true);
     try {
       final name =
@@ -57,7 +67,8 @@ class _CreateRoomSheetState extends ConsumerState<_CreateRoomSheet> {
       if (!mounted) return;
       Navigator.of(context).pop();
       ref.invalidate(groupLobbyProvider);
-      context.push('/speaking/group/call/${room.code}');
+      context.push('/speaking/group/call/${room.code}',
+          extra: groupEnteredByTap);
     } catch (e) {
       if (mounted) {
         setState(() => _busy = false);

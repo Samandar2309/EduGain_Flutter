@@ -113,6 +113,19 @@ class _PeerCallScreenState extends ConsumerState<PeerCallScreen> {
                         avatar: state.partnerAvatar,
                       ),
                       const SizedBox(height: AppSpace.md),
+                      // Silence with a reason.
+                      //
+                      // Without this the learner hears nothing, has no way to
+                      // know why, and concludes the app is broken — which is
+                      // precisely the report that came in about iPhone and
+                      // Android calls. The other side is audible to them; only
+                      // this direction is dead, and saying so costs one line.
+                      if (state.partnerMicOff) ...[
+                        _MicWarning(
+                          text: AppLocalizations.of(context).peerPartnerMicOff,
+                        ),
+                        const SizedBox(height: AppSpace.md),
+                      ],
                     ],
                     // Everything between the partner and the controls scrolls.
                     // The parts panel is four tiles tall and the role-play card
@@ -157,6 +170,45 @@ class _PeerCallScreenState extends ConsumerState<PeerCallScreen> {
       ),
     );
   }
+}
+
+/// An amber strip, not a red one: nothing has failed, and the call is worth
+/// staying in — one direction of it simply carries no audio.
+class _MicWarning extends StatelessWidget {
+  const _MicWarning({required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.symmetric(
+      horizontal: AppSpace.md,
+      vertical: AppSpace.sm + 2,
+    ),
+    decoration: BoxDecoration(
+      color: AppColors.warning.withValues(alpha: 0.14),
+      borderRadius: BorderRadius.circular(AppRadius.md),
+      border: Border.all(color: AppColors.warning.withValues(alpha: 0.35)),
+    ),
+    child: Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Icon(Icons.mic_off_rounded, size: 17, color: AppColors.warning),
+        const SizedBox(width: AppSpace.sm),
+        Expanded(
+          child: Text(
+            text,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 12.5,
+              height: 1.35,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
 }
 
 class _StatusHeader extends StatelessWidget {
@@ -459,9 +511,17 @@ class _CallControls extends StatelessWidget {
         // Only when there is something to say. With a working microphone —
         // which is the ordinary case — the controls look exactly as they did
         // before any of this, because that is the version that worked.
+        // The old copy here said "press again" while the button beside it was
+        // disabled — an instruction the interface could not carry out. Now it
+        // says the thing that actually works: leave and start again, with the
+        // microphone answered at the door.
+        //
+        // Reaching this state at all should be rare: every entry point now
+        // opens the microphone before a search begins. It survives for the one
+        // case the gate cannot cover — a microphone that dies mid-call.
         if (micDenied) ...[
           Text(
-            l.peerNoMicBody,
+            l.peerNoMicRejoin,
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 12.5,

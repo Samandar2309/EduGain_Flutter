@@ -625,11 +625,23 @@ class SpeakingQuota {
     required this.secondsLimit,
     required this.secondsUsed,
     this.aiUnlocked = false,
+    this.resetsInSeconds = 0,
   });
 
   final int sessionsRemaining;
   final int secondsLimit;
   final int secondsUsed;
+
+  /// How long until today's budget refills.
+  ///
+  /// A duration the server measured, never a time this device computed. Phone
+  /// clocks are wrong often enough that subtracting one from a timestamp has
+  /// already produced a nine-second room timer elsewhere in this app.
+  ///
+  /// Zero means the server did not say — an older build, a field that went
+  /// missing — and the caller must then simply not schedule anything rather
+  /// than treat "now" as the answer and spin.
+  final int resetsInSeconds;
 
   /// Whether the AI tutor is open to this learner yet.
   ///
@@ -659,6 +671,7 @@ class SpeakingQuota {
       secondsLimit: (speaking['seconds_limit'] as num?)?.toInt() ?? 0,
       secondsUsed: (speaking['seconds_used'] as num?)?.toInt() ?? 0,
       aiUnlocked: json['ai_unlocked'] as bool? ?? false,
+      resetsInSeconds: (speaking['resets_in_seconds'] as num?)?.toInt() ?? 0,
     );
   }
 }

@@ -1447,6 +1447,74 @@ class AppLocalizationsEn extends AppLocalizations {
   String get peerLiveChat => 'Live conversation';
 
   @override
+  String get micPrimerTitle => 'Turn on your microphone';
+
+  @override
+  String get micPrimerBody =>
+      'Your partner needs to hear you. Your browser will now ask for permission — please choose “Allow”.';
+
+  @override
+  String get micPrimerAllowWord => 'Allow';
+
+  @override
+  String get micPrimerBlockWord => 'Block';
+
+  @override
+  String get micPrimerContinue => 'Continue';
+
+  @override
+  String get micBlockedTelegramBody =>
+      'Microphone access was refused. Close Telegram completely, open EduGain again, and choose “Allow” this time.';
+
+  @override
+  String get micBlockedBrowserBody =>
+      'Microphone access is blocked for this site. Tap the lock icon next to the address bar → Microphone → Allow, then reload.';
+
+  @override
+  String get peerPartnerMicOff =>
+      'Your partner’s microphone is off — they can hear you, but you cannot hear them.';
+
+  @override
+  String get peerNoMicRejoin =>
+      'Your microphone isn\'t on. End the call and start again — you\'ll be asked for it first.';
+
+  @override
+  String get micPreparing => 'Preparing microphone…';
+
+  @override
+  String get micNeededTitle => 'Microphone needed';
+
+  @override
+  String get micDeniedBody =>
+      'Microphone permission is required to talk with your partner.';
+
+  @override
+  String get micBlockedBody =>
+      'Microphone access is blocked. Please allow microphone access in your browser or Telegram settings, then try again.';
+
+  @override
+  String get micNotFoundBody => 'No microphone was found on this device.';
+
+  @override
+  String get micBusyBody =>
+      'Your microphone is being used by another app. Close it and try again.';
+
+  @override
+  String get micInsecureBody =>
+      'The microphone only works over a secure connection. Please reopen the app from the bot.';
+
+  @override
+  String get micConstraintsBody =>
+      'Your microphone does not support the settings a call needs.';
+
+  @override
+  String get micUnknownBody =>
+      'The microphone could not be turned on. Please try again.';
+
+  @override
+  String get micRetry => 'Try again';
+
+  @override
   String get peerFriendRoom => 'Room with a friend';
 
   @override

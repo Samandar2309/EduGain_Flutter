@@ -297,8 +297,26 @@ final routerProvider = Provider<GoRouter>((ref) {
         routes: [
           GoRoute(
             path: 'call',
+            // A call may only be entered from a tap that opened the
+            // microphone — and `extra` is what proves one did.
+            //
+            // Every in-app route to here carries a `PeerLaunch`, set by the
+            // handler that has just run `ensureMicrophoneReady`. A URL cannot
+            // carry one: it arrives null. That is precisely the case that must
+            // not start a search, because a page that has just loaded has no
+            // user gesture to spend on a permission prompt — the learner lands
+            // in a room unable to speak, and their partner hears silence.
+            //
+            // It is not hypothetical. The bot's "Join the conversation" button
+            // linked straight here, and those messages sit in people's chats
+            // for good, so repointing the button fixes only the ones sent from
+            // now on. This covers the rest — and a browser reload mid-call,
+            // where `extra` is likewise gone.
+            //
+            // The hub is one tap away and that tap does open the microphone.
+            redirect: (_, state) => state.extra == null ? '/peer' : null,
             builder: (_, state) => PeerCallScreen(
-              launch: state.extra as PeerLaunch? ?? PeerLaunch.match,
+              launch: state.extra! as PeerLaunch,
             ),
           ),
         ],
@@ -314,6 +332,21 @@ final routerProvider = Provider<GoRouter>((ref) {
             routes: [
               GoRoute(
                 path: 'call/:code',
+                // Same rule as the peer call, for the same reason.
+                //
+                // LiveKit opens the microphone on `setMicrophoneEnabled` after
+                // the room is joined — a callback, not a gesture. Reached from
+                // a notification URL there is no activation left to spend on a
+                // permission prompt, so on WebKit it is refused in silence and
+                // the learner sits in a room hearing everyone and heard by
+                // nobody.
+                //
+                // Only public rooms are ever announced (`group.py` never
+                // announces a private one), so the lobby is guaranteed to be
+                // showing this room — nothing is lost by landing there, and
+                // its join button is a real tap.
+                redirect: (_, state) =>
+                    state.extra == null ? '/speaking/group' : null,
                 builder: (_, state) =>
                     GroupCallScreen(code: state.pathParameters['code']!),
               ),
