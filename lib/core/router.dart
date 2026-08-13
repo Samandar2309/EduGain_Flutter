@@ -218,6 +218,15 @@ final routerProvider = Provider<GoRouter>((ref) {
         builder: (_, _) => const ChannelScreen(),
       ),
       GoRoute(path: '/home', builder: (_, _) => const MainShell()),
+      // The same shell, opened on the board.
+      //
+      // Its own route because the bot links here: "somebody passed you" is
+      // worth exactly one tap, and /home would land the learner on the home
+      // tab to go looking for the thing the message was about.
+      GoRoute(
+        path: '/leaderboard',
+        builder: (_, _) => const MainShell(initialTab: 2),
+      ),
       GoRoute(path: '/placement', builder: (_, _) => const PlacementScreen()),
       GoRoute(path: '/games', builder: (_, _) => const GamesHubScreen()),
       // A sibling of the hub, not a child of it: a parent route's

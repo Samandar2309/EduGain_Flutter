@@ -27,14 +27,21 @@ import 'home_screen.dart';
 /// an activity that changed it. (The third moment — coming back to the app —
 /// belongs to the providers, via `refreshOnResume`.)
 class MainShell extends ConsumerStatefulWidget {
-  const MainShell({super.key});
+  const MainShell({super.key, this.initialTab = 0});
+
+  /// Which tab to open on. Non-zero only for a deep link that names a
+  /// destination inside the shell — the leaderboard, opened from the bot's
+  /// "somebody passed you" message. Landing on the home tab and asking the
+  /// learner to find the board themselves wastes the one tap the message is
+  /// worth.
+  final int initialTab;
 
   @override
   ConsumerState<MainShell> createState() => _MainShellState();
 }
 
 class _MainShellState extends ConsumerState<MainShell> with RouteAware {
-  int _index = 0;
+  late int _index = widget.initialTab.clamp(0, _tabs.length - 1);
 
   // Leaderboard sits in the bar rather than behind the home screen: a weekly
   // board is only motivating if checking it is one tap, and a rank buried two

@@ -9,6 +9,7 @@ import '../../../core/api/token_storage.dart';
 import '../../../core/media/microphone_service.dart';
 import '../../../core/media/remote_audio_stub.dart'
     if (dart.library.js_interop) '../../../core/media/remote_audio_web.dart';
+import '../../../core/live_data.dart';
 import '../../../core/providers.dart';
 import '../data/peer_api.dart';
 import '../data/ice_repository.dart';
@@ -609,7 +610,18 @@ final peerCallControllerProvider = StateNotifierProvider.autoDispose
       return controller;
     });
 
-/// Hub data: history + online count (refetched every time the hub opens).
-final peerHubProvider = FutureProvider.autoDispose(
-  (ref) => PeerApi(ref.read(apiClientProvider)).history(),
-);
+/// Hub data: history + how many learners are online.
+///
+/// The count is the whole reason this refreshes on a timer rather than only
+/// when the hub opens. It is what a learner reads to decide whether waiting
+/// for a partner is worth it, and it changes because other people arrive and
+/// leave — nothing on this device marks that moment. Shown once at open, it
+/// was a number from whenever the screen happened to load, and the only way to
+/// correct it was closing the app and coming back.
+///
+/// Twelve seconds because the server re-stamps presence every fifteen
+/// (`presence.py`); asking faster cannot surface anyone newer.
+final peerHubProvider = FutureProvider.autoDispose((ref) {
+  refreshEvery(ref, const Duration(seconds: 12));
+  return PeerApi(ref.read(apiClientProvider)).history();
+});
