@@ -28,6 +28,11 @@ Future<void> main() async {
   // Telegram dismisses a Mini App on a downward drag — the same gesture as
   // scrolling a list back up. Without this the app closes itself while
   // somebody is reading, which is what "the bot just exits" was.
+  // Telegram remembers the mode a Mini App was last opened in, and one
+  // reverted `requestFullscreen()` was enough to make the chat-list entry
+  // point keep arriving fullscreen — header gone, its close button over the
+  // greeting, the bottom bar among the phone's navigation keys.
+  TelegramWebApp.exitFullscreen();
   TelegramWebApp.disableVerticalSwipes();
   // The page runs underneath the system navigation buttons and Flutter web
   // reports nothing about it, so the bottom bar landed on top of them.

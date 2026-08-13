@@ -118,6 +118,22 @@ void main() {
     });
   });
 
+  group('the remembered fullscreen', () {
+    test('the app says no, it does not merely stop asking', () {
+      // `requestFullscreen()` was tried once and reverted. Removing the call
+      // was not enough: Telegram REMEMBERS the mode a Mini App was last opened
+      // in, so launching from the chat list kept arriving fullscreen — no
+      // Telegram header, its close button over the greeting, the bottom bar
+      // among the phone's own navigation keys — while opening the bot and
+      // pressing its button was fine. Two entry points, two different apps.
+      //
+      // Off the web this is inert, which is all a unit test can show; what it
+      // pins is that the call exists and is safe to make unconditionally.
+      TelegramWebApp.exitFullscreen();
+      expect(TelegramWebApp.insets.value.isZero, isTrue);
+    });
+  });
+
   group('off the web', () {
     test('there is nothing to disable and nothing to measure', () {
       // The native build must stay completely inert — it has real padding from

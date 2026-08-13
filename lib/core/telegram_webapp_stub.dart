@@ -11,6 +11,7 @@ class TelegramWebAppPlatform {
       ValueNotifier(TelegramInsets.zero);
 
   static void disableVerticalSwipes() {}
+  static void exitFullscreen() {}
   static void watchInsets() {}
   static String? get initData => null;
   static bool get sdkPresent => false;

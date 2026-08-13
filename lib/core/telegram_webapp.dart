@@ -42,6 +42,13 @@ class TelegramWebApp {
   /// Requests the maximum available viewport height.
   static void expand() => TelegramWebAppPlatform.expand();
 
+  /// Hand the whole screen back if Telegram is still giving it to us.
+  ///
+  /// Telegram remembers the mode a Mini App was last opened in, so a single
+  /// `requestFullscreen()` — since reverted — kept coming back on every launch
+  /// from the chat list. Not asking is not the same as saying no.
+  static void exitFullscreen() => TelegramWebAppPlatform.exitFullscreen();
+
   /// Stop Telegram closing the app when somebody scrolls (Bot API 7.7).
   ///
   /// Its dismiss gesture is a downward drag, which is also how a list is
