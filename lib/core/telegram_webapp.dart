@@ -1,5 +1,10 @@
+import 'package:flutter/foundation.dart';
+
+import 'telegram_insets.dart';
 import 'telegram_webapp_stub.dart'
     if (dart.library.js_interop) 'telegram_webapp_web.dart';
+
+export 'telegram_insets.dart' show TelegramInsets;
 
 /// Bridge to Telegram's Mini App JS SDK (`telegram-web-app.js`, loaded in
 /// `web/index.html`). On every platform except web this is entirely inert —
@@ -36,6 +41,21 @@ class TelegramWebApp {
 
   /// Requests the maximum available viewport height.
   static void expand() => TelegramWebAppPlatform.expand();
+
+  /// Stop Telegram closing the app when somebody scrolls (Bot API 7.7).
+  ///
+  /// Its dismiss gesture is a downward drag, which is also how a list is
+  /// scrolled back to the top — so on a long screen the app closed itself
+  /// mid-read. Reported as "the bot just exits".
+  static void disableVerticalSwipes() =>
+      TelegramWebAppPlatform.disableVerticalSwipes();
+
+  /// Where the app must not draw — the system navigation buttons, the notch.
+  static ValueListenable<TelegramInsets> get insets =>
+      TelegramWebAppPlatform.insets;
+
+  /// Begin following the safe area. Called once from `main()`.
+  static void watchInsets() => TelegramWebAppPlatform.watchInsets();
 
   /// Opens a t.me link (the bot) inside Telegram — used to send an
   /// unregistered learner back to the bot to finish signing up.

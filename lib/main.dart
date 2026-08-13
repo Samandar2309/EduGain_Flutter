@@ -6,6 +6,7 @@ import 'features/speaking/presentation/avatar/photo_hero.dart';
 
 import 'core/locale_controller.dart';
 import 'core/router.dart';
+import 'core/telegram_safe_area.dart';
 import 'core/telegram_webapp.dart';
 import 'core/theme.dart';
 import 'l10n/app_localizations.dart';
@@ -24,6 +25,13 @@ Future<void> main() async {
   // and claims the full viewport height once Flutter has taken over.
   TelegramWebApp.ready();
   TelegramWebApp.expand();
+  // Telegram dismisses a Mini App on a downward drag — the same gesture as
+  // scrolling a list back up. Without this the app closes itself while
+  // somebody is reading, which is what "the bot just exits" was.
+  TelegramWebApp.disableVerticalSwipes();
+  // The page runs underneath the system navigation buttons and Flutter web
+  // reports nothing about it, so the bottom bar landed on top of them.
+  TelegramWebApp.watchInsets();
   runApp(const ProviderScope(child: EduGainApp()));
 }
 
@@ -45,6 +53,11 @@ class EduGainApp extends ConsumerWidget {
       // in dark mode — a proper dark theme is a separate, deliberate project.
       themeMode: ThemeMode.light,
       routerConfig: router,
+      // Folded in above every screen: the insets come from the device and
+      // Telegram, not from the browser, so `SafeArea` would otherwise be a
+      // no-op on exactly the phones that need it.
+      builder: (_, child) =>
+          TelegramSafeArea(child: child ?? const SizedBox.shrink()),
       locale: locale,
       supportedLocales: AppLocalizations.supportedLocales,
       localizationsDelegates: AppLocalizations.localizationsDelegates,

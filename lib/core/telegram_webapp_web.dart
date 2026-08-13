@@ -1,5 +1,9 @@
 import 'dart:js_interop';
 
+import 'package:flutter/foundation.dart';
+
+import 'telegram_insets.dart';
+
 extension type _JSTelegram._(JSObject _) implements JSObject {
   @JS('WebApp')
   external _JSWebApp? get webApp;
@@ -13,10 +17,35 @@ extension type _JSWebApp._(JSObject _) implements JSObject {
   external bool isVersionAtLeast(String version);
   external void shareMessage(String preparedMessageId);
   external void close();
+
+  /// Stop Telegram treating a downward drag inside the page as "close me"
+  /// (Bot API 7.7).
+  external void disableVerticalSwipes();
+
+  /// The device's own unsafe strips, when the client is new enough to say
+  /// (Bot API 8.0). Older ones report nothing and the CSS probe covers them.
+  external _JSInsets? get safeAreaInset;
+
+  external void onEvent(String type, JSFunction handler);
+}
+
+extension type _JSInsets._(JSObject _) implements JSObject {
+  external num? get top;
+  external num? get bottom;
+  external num? get left;
+  external num? get right;
 }
 
 @JS('Telegram')
 external _JSTelegram? get _telegram;
+
+/// The CSS-measured safe area (see the probe in `web/index.html`).
+///
+/// Works on every Telegram client, unlike the Bot API's own insets which only
+/// arrived in 8.0 — and the phones that most need a bottom inset are the ones
+/// least likely to be running it.
+@JS('edugainSafeArea')
+external _JSInsets? _cssSafeArea();
 
 /// The real bridge to `window.Telegram.WebApp`, present only when the page
 /// is opened as a Telegram Mini App (the SDK script in `web/index.html`
@@ -95,6 +124,74 @@ class TelegramWebAppPlatform {
     } catch (_) {
       // Not running inside Telegram — nothing to expand.
     }
+  }
+
+  /// Where the app must not draw, updated as the device reports changes.
+  static final ValueNotifier<TelegramInsets> insets =
+      ValueNotifier(TelegramInsets.zero);
+
+  /// Stop a scroll being read as "close the app".
+  ///
+  /// Telegram dismisses a Mini App on a downward drag, which is the same
+  /// gesture as scrolling a list back to the top. On a long screen that makes
+  /// the app close itself while somebody is reading it — reported as "the bot
+  /// just exits". Bot API 7.7; older clients keep the old behaviour, which is
+  /// the best that can be done for them.
+  static void disableVerticalSwipes() {
+    try {
+      final app = _telegram?.webApp;
+      if (app == null || !app.isVersionAtLeast('7.7')) return;
+      app.disableVerticalSwipes();
+    } catch (_) {
+      // An older SDK without the method. Nothing to undo.
+    }
+  }
+
+  /// Start following the safe area.
+  ///
+  /// Two sources, and the larger of the two wins per edge. CSS `env()` is the
+  /// one that works everywhere; Telegram's own insets are more accurate when
+  /// the client is new enough to send them. Re-read on the events that can
+  /// move them — rotating the phone, the keyboard, Telegram resizing itself.
+  static void watchInsets() {
+    void publish() => insets.value = _read();
+    publish();
+    try {
+      final app = _telegram?.webApp;
+      for (final event in const [
+        'viewportChanged',
+        'safeAreaChanged',
+        'contentSafeAreaChanged',
+      ]) {
+        app?.onEvent(event, ((JSAny? _) => publish()).toJS);
+      }
+    } catch (_) {
+      // No SDK. The CSS reading below still works in a plain browser.
+    }
+  }
+
+  static TelegramInsets _read() {
+    TelegramInsets from(_JSInsets? raw) => raw == null
+        ? TelegramInsets.zero
+        : TelegramInsets(
+            top: (raw.top ?? 0).toDouble(),
+            bottom: (raw.bottom ?? 0).toDouble(),
+            left: (raw.left ?? 0).toDouble(),
+            right: (raw.right ?? 0).toDouble(),
+          );
+
+    var result = TelegramInsets.zero;
+    try {
+      result = from(_cssSafeArea());
+    } catch (_) {
+      // An index.html older than this build, still cached on the device.
+    }
+    try {
+      result = result.largest(from(_telegram?.webApp?.safeAreaInset));
+    } catch (_) {
+      // Client older than Bot API 8.0 — the CSS reading stands alone.
+    }
+    return result;
   }
 
   /// Opens a t.me link (e.g. the bot) inside Telegram and closes the Mini App.

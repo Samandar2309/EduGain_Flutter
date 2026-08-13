@@ -37,8 +37,50 @@
 
   <title>edugain</title>
   <link rel="manifest" href="manifest.json">
+  <style>
+    /* Measures the device's unsafe strips, so Flutter can read them.
+       `viewport-fit=cover` above is what makes env() report anything at all;
+       without it these are always zero. Hidden and zero-sized — it exists to
+       be measured, not seen. */
+    #eg-safe-probe {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      visibility: hidden;
+      pointer-events: none;
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+      padding-left: env(safe-area-inset-left, 0px);
+      padding-right: env(safe-area-inset-right, 0px);
+    }
+  </style>
+  <script>
+    // The safe area, in CSS pixels, or null when the probe is missing.
+    //
+    // Read from a real element rather than the custom property, because
+    // env() inside a variable comes back as the literal text; resolved
+    // padding is a number.
+    //
+    // This is the source that works on EVERY Telegram client. The Bot API
+    // only started reporting insets in 8.0, and the phones that need this
+    // most are the ones least likely to be on it.
+    window.edugainSafeArea = function () {
+      var el = document.getElementById('eg-safe-probe');
+      if (!el) return null;
+      var s = getComputedStyle(el);
+      return {
+        top: parseFloat(s.paddingTop) || 0,
+        bottom: parseFloat(s.paddingBottom) || 0,
+        left: parseFloat(s.paddingLeft) || 0,
+        right: parseFloat(s.paddingRight) || 0
+      };
+    };
+  </script>
 </head>
 <body>
+  <div id="eg-safe-probe"></div>
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
