@@ -13,6 +13,8 @@ import 'package:flutter_test/flutter_test.dart';
 /// closure, unreachable from a test, and it is short enough that a copy is
 /// cheaper than the indirection needed to share it.
 void main() {
+  group('the destination a bot link carries', _linkDestinationSuite);
+
   bool isGate(String loc) =>
       loc == '/splash' ||
       loc == '/welcome' ||
@@ -78,5 +80,50 @@ void main() {
     expect(land('/peer'), '/peer');
     // A fresh walk with no incoming destination — home, not the old one.
     expect(land('/splash'), '/home');
+  });
+}
+
+/// Where a bot link says to go, and why it is not in the fragment.
+///
+/// Telegram delivers initData by APPENDING to the URL fragment, and this app
+/// routes on the fragment too (Flutter web's hash strategy). So a link written
+/// as `/app/#/leaderboard` hands the router `/leaderboard` with Telegram's
+/// data stuck onto the end of it. The bot's own menu button carries no
+/// fragment at all — which is exactly why that one always opened cleanly and
+/// the notification buttons did not.
+///
+/// A query parameter is untouched by Telegram, so the two now open the same
+/// way.
+void _linkDestinationSuite() {
+  String? destination(String url) {
+    final raw = Uri.parse(url).queryParameters['to'];
+    if (raw == null || raw.isEmpty) return null;
+    if (!raw.startsWith('/') || raw.startsWith('//')) return null;
+    return raw;
+  }
+
+  test('a plain open, with no destination, asks for nothing', () {
+    expect(destination('https://x.test/app/'), isNull);
+  });
+
+  test('a destination survives Telegram appending its own data', () {
+    // What the client actually receives once Telegram has had the URL.
+    const url = 'https://x.test/app/?to=/leaderboard#tgWebAppData=abc&v=8.0';
+    expect(destination(url), '/leaderboard');
+  });
+
+  test('paths with their own segments come through whole', () {
+    expect(destination('https://x.test/app/?to=/games/quiz'), '/games/quiz');
+    expect(destination('https://x.test/app/?to=/speaking/group'),
+        '/speaking/group');
+  });
+
+  test('anything that is not an in-app path is refused', () {
+    // A link is untrusted input. "Somewhere inside this app" is the only
+    // thing it is allowed to say — a protocol-relative URL would otherwise
+    // send a learner off the app entirely.
+    expect(destination('https://x.test/app/?to=//evil.test/'), isNull);
+    expect(destination('https://x.test/app/?to=https://evil.test'), isNull);
+    expect(destination('https://x.test/app/?to='), isNull);
   });
 }

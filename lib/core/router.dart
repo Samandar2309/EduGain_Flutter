@@ -70,6 +70,18 @@ bool _isGate(String loc) =>
     loc == '/signin-failed' ||
     loc.startsWith('/onboarding/');
 
+/// The destination a Mini App link asked for, as `?to=/leaderboard`.
+///
+/// Null unless one was given, and null for anything that is not an in-app
+/// path — a link is untrusted input, and "somewhere inside this app" is the
+/// only thing it is allowed to say.
+String? _fromQuery() {
+  final raw = Uri.base.queryParameters['to'];
+  if (raw == null || raw.isEmpty) return null;
+  if (!raw.startsWith('/') || raw.startsWith('//')) return null;
+  return raw;
+}
+
 final routerProvider = Provider<GoRouter>((ref) {
   final refresh = ValueNotifier<int>(0);
   ref.listen(authControllerProvider, (_, _) => refresh.value++);
@@ -105,6 +117,18 @@ final routerProvider = Provider<GoRouter>((ref) {
       if (_intended == null && !_isGate(loc) && loc != '/home') {
         _intended = state.uri.toString();
       }
+      // A destination sent as `?to=/leaderboard` rather than in the fragment.
+      //
+      // Telegram delivers initData by APPENDING to the URL fragment, and this
+      // app routes on the fragment too (Flutter web's default hash strategy).
+      // So a link written as `/app/#/leaderboard` hands the router
+      // `/leaderboard` with Telegram's data stuck to the end of it, and the
+      // route stops matching. The bot's own button has no fragment at all,
+      // which is exactly why it opens cleanly and these did not.
+      //
+      // A query parameter survives untouched: Telegram only ever touches the
+      // fragment.
+      _intended ??= _fromQuery();
 
       // Hold the splash until BOTH auth and the first-launch flag are known,
       // so the welcome flow never flashes for returning users.
