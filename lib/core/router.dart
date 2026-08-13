@@ -32,7 +32,7 @@ import '../features/onboarding/presentation/learning_language_screen.dart';
 import '../features/onboarding/presentation/welcome_screen.dart';
 import '../features/peer/application/peer_call_controller.dart';
 import '../features/peer/presentation/peer_call_screen.dart';
-import '../features/peer/presentation/peer_hub_screen.dart';
+import '../features/peer/presentation/peer_entry_screen.dart';
 import '../features/placement/presentation/placement_screen.dart';
 import '../features/profile/presentation/account_screen.dart';
 import '../features/profile/presentation/profile_screen.dart';
@@ -307,7 +307,17 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/account', builder: (_, _) => const AccountScreen()),
       GoRoute(
         path: '/peer',
-        builder: (_, _) => const PeerHubScreen(),
+        // The hub is not shown for now.
+        //
+        // It carried the search, a friend room, a join-by-code box and the
+        // conversation history, and every one of those was reachable only
+        // after a tap that opened the microphone. The bot's button now spends
+        // that tap in Telegram instead: this asks for the microphone on
+        // arrival and either starts the search or sends the learner home.
+        //
+        // `PeerHubScreen` is kept, not deleted — restoring it is this one
+        // line back.
+        builder: (_, _) => const PeerEntryScreen(),
         routes: [
           GoRoute(
             path: 'call',
