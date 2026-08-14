@@ -302,16 +302,8 @@ class PeerCallController extends StateNotifier<PeerCallState> {
           // still ends the call through the watchdog or the socket.
           if (kDebugMode) debugPrint('peer: message handler failed: $e');
         }),
-        onError: (Object _) => _end('failed'),
-        onDone: () {
-          if (state.phase == PeerPhase.ended) return;
-          // The server closes with a code when the reason is knowable; only a
-          // genuinely unexplained drop is a "failure".
-          _end(switch (signaling.closeCode) {
-            _quotaExhausted => 'peer_quota',
-            _ => 'failed',
-          });
-        },
+        onError: (Object _) => _onSignalingGone(),
+        onDone: _onSignalingGone,
       );
     } catch (_) {
       _end('failed');
@@ -451,6 +443,44 @@ class PeerCallController extends StateNotifier<PeerCallState> {
       }
       _end('failed');
     });
+  }
+
+  /// The signalling socket has gone.
+  ///
+  /// This used to end the call, always, and that was the bug behind "it
+  /// connects and then switches itself off". The audio does NOT travel through
+  /// this socket — media is peer-to-peer, and once the handshake is done the
+  /// socket carries nothing but relay messages. A mobile network hands over
+  /// between WiFi and LTE, a proxy times an idle socket out, Telegram's WebView
+  /// stalls for a moment: the socket drops, the audio is still flowing, and the
+  /// call was thrown away anyway.
+  ///
+  /// It matched the evidence exactly — the server saw an abrupt 1006 with no
+  /// error of its own, and the calls that died were one to five seconds long
+  /// while the ones that survived ran for nine minutes.
+  ///
+  /// So: before the media is up the socket IS the call, because the handshake
+  /// cannot finish without it. After that it is not, and losing it is not a
+  /// reason to hang up. Genuine media failure is still caught — see
+  /// `onConnectionState`, which ends the call on
+  /// `RTCPeerConnectionStateFailed`.
+  void _onSignalingGone() {
+    if (_disposed || state.phase == PeerPhase.ended) return;
+
+    // A code means the server decided, and it decided for a reason that
+    // outlives the socket.
+    if (_signaling?.closeCode == _quotaExhausted) {
+      _end('peer_quota');
+      return;
+    }
+
+    if (state.phase == PeerPhase.inCall) {
+      if (kDebugMode) {
+        debugPrint('peer: signalling dropped mid-call; audio continues');
+      }
+      return;
+    }
+    _end('failed');
   }
 
   Future<void> _beginOffer() async {
