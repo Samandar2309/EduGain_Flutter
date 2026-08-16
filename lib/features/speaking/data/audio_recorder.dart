@@ -4,6 +4,9 @@ import 'dart:typed_data';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:record/record.dart' as rec;
 
+import 'opus_capture_stub.dart'
+    if (dart.library.js_interop) 'opus_capture_web.dart';
+
 import 'voice_activity.dart';
 
 import 'native_audio_io_stub.dart' if (dart.library.io) 'native_audio_io.dart';
@@ -38,6 +41,14 @@ class SpeechRecorder {
   static const _nativeFilename = 'speaking_turn.m4a';
   static const _webFilename = 'speaking_turn.wav';
 
+  /// The browser's Opus recorder for this turn, when it can do it.
+  ///
+  /// Opus is ~3 KB/s against WAV's 32, and the upload is the largest part of a
+  /// spoken turn. The device itself is opened once per conversation, not per
+  /// turn — see `opus_capture_web.dart` for why that distinction cost a
+  /// deploy.
+  OpusCapture? _opus;
+
   StreamSubscription<Uint8List>? _webSub;
   StreamSubscription<rec.Amplitude>? _ampSub;
   BytesBuilder? _webBuffer;
@@ -64,6 +75,10 @@ class SpeechRecorder {
       _webLevel = onLevel;
       _webBuffer = BytesBuilder(copy: false);
       _capturing = true;
+
+      // Alongside, not instead: the PCM stream drives the level meter and the
+      // silence detector that ends a turn, and it is the fallback.
+      _opus = OpusCapture.isSupported ? await OpusCapture.start() : null;
       if (_webSub != null) return;
 
       final stream = await _recorder.startStream(
@@ -146,8 +161,21 @@ class SpeechRecorder {
     if (kIsWeb) {
       // The turn ends. The microphone does not.
       _capturing = false;
+      final opus = _opus;
+      _opus = null;
+      final encoded = opus == null ? null : await opus.stop();
+
       final pcm = _webBuffer?.takeBytes();
       _webBuffer = null;
+
+      // The extension is the only codec hint the transcriber gets.
+      if (encoded != null && encoded.isNotEmpty) {
+        return AudioClip(
+          bytes: encoded,
+          filename:
+              opus!.mimeType.startsWith('audio/mp4') ? 'turn.mp4' : 'turn.webm',
+        );
+      }
       if (pcm == null || pcm.isEmpty) {
         // A turn that captured nothing means the track stopped delivering
         // without ending the Dart stream — the quieter half of the same
@@ -179,6 +207,8 @@ class SpeechRecorder {
   Future<void> cancel() async {
     if (kIsWeb) {
       // Abandoning a turn is not leaving the conversation, so the stream stays.
+      _opus?.cancel();
+      _opus = null;
       _capturing = false;
       _webBuffer = null;
       return;
@@ -204,6 +234,12 @@ class SpeechRecorder {
   }
 
   Future<void> dispose() async {
+    // The conversation is over, so the shared Opus device goes back. A track
+    // left running is a microphone indicator that never goes out, which
+    // learners read as being listened to.
+    _opus?.cancel();
+    _opus = null;
+    releaseOpusMicrophone();
     await endSession();
     await _recorder.dispose();
   }
