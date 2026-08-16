@@ -78,14 +78,34 @@ class SpeechRecorder {
           noiseSuppress: true,
         ),
       );
-      _webSub = stream.listen((chunk) {
-        // Between turns the stream keeps arriving and is thrown away. Cheaper
-        // and far less fragile than tearing the microphone down and asking for
-        // it again, which is the thing that was going wrong.
-        if (!_capturing) return;
-        _webBuffer?.add(chunk);
-        _webLevel?.call(rms(chunk));
-      });
+      _webSub = stream.listen(
+        (chunk) {
+          // Between turns the stream keeps arriving and is thrown away. Cheaper
+          // and far less fragile than tearing the microphone down and asking for
+          // it again, which is the thing that was going wrong.
+          if (!_capturing) return;
+          _webBuffer?.add(chunk);
+          _webLevel?.call(rms(chunk));
+        },
+        // A capture that ends is not the end of the conversation.
+        //
+        // The stream is opened once and held for the whole session, so that the
+        // permission dialog is asked for once rather than every turn. But a
+        // long-held track does not always survive: a Telegram WebView under
+        // memory pressure, a spell in the background, an audio context the
+        // browser decided to suspend — any of them can end it, and none of them
+        // is an error anybody sees.
+        //
+        // Left as it was, `_webSub` stayed non-null forever and the guard above
+        // refused to reopen it. Nothing reached the buffer, every turn uploaded
+        // nothing, and the app went deaf a few minutes into a conversation with
+        // no sign of why. Dropping the handle is what lets the next turn open a
+        // fresh one — and because permission has already been granted by then,
+        // reopening shows no dialog at all.
+        onDone: _releaseWebCapture,
+        onError: (Object _) => _releaseWebCapture(),
+        cancelOnError: true,
+      );
       return;
     }
     _ampSub = _recorder
@@ -110,6 +130,15 @@ class SpeechRecorder {
     );
   }
 
+  /// Forget the capture handle so the next turn opens a new one.
+  ///
+  /// Only the handle: the buffer and the capturing flag belong to the turn in
+  /// progress and are cleared by `stop`/`cancel`.
+  void _releaseWebCapture() {
+    _webSub?.cancel();
+    _webSub = null;
+  }
+
   Future<bool> isRecording() => _recorder.isRecording();
 
   /// Stop and return the recorded clip, or null if nothing was captured.
@@ -119,7 +148,14 @@ class SpeechRecorder {
       _capturing = false;
       final pcm = _webBuffer?.takeBytes();
       _webBuffer = null;
-      if (pcm == null || pcm.isEmpty) return null;
+      if (pcm == null || pcm.isEmpty) {
+        // A turn that captured nothing means the track stopped delivering
+        // without ending the Dart stream — the quieter half of the same
+        // failure, and the one `onDone` above cannot catch. Drop the handle so
+        // the next turn reopens rather than recording silence forever.
+        _releaseWebCapture();
+        return null;
+      }
       return AudioClip(
         bytes: wavFromPcm16(pcm, sampleRate: _webSampleRate, numChannels: 1),
         filename: _webFilename,
