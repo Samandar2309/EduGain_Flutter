@@ -40,3 +40,49 @@ Uint8List wavFromPcm16(
   out.setRange(44, out.length, pcm);
   return out;
 }
+
+/// Drop the silence at each end of a clip before it is uploaded.
+///
+/// The upload is the largest single part of a spoken turn — 32 KB for every
+/// second of PCM16 at 16 kHz. A learner taps to start, thinks, speaks, finishes
+/// the thought and then reaches for the button, so two to four seconds of a
+/// seventeen-second clip is usually nobody talking. That is 60-130 KB sent for
+/// nothing.
+///
+/// Deliberately timid, in three ways:
+///
+/// * The threshold is low (about -45 dBFS), so breathing and room noise still
+///   count as sound rather than being cut away.
+/// * A [keep] margin of speech is left on each side, because the quietest part
+///   of a word is its start and its end — trimming to the exact first loud
+///   sample clips consonants, and a clipped word is an audible fault where a
+///   little extra silence is not.
+/// * A clip that looks entirely silent is returned untouched. If the reading is
+///   wrong, sending too much is recoverable and sending nothing is not.
+Uint8List trimSilence(
+  Uint8List pcm, {
+  int sampleRate = 16000,
+  double threshold = 0.006,
+  Duration keep = const Duration(milliseconds: 250),
+}) {
+  if (pcm.length < 4) return pcm;
+  final samples = Int16List.view(pcm.buffer, pcm.offsetInBytes, pcm.length ~/ 2);
+
+  int? first;
+  int? last;
+  for (var i = 0; i < samples.length; i++) {
+    if ((samples[i] / 32768).abs() >= threshold) {
+      first ??= i;
+      last = i;
+    }
+  }
+  if (first == null || last == null) return pcm;
+
+  final margin = (sampleRate * keep.inMilliseconds) ~/ 1000;
+  final start = (first - margin).clamp(0, samples.length);
+  final end = (last + margin + 1).clamp(0, samples.length);
+  if (end - start >= samples.length) return pcm;
+
+  // Byte offsets, and even ones: a 16-bit sample cut in half is noise.
+  return Uint8List.sublistView(pcm, start * 2, end * 2);
+}

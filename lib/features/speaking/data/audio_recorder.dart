@@ -157,7 +157,13 @@ class SpeechRecorder {
         return null;
       }
       return AudioClip(
-        bytes: wavFromPcm16(pcm, sampleRate: _webSampleRate, numChannels: 1),
+        // Trimmed first: the silence at each end is bytes nobody says and
+        // seconds nobody hears, and the upload is the largest part of a turn.
+        bytes: wavFromPcm16(
+          trimSilence(pcm, sampleRate: _webSampleRate),
+          sampleRate: _webSampleRate,
+          numChannels: 1,
+        ),
         filename: _webFilename,
       );
     }
