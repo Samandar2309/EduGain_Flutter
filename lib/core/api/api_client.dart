@@ -31,6 +31,29 @@ class ApiClient {
   final Dio _dio;
   final Dio _refreshDio;
 
+  /// Mark a request as one the SERVER has to think about before it can answer.
+  ///
+  /// The default budget is a connection budget: fifteen seconds to get a reply
+  /// started. On the web that is also, in effect, the whole-request budget —
+  /// `dio_web_adapter` arms its connect timer and only stands it down once
+  /// response HEADERS arrive, and an endpoint that computes before it responds
+  /// sends no headers until it is finished.
+  ///
+  /// Ending a session is exactly that endpoint: it grades the whole
+  /// conversation with a 70B model first. Measured in production it took 15.9
+  /// seconds, against a ceiling of 15 — so nginx logged `499 rt 15.060`, the
+  /// learner was told to check their internet, and the report they were owed
+  /// had been written and stored a second later with nobody there to read it.
+  ///
+  /// Not raised globally: fifteen seconds is the right answer for a request
+  /// that should have been answered immediately, and stretching it everywhere
+  /// would turn every dead connection into a minute of silence.
+  static const slowCall = 'slow_call';
+
+  /// What a [slowCall] gets instead. Generous on purpose — the alternative to
+  /// waiting is losing the report, and it is the last thing in a lesson.
+  static const _slowBudget = Duration(seconds: 90);
+
   /// Wired by the auth controller; called when a token refresh fails so the
   /// app can route back to login.
   void Function()? onAuthFailure;
@@ -56,6 +79,12 @@ class ApiClient {
     final lang = languageCode?.call();
     if (lang != null && lang.isNotEmpty) {
       options.headers['Accept-Language'] = lang;
+    }
+    if (options.extra[slowCall] == true) {
+      // Both, because the web adapter uses their SUM as the hard XHR timeout
+      // and the connect half as the "have headers arrived yet" deadline.
+      options.connectTimeout = _slowBudget;
+      options.receiveTimeout = _slowBudget;
     }
     handler.next(options);
   }
@@ -110,12 +139,21 @@ class ApiClient {
   Future<Map<String, dynamic>> get(String path, {Map<String, dynamic>? query}) =>
       _send(() => _dio.get<dynamic>(path, queryParameters: query));
 
+  /// [slow] for an endpoint that computes before it answers — see [slowCall].
   Future<Map<String, dynamic>> post(
     String path, {
     Object? body,
     Map<String, String>? headers,
+    bool slow = false,
   }) => _send(
-    () => _dio.post<dynamic>(path, data: body, options: Options(headers: headers)),
+    () => _dio.post<dynamic>(
+      path,
+      data: body,
+      options: Options(
+        headers: headers,
+        extra: slow ? const {slowCall: true} : null,
+      ),
+    ),
   );
 
   Future<Map<String, dynamic>> patch(String path, {Object? body}) =>
@@ -124,7 +162,11 @@ class ApiClient {
   /// Open a Server-Sent Events stream (speaking/writing). On a non-200
   /// pre-check (402 paywall, 404, ...) the JSON body is read and thrown as an
   /// [ApiException] — the stream never starts (REQ-23-006).
-  Future<Stream<List<int>>> postStream(String path, {Object? body}) async {
+  Future<Stream<List<int>>> postStream(
+    String path, {
+    Object? body,
+    String? requestId,
+  }) async {
     final Response<ResponseBody> resp;
     try {
       resp = await _dio.post<ResponseBody>(
@@ -132,7 +174,10 @@ class ApiClient {
         data: body,
         options: Options(
           responseType: ResponseType.stream,
-          headers: {'Accept': 'text/event-stream'},
+          headers: {
+            'Accept': 'text/event-stream',
+            if (requestId != null) 'X-Request-ID': requestId,
+          },
           validateStatus: (_) => true,
         ),
       );
@@ -164,6 +209,25 @@ class ApiClient {
     return _send(() => _dio.put<dynamic>(path, data: form));
   }
 
+  /// Upload a file by POST and read a plain JSON reply.
+  ///
+  /// Separate from [postMultipartStream], which expects SSE back: this is for
+  /// uploads that answer once — the ahead-of-turn transcription, which returns
+  /// only whether the clip was cached.
+  Future<Map<String, dynamic>> postMultipart(
+    String path, {
+    required Uint8List bytes,
+    required String filename,
+    String field = 'audio',
+  }) async {
+    // `fromBytes`, not `fromFile`: dio's web adapter has no filesystem, and the
+    // browser is this app's main platform.
+    final form = FormData.fromMap({
+      field: MultipartFile.fromBytes(bytes, filename: filename),
+    });
+    return _send(() => _dio.post<dynamic>(path, data: form));
+  }
+
   /// Like [postStream] but uploads a file as multipart form-data (audio
   /// Speaking). The reply still streams back as SSE; pre-stream errors (422
   /// empty/silent audio, 402 paywall, ...) arrive as JSON and are thrown.
@@ -172,14 +236,23 @@ class ApiClient {
     required Uint8List bytes,
     required String filename,
     String field = 'audio',
+    // Plain text fields sent alongside the file. A multipart request has no
+    // JSON body to put them in, so anything the server needs to know about the
+    // upload travels here.
+    Map<String, String>? fields,
     // Bytes sent / total, while the body uploads. A spoken turn can be a few
     // megabytes on a slow mobile connection, and silence there reads as a
     // frozen app.
     void Function(int sent, int total)? onProgress,
+    // Correlates this turn's client timings with the server's. The service
+    // already honours `X-Request-ID` and binds it into every log line it writes
+    // for the request, so sending one is the whole of the join.
+    String? requestId,
   }) async {
     // `fromBytes` (not `fromFile`) so this works identically on native and
     // web — dio's web adapter has no filesystem to read a path from.
     final form = FormData.fromMap({
+      ...?fields,
       field: MultipartFile.fromBytes(bytes, filename: filename),
     });
     final Response<ResponseBody> resp;
@@ -190,7 +263,10 @@ class ApiClient {
         onSendProgress: onProgress,
         options: Options(
           responseType: ResponseType.stream,
-          headers: {'Accept': 'text/event-stream'},
+          headers: {
+            'Accept': 'text/event-stream',
+            if (requestId != null) 'X-Request-ID': requestId,
+          },
           validateStatus: (_) => true,
         ),
       );

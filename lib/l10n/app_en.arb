@@ -277,6 +277,14 @@
   "voicesLoadError": "Couldn’t load the voice list.",
   "noVoices": "No voices available yet.",
   "voicePreview": "Listen",
+  "voiceAddMore": "Add more voices",
+  "voiceAddMoreIntro": "The app can only use voices your device already has. Install more from your device settings, then come back and refresh.",
+  "voiceStepsAndroid": "Settings → System → Languages & input → Text-to-speech output → Google Text-to-Speech → Install voice data → English. Pick the “Enhanced” voices — they sound far closer to a real speaker.",
+  "voiceStepsIos": "Settings → Accessibility → Spoken Content → Voices → English. Download a “Premium” or “Enhanced” voice such as Evan or Nathan.",
+  "voiceStepsWindows": "Settings → Time & language → Speech → Manage voices → Add voices → English (United States).",
+  "voiceStepsMac": "System Settings → Accessibility → Spoken Content → System Voice → Manage Voices → English.",
+  "voiceStepsGeneric": "Open your device settings and look for text-to-speech or spoken content, then install an English voice.",
+  "voiceRefresh": "Refresh list",
   "voicePreviewError": "Couldn’t play the voice.",
   "genderFemale": "Female",
   "genderMale": "Male",
@@ -490,6 +498,9 @@
   "welcomeGoalBody": "IELTS, career, travel or everyday talk — follow a track that adapts to your weak spots.",
   "xpSourceDailyGoal": "Daily goal",
   "xpSourceStreak": "Streak bonus",
+  "coachWhy": "Why",
+  "coachMore": "Why, and a more natural version",
+  "coachLess": "Hide the explanation",
   "coachCorrection": "Correction",
   "coachNatural": "Natural version",
   "coachGrammar": "Grammar",
@@ -1211,6 +1222,48 @@
         "type": "int"
       },
       "total": {
+        "type": "int"
+      }
+    }
+  },
+  "referralTitle": "Invite a friend",
+  "referralBody": "{minutes} minutes of conversation for every friend who joins. These minutes never expire.",
+  "referralCta": "Invite a friend",
+  "referralFriends": "{count} friends joined",
+  "referralShareText": "Practise speaking English on EduGain — talk with an AI partner and have live conversations with other learners.\n\n{link}",
+  "@referralBody": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "@referralFriends": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "@referralShareText": {
+    "placeholders": {
+      "link": {
+        "type": "String"
+      }
+    }
+  },
+  "referralEarned": "{minutes} minutes earned",
+  "referralLeft": "{minutes} minutes left",
+  "@referralEarned": {
+    "placeholders": {
+      "minutes": {
+        "type": "int"
+      }
+    }
+  },
+  "@referralLeft": {
+    "placeholders": {
+      "minutes": {
         "type": "int"
       }
     }

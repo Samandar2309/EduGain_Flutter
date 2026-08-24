@@ -60,7 +60,7 @@ void main() {
     }
 
     TtsService make() =>
-        TtsService(synthesize: synth, playback: playback, voice: 'troy');
+        TtsService(serverSpeech: true, synthesize: synth, playback: playback, voice: 'troy');
 
     setUp(() {
       playback = _FakePlayback();
@@ -251,6 +251,41 @@ void main() {
       expect(synthCalls.length, 1, reason: 'in-flight requests must coalesce');
     });
 
+    // ── audio the server already rendered ───────────────────────────────
+    test('server-rendered audio is played without asking for it', () async {
+      // The point of the whole change: the bytes came down the reply stream,
+      // so there is nothing left to fetch.
+      make().enqueueRendered('Of course.', _bytes('Of course.'));
+      await pumpEventQueue();
+      expect(playback.played, ['Of course.']);
+      expect(synthCalls, isEmpty);
+    });
+
+    test('rendered and fetched sentences keep one order', () async {
+      // A reply whose second sentence the server could not speak: the fallback
+      // must land in its place, not after everything else.
+      make()
+        ..enqueueRendered('First.', _bytes('First.'))
+        ..enqueue('Second.')
+        ..enqueueRendered('Third.', _bytes('Third.'));
+      await pumpEventQueue();
+      expect(playback.played, ['First.', 'Second.', 'Third.']);
+      expect(synthCalls, [
+        ['Second.', 'troy'],
+      ]);
+    });
+
+    test('a replayed line reuses the audio the stream brought', () async {
+      // "Say that again" is the same words in the same voice — paying the
+      // provider for it twice is the cost this cache exists to avoid.
+      final tts = make()..enqueueRendered('Say again.', _bytes('Say again.'));
+      await pumpEventQueue();
+      await tts.replay('Say again.');
+      await pumpEventQueue();
+      expect(synthCalls, isEmpty);
+      expect(playback.played, ['Say again.', 'Say again.']);
+    });
+
     test('a different voice is different audio, not a cache hit', () async {
       final tts = make()..enqueue('Ping.');
       await pumpEventQueue();
@@ -289,7 +324,7 @@ void main() {
     test('an oversized clip is played but never cached', () async {
       final big = Uint8List(2 * 1024 * 1024); // over the per-clip ceiling
       var calls = 0;
-      final tts = TtsService(
+      final tts = TtsService(serverSpeech: true, 
         synthesize: (t, v) async {
           calls++;
           return big;
@@ -346,7 +381,7 @@ void main() {
     test('a failed prefetch is retried when its turn comes, not skipped',
         () async {
       var attempts = 0;
-      final tts = TtsService(
+      final tts = TtsService(serverSpeech: true, 
         synthesize: (t, v) async {
           if (t == 'flaky.') {
             attempts++;
@@ -362,6 +397,39 @@ void main() {
 
       expect(attempts, 2, reason: 'prefetch failed, the real turn retried');
       expect(playback.played, ['steady.', 'flaky.']);
+      await tts.dispose();
+    });
+    // ── the device speaks, and nothing is fetched ─────────────────────────
+    test('on the device engine nothing is ever synthesised', () async {
+      // The whole point: no provider call, no bytes, no bill. The stub engine
+      // reports unsupported, so this pins the wiring rather than the browser.
+      final tts = TtsService(serverSpeech: true, 
+        synthesize: synth,
+        playback: playback,
+        useDevice: true,
+      )..enqueue('Hello there.');
+      await pumpEventQueue();
+
+      expect(synthCalls, isEmpty, reason: 'the phone speaks, not a provider');
+      expect(playback.played, isEmpty, reason: 'there are no bytes to play');
+      expect(tts.usesDevice, isTrue);
+      await tts.dispose();
+    });
+
+    test('the turn still ends, so the microphone re-opens', () async {
+      // A device utterance that never resolved would leave `speaking` true for
+      // ever and the learner unable to answer.
+      final tts = TtsService(serverSpeech: true, 
+        synthesize: synth,
+        playback: playback,
+        useDevice: true,
+      );
+      tts.beginStream();
+      tts.enqueue('One.');
+      tts.endStream();
+      await pumpEventQueue();
+
+      expect(tts.speaking.value, isFalse);
       await tts.dispose();
     });
   });

@@ -552,6 +552,36 @@ class AppLocalizationsUz extends AppLocalizations {
   String get voicePreview => 'Eshitish';
 
   @override
+  String get voiceAddMore => 'Yana ovoz qoʻshish';
+
+  @override
+  String get voiceAddMoreIntro =>
+      'Ilova faqat qurilmangizda mavjud ovozlardan foydalana oladi. Qurilma sozlamalaridan yangisini oʻrnating, soʻng qaytib roʻyxatni yangilang.';
+
+  @override
+  String get voiceStepsAndroid =>
+      'Sozlamalar → Tizim → Til va kiritish → Matndan nutqqa → Google Text-to-Speech → Ovoz maʼlumotlarini oʻrnatish → English. “Enhanced” ovozlarni tanlang — ular ancha tabiiy eshitiladi.';
+
+  @override
+  String get voiceStepsIos =>
+      'Sozlamalar → Maxsus imkoniyatlar → Nutq → Ovozlar → English. “Premium” yoki “Enhanced” ovozni yuklang, masalan Evan yoki Nathan.';
+
+  @override
+  String get voiceStepsWindows =>
+      'Sozlamalar → Vaqt va til → Nutq → Ovozlarni boshqarish → Ovoz qoʻshish → English (United States).';
+
+  @override
+  String get voiceStepsMac =>
+      'Tizim sozlamalari → Maxsus imkoniyatlar → Nutq → Tizim ovozi → Ovozlarni boshqarish → English.';
+
+  @override
+  String get voiceStepsGeneric =>
+      'Qurilma sozlamalarini oching, matndan nutqqa yoki nutq boʻlimini toping va inglizcha ovoz oʻrnating.';
+
+  @override
+  String get voiceRefresh => 'Roʻyxatni yangilash';
+
+  @override
   String get voicePreviewError => 'Ovozni eshittirib bo‘lmadi.';
 
   @override
@@ -940,6 +970,15 @@ class AppLocalizationsUz extends AppLocalizations {
 
   @override
   String get xpSourceStreak => 'Seriya bonusi';
+
+  @override
+  String get coachWhy => 'Nega';
+
+  @override
+  String get coachMore => 'Nega, va tabiiy variant';
+
+  @override
+  String get coachLess => 'Izohni yashirish';
 
   @override
   String get coachCorrection => 'To‘g‘rilash';
@@ -2301,5 +2340,36 @@ class AppLocalizationsUz extends AppLocalizations {
   @override
   String homeLessonsAt(int done, int total) {
     return '$done / $total dars';
+  }
+
+  @override
+  String get referralTitle => 'Do‘stni taklif qiling';
+
+  @override
+  String referralBody(int minutes) {
+    return 'Har bir qo‘shilgan do‘st uchun $minutes daqiqa suhbat. Bu daqiqalar tugamaydi.';
+  }
+
+  @override
+  String get referralCta => 'Do‘stni taklif qilish';
+
+  @override
+  String referralFriends(int count) {
+    return '$count do‘st qo‘shildi';
+  }
+
+  @override
+  String referralShareText(String link) {
+    return 'EduGain’da ingliz tilida gapirishni mashq qiling — AI bilan suhbatlashing va boshqa o‘rganuvchilar bilan jonli suhbat qiling.\n\n$link';
+  }
+
+  @override
+  String referralEarned(int minutes) {
+    return 'Jami $minutes daqiqa';
+  }
+
+  @override
+  String referralLeft(int minutes) {
+    return '$minutes daqiqa qoldi';
   }
 }

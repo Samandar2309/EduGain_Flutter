@@ -547,6 +547,36 @@ class AppLocalizationsEn extends AppLocalizations {
   String get voicePreview => 'Listen';
 
   @override
+  String get voiceAddMore => 'Add more voices';
+
+  @override
+  String get voiceAddMoreIntro =>
+      'The app can only use voices your device already has. Install more from your device settings, then come back and refresh.';
+
+  @override
+  String get voiceStepsAndroid =>
+      'Settings → System → Languages & input → Text-to-speech output → Google Text-to-Speech → Install voice data → English. Pick the “Enhanced” voices — they sound far closer to a real speaker.';
+
+  @override
+  String get voiceStepsIos =>
+      'Settings → Accessibility → Spoken Content → Voices → English. Download a “Premium” or “Enhanced” voice such as Evan or Nathan.';
+
+  @override
+  String get voiceStepsWindows =>
+      'Settings → Time & language → Speech → Manage voices → Add voices → English (United States).';
+
+  @override
+  String get voiceStepsMac =>
+      'System Settings → Accessibility → Spoken Content → System Voice → Manage Voices → English.';
+
+  @override
+  String get voiceStepsGeneric =>
+      'Open your device settings and look for text-to-speech or spoken content, then install an English voice.';
+
+  @override
+  String get voiceRefresh => 'Refresh list';
+
+  @override
   String get voicePreviewError => 'Couldn’t play the voice.';
 
   @override
@@ -933,6 +963,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get xpSourceStreak => 'Streak bonus';
+
+  @override
+  String get coachWhy => 'Why';
+
+  @override
+  String get coachMore => 'Why, and a more natural version';
+
+  @override
+  String get coachLess => 'Hide the explanation';
 
   @override
   String get coachCorrection => 'Correction';
@@ -2285,5 +2324,36 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String homeLessonsAt(int done, int total) {
     return '$done of $total';
+  }
+
+  @override
+  String get referralTitle => 'Invite a friend';
+
+  @override
+  String referralBody(int minutes) {
+    return '$minutes minutes of conversation for every friend who joins. These minutes never expire.';
+  }
+
+  @override
+  String get referralCta => 'Invite a friend';
+
+  @override
+  String referralFriends(int count) {
+    return '$count friends joined';
+  }
+
+  @override
+  String referralShareText(String link) {
+    return 'Practise speaking English on EduGain — talk with an AI partner and have live conversations with other learners.\n\n$link';
+  }
+
+  @override
+  String referralEarned(int minutes) {
+    return '$minutes minutes earned';
+  }
+
+  @override
+  String referralLeft(int minutes) {
+    return '$minutes minutes left';
   }
 }

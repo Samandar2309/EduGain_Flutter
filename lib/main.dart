@@ -32,7 +32,7 @@ Future<void> main() async {
   // reverted `requestFullscreen()` was enough to make the chat-list entry
   // point keep arriving fullscreen — header gone, its close button over the
   // greeting, the bottom bar among the phone's navigation keys.
-  TelegramWebApp.exitFullscreen();
+  TelegramWebApp.keepWindowed();
   TelegramWebApp.disableVerticalSwipes();
   // The page runs underneath the system navigation buttons and Flutter web
   // reports nothing about it, so the bottom bar landed on top of them.

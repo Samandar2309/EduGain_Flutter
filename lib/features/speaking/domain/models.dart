@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 // Speaking domain models mirroring the backend DTOs (§3, §4.4).
 
 /// One of the five goal paths shown on the Speaking home (`GET /speaking/tracks`).
@@ -541,6 +543,7 @@ class Coaching {
     required this.correction,
     required this.naturalVersion,
     required this.grammarPoint,
+    this.why = '',
     required this.vocabulary,
     required this.pronunciation,
     required this.errorTags,
@@ -552,6 +555,13 @@ class Coaching {
   final String correction;
   final String naturalVersion;
   final String grammarPoint;
+
+  /// Why the correction is needed, in the learner's own language.
+  ///
+  /// `grammarPoint` names the rule ("Past Simple"); this explains it. A label
+  /// only helps somebody who already knows the grammar — which is not the
+  /// person who just made the mistake.
+  final String why;
   final List<String> vocabulary;
   final List<String> pronunciation;
   final List<String> errorTags;
@@ -566,6 +576,7 @@ class Coaching {
     correction: json['correction'] as String? ?? '',
     naturalVersion: json['natural_version'] as String? ?? '',
     grammarPoint: json['grammar_point'] as String? ?? '',
+    why: json['why'] as String? ?? '',
     vocabulary: _strs(json['vocabulary']),
     pronunciation: _strs(json['pronunciation']),
     errorTags: _strs(json['error_tags']),
@@ -598,6 +609,27 @@ class TranscriptEvent extends SpeakingEvent {
 class ChunkEvent extends SpeakingEvent {
   const ChunkEvent(this.text);
   final String text;
+}
+
+/// One sentence of the reply, already spoken by the server and carried on this
+/// same stream.
+///
+/// The app used to POST for this audio itself, once per sentence, after the
+/// text had arrived — a whole round trip per sentence on a mobile network, and
+/// measurably the largest part of the wait between a learner finishing their
+/// answer and hearing one back.
+///
+/// [bytes] is null when the server could not render the sentence. The sentence
+/// is still named, so it can be requested the old way rather than dropped: a
+/// tutor that skips a line is worse than one that takes a moment to say it.
+class AudioEvent extends SpeakingEvent {
+  const AudioEvent(this.seq, this.text, this.bytes);
+
+  /// 1-based position of this sentence in the reply. Sent in order; carried so
+  /// a client can tell a re-ordered stream from a missing sentence.
+  final int seq;
+  final String text;
+  final Uint8List? bytes;
 }
 
 /// The per-turn coaching, sent after the reply chunks and before [DoneEvent].

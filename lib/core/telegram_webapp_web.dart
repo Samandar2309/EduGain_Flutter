@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:js_interop';
 
 import 'package:flutter/foundation.dart';
@@ -136,27 +137,43 @@ class TelegramWebAppPlatform {
   static final ValueNotifier<TelegramInsets> insets =
       ValueNotifier(TelegramInsets.zero);
 
-  /// Give the screen back if Telegram is still handing it to us.
+  /// Give the screen back. This app is never fullscreen.
   ///
   /// `requestFullscreen()` was tried once and reverted — but removing the call
   /// was not enough, because Telegram REMEMBERS the mode a Mini App was last
-  /// opened in. Launched from the chat list it kept arriving fullscreen: no
+  /// opened in. Opened from a bot message it kept arriving fullscreen: no
   /// Telegram header, its close button floating over the greeting, and the
-  /// bottom bar down among the phone's own navigation keys. Opening the bot
-  /// and pressing its button was fine, which is what made this look like two
-  /// different apps.
+  /// bottom bar down among the phone's own navigation keys. Opening it from
+  /// the menu button was fine, which is what made this look like two different
+  /// apps.
   ///
-  /// So the app has to say no, not merely stop asking. Checked rather than
-  /// called blindly: on a client that never granted it there is nothing to
-  /// exit, and on an older one the method does not exist at all.
+  /// Called unconditionally, and that is the fix. It used to return early
+  /// unless `isFullscreen` was already `true` — but at startup the SDK has not
+  /// necessarily answered that question yet, so the guard read "not fullscreen"
+  /// for a session that was about to become one, and the call it was guarding
+  /// never happened. Asking to leave a mode we are not in costs nothing;
+  /// staying in it because a flag had not arrived costs the whole layout.
   static void exitFullscreen() {
     try {
       final app = _telegram?.webApp;
       if (app == null || !app.isVersionAtLeast('8.0')) return;
-      if (app.isFullscreen != true) return;
       app.exitFullscreen();
     } catch (_) {
       // Older SDK without the method — it cannot be in fullscreen either.
+    }
+  }
+
+  /// Keep saying no for the first moments of a session.
+  ///
+  /// Telegram can grant the remembered mode slightly AFTER the app boots, and
+  /// `fullscreenChanged` is not fired by every client when it does. A handful
+  /// of repeats over the first second and a half covers that without a poll
+  /// that runs for the life of the session: if the app is still windowed after
+  /// that, nothing is going to change it.
+  static void keepWindowed() {
+    exitFullscreen();
+    for (final ms in const [150, 400, 900, 1500]) {
+      Timer(Duration(milliseconds: ms), exitFullscreen);
     }
   }
 

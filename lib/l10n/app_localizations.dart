@@ -1072,6 +1072,54 @@ abstract class AppLocalizations {
   /// **'Listen'**
   String get voicePreview;
 
+  /// No description provided for @voiceAddMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Add more voices'**
+  String get voiceAddMore;
+
+  /// No description provided for @voiceAddMoreIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'The app can only use voices your device already has. Install more from your device settings, then come back and refresh.'**
+  String get voiceAddMoreIntro;
+
+  /// No description provided for @voiceStepsAndroid.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings → System → Languages & input → Text-to-speech output → Google Text-to-Speech → Install voice data → English. Pick the “Enhanced” voices — they sound far closer to a real speaker.'**
+  String get voiceStepsAndroid;
+
+  /// No description provided for @voiceStepsIos.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings → Accessibility → Spoken Content → Voices → English. Download a “Premium” or “Enhanced” voice such as Evan or Nathan.'**
+  String get voiceStepsIos;
+
+  /// No description provided for @voiceStepsWindows.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings → Time & language → Speech → Manage voices → Add voices → English (United States).'**
+  String get voiceStepsWindows;
+
+  /// No description provided for @voiceStepsMac.
+  ///
+  /// In en, this message translates to:
+  /// **'System Settings → Accessibility → Spoken Content → System Voice → Manage Voices → English.'**
+  String get voiceStepsMac;
+
+  /// No description provided for @voiceStepsGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Open your device settings and look for text-to-speech or spoken content, then install an English voice.'**
+  String get voiceStepsGeneric;
+
+  /// No description provided for @voiceRefresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh list'**
+  String get voiceRefresh;
+
   /// No description provided for @voicePreviewError.
   ///
   /// In en, this message translates to:
@@ -1773,6 +1821,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Streak bonus'**
   String get xpSourceStreak;
+
+  /// No description provided for @coachWhy.
+  ///
+  /// In en, this message translates to:
+  /// **'Why'**
+  String get coachWhy;
+
+  /// No description provided for @coachMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Why, and a more natural version'**
+  String get coachMore;
+
+  /// No description provided for @coachLess.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide the explanation'**
+  String get coachLess;
 
   /// No description provided for @coachCorrection.
   ///
@@ -4239,6 +4305,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{done} of {total}'**
   String homeLessonsAt(int done, int total);
+
+  /// No description provided for @referralTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite a friend'**
+  String get referralTitle;
+
+  /// No description provided for @referralBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} minutes of conversation for every friend who joins. These minutes never expire.'**
+  String referralBody(int minutes);
+
+  /// No description provided for @referralCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite a friend'**
+  String get referralCta;
+
+  /// No description provided for @referralFriends.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} friends joined'**
+  String referralFriends(int count);
+
+  /// No description provided for @referralShareText.
+  ///
+  /// In en, this message translates to:
+  /// **'Practise speaking English on EduGain — talk with an AI partner and have live conversations with other learners.\n\n{link}'**
+  String referralShareText(String link);
+
+  /// No description provided for @referralEarned.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} minutes earned'**
+  String referralEarned(int minutes);
+
+  /// No description provided for @referralLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} minutes left'**
+  String referralLeft(int minutes);
 }
 
 class _AppLocalizationsDelegate

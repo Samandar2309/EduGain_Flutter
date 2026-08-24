@@ -12,6 +12,7 @@ class TelegramWebAppPlatform {
 
   static void disableVerticalSwipes() {}
   static void exitFullscreen() {}
+  static void keepWindowed() {}
   static void watchInsets() {}
   static String? get initData => null;
   static bool get sdkPresent => false;

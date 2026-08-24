@@ -36,7 +36,7 @@ void main() {
 
   setUp(() {
     playback = _Recorder();
-    tts = TtsService(
+    tts = TtsService(serverSpeech: true, 
       synthesize: (text, voice) async => Uint8List.fromList(text.codeUnits),
       playback: playback,
     );

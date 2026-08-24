@@ -57,7 +57,24 @@ Future<void> playFollowingEnvelope({
   required Future<void> Function() loadSource,
 }) async {
   final env = amplitudeEnvelope(bytes, fps: envelopeFps);
-  await loadSource();
+
+  // Every wait below is bounded, and that is the whole point of this shape.
+  //
+  // A future that never resolves here is not a slow tutor, it is a dead
+  // session. The speech queue is drained one clip at a time, so a clip that
+  // never reports finishing holds `speaking` true for ever — and while the
+  // tutor is believed to be talking the microphone is deliberately kept shut.
+  // The learner then finds that speaking has stopped working while typing
+  // still does, a couple of turns in, with nothing on screen to say why.
+  //
+  // That is not a hypothesis. Three of three real Android sessions went quiet
+  // on a server-spoken turn and never sent another: playback had started —
+  // the turn reported its first audio — and then nothing, for ever.
+  //
+  // Nothing here can prevent a player from stalling. What it can do is refuse
+  // to wait on one indefinitely.
+  final budget = playbackBudget(env);
+  await loadSource().timeout(budget, onTimeout: () {});
 
   // Wait until the player is actually holding this clip before listening for
   // the end of it.
@@ -92,12 +109,39 @@ Future<void> playFollowingEnvelope({
     level.value = levelAtEnvelope(env, player.position);
   });
 
-  await player.play();
-  await done;
+  // `play()` resolves when playback STOPS, not when it starts, so it carries
+  // the same risk as `done` and gets the same deadline.
+  try {
+    await player.play().timeout(budget);
+  } catch (_) {
+    // A rejected autoplay, or a player that went quiet. Either way `done`
+    // below decides how long this clip is still owed.
+  }
+  await done.timeout(budget, onTimeout: () => ProcessingState.idle);
   ticker.cancel();
   level.value = 0;
   // Reset to idle so the next load starts cleanly; harmless if already stopped.
   await player.stop();
+}
+
+/// How long one clip may take to play before the queue stops waiting for it.
+///
+/// Measured from the audio itself. The envelope holds one value per frame at
+/// [envelopeFps], so its length IS the clip's duration — no metadata, no
+/// player, nothing that can lie about it. A clip cannot honestly outlast that,
+/// so half again plus five seconds covers a slow load, a slow decode and a
+/// player that reports a beat late, while still being a ceiling rather than a
+/// wish.
+///
+/// The empty case is audio this app could not parse — a provider that returned
+/// something other than the PCM WAV it usually does. Its length is genuinely
+/// unknown, so it gets a flat minute: long enough never to cut a real sentence
+/// short, short enough that a session recovers on its own rather than needing
+/// to be restarted.
+Duration playbackBudget(List<double> env) {
+  if (env.isEmpty) return const Duration(seconds: 60);
+  final ms = (env.length / envelopeFps * 1500).round();
+  return Duration(milliseconds: ms) + const Duration(seconds: 5);
 }
 
 double levelAtEnvelope(List<double> env, Duration pos) {

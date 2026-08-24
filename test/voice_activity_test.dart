@@ -217,4 +217,78 @@ void main() {
       expect(vad.heardSpeech, isFalse);
     });
   });
+
+  group('the room, not just a number', () {
+    // The complaint that produced this: in one room the app transcribed noises
+    // nobody made, and in the same room it decided a learner had finished
+    // while they were still talking. One fixed threshold cannot serve both —
+    // it sat under the hiss, so the hiss was speech and the learner was not.
+    VoiceActivity noisy(double noise) {
+      final vad = VoiceActivity();
+      // Twenty seconds of room, which is what the app hears while the learner
+      // reads the screen. Longer than `_sustained` on purpose: that is the rule
+      // that lets a room whose hiss clears the fixed floor ever be recognised.
+      for (var i = 0; i < 200; i++) {
+        vad.onLevel(noise, const Duration(milliseconds: 100));
+      }
+      return vad;
+    }
+
+    test('room hiss above the fixed floor is not mistaken for speech', () {
+      final vad = noisy(0.07); // over the 0.05 floor: speech, under the old rule
+      for (var i = 0; i < 20; i++) {
+        vad.onLevel(0.07, const Duration(milliseconds: 100));
+      }
+      expect(vad.heardSpeech, isFalse);
+    });
+
+    test('a noisy room still ends the turn — it must never hang', () {
+      final vad = noisy(0.07);
+      for (var i = 0; i < 10; i++) {
+        vad.onLevel(0.4, const Duration(milliseconds: 100)); // real speech
+      }
+      expect(vad.heardSpeech, isTrue);
+      var verdict = VoiceVerdict.keepListening;
+      for (var i = 0; i < 40 && verdict != VoiceVerdict.endOfTurn; i++) {
+        verdict = vad.onLevel(0.07, const Duration(milliseconds: 100));
+      }
+      expect(verdict, VoiceVerdict.endOfTurn);
+    });
+
+    test('a quiet room keeps the sensitivity that 27 real turns needed', () {
+      final vad = noisy(0.005);
+      for (var i = 0; i < 6; i++) {
+        vad.onLevel(0.06, const Duration(milliseconds: 100));
+      }
+      expect(vad.heardSpeech, isTrue);
+    });
+
+    test('trailing off softly does not end the turn', () {
+      final vad = noisy(0.01);
+      for (var i = 0; i < 10; i++) {
+        vad.onLevel(0.4, const Duration(milliseconds: 100));
+      }
+      // Well under the speech bar, well over the room: the end of a sentence
+      // said towards the table. Four seconds of it — twice the silence window.
+      var verdict = VoiceVerdict.keepListening;
+      for (var i = 0; i < 40; i++) {
+        verdict = vad.onLevel(0.035, const Duration(milliseconds: 100));
+        if (verdict == VoiceVerdict.endOfTurn) break;
+      }
+      expect(verdict, isNot(VoiceVerdict.endOfTurn));
+    });
+
+    test('the floor is capped, so no microphone can deafen the app', () {
+      final vad = VoiceActivity();
+      for (var i = 0; i < 2000; i++) {
+        vad.onLevel(0.9, const Duration(milliseconds: 100));
+      }
+      // Even after a storm of loud readings, ordinary speech still registers.
+      vad.reset();
+      for (var i = 0; i < 10; i++) {
+        vad.onLevel(0.6, const Duration(milliseconds: 100));
+      }
+      expect(vad.heardSpeech, isTrue);
+    });
+  });
 }

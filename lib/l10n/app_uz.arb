@@ -218,6 +218,14 @@
   "voicesLoadError": "Ovozlar ro‘yxatini yuklab bo‘lmadi.",
   "noVoices": "Hozircha ovozlar mavjud emas.",
   "voicePreview": "Eshitish",
+  "voiceAddMore": "Yana ovoz qoʻshish",
+  "voiceAddMoreIntro": "Ilova faqat qurilmangizda mavjud ovozlardan foydalana oladi. Qurilma sozlamalaridan yangisini oʻrnating, soʻng qaytib roʻyxatni yangilang.",
+  "voiceStepsAndroid": "Sozlamalar → Tizim → Til va kiritish → Matndan nutqqa → Google Text-to-Speech → Ovoz maʼlumotlarini oʻrnatish → English. “Enhanced” ovozlarni tanlang — ular ancha tabiiy eshitiladi.",
+  "voiceStepsIos": "Sozlamalar → Maxsus imkoniyatlar → Nutq → Ovozlar → English. “Premium” yoki “Enhanced” ovozni yuklang, masalan Evan yoki Nathan.",
+  "voiceStepsWindows": "Sozlamalar → Vaqt va til → Nutq → Ovozlarni boshqarish → Ovoz qoʻshish → English (United States).",
+  "voiceStepsMac": "Tizim sozlamalari → Maxsus imkoniyatlar → Nutq → Tizim ovozi → Ovozlarni boshqarish → English.",
+  "voiceStepsGeneric": "Qurilma sozlamalarini oching, matndan nutqqa yoki nutq boʻlimini toping va inglizcha ovoz oʻrnating.",
+  "voiceRefresh": "Roʻyxatni yangilash",
   "voicePreviewError": "Ovozni eshittirib bo‘lmadi.",
   "genderFemale": "Ayol",
   "genderMale": "Erkak",
@@ -349,6 +357,9 @@
   "welcomeGoalBody": "IELTS, karyera, sayohat yoki kundalik suhbat — trek zaif tomonlaringizga moslashadi.",
   "xpSourceDailyGoal": "Kunlik maqsad",
   "xpSourceStreak": "Seriya bonusi",
+  "coachWhy": "Nega",
+  "coachMore": "Nega, va tabiiy variant",
+  "coachLess": "Izohni yashirish",
   "coachCorrection": "To‘g‘rilash",
   "coachNatural": "Tabiiy variant",
   "coachGrammar": "Grammatika",
@@ -1001,5 +1012,12 @@
         "type": "int"
       }
     }
-  }
+  },
+  "referralTitle": "Do‘stni taklif qiling",
+  "referralBody": "Har bir qo‘shilgan do‘st uchun {minutes} daqiqa suhbat. Bu daqiqalar tugamaydi.",
+  "referralCta": "Do‘stni taklif qilish",
+  "referralFriends": "{count} do‘st qo‘shildi",
+  "referralShareText": "EduGain’da ingliz tilida gapirishni mashq qiling — AI bilan suhbatlashing va boshqa o‘rganuvchilar bilan jonli suhbat qiling.\n\n{link}",
+  "referralEarned": "Jami {minutes} daqiqa",
+  "referralLeft": "{minutes} daqiqa qoldi"
 }

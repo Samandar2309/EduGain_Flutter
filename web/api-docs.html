@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>EduGain API</title>
+
+<!--
+  One page for an API that lives in two services.
+
+  Django owns accounts, authentication, the profile, billing and placement.
+  FastAPI owns the AI service: speaking, peer calls, group rooms. A client
+  developer needs both, and reading two documents in two places is how a client
+  ends up written against half an API.
+
+  Both specs are fetched LIVE from the running services rather than committed
+  next to this file. That is the whole point: a spec kept by hand beside the
+  code drifts from it, and a drifted spec is worse than none because it is
+  believed. What is served here is generated from the serializers and the
+  Pydantic models themselves.
+
+  It lives in `flutter_app/web/` so the deploy carries it: the served directory
+  is emptied and repopulated from each build, and anything dropped in by hand
+  disappears on the next one.
+-->
+
+<link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui.css">
+<style>
+  body { margin: 0; background: #fafafa; font-family: system-ui, -apple-system, sans-serif; }
+  .bar { background: #1b1533; color: #fff; padding: 14px 20px; display: flex;
+         align-items: center; gap: 16px; flex-wrap: wrap; }
+  .bar b { font-size: 17px; letter-spacing: .2px; }
+  .bar span { color: #b9b2e0; font-size: 13px; }
+  .tabs { display: flex; gap: 8px; margin-left: auto; }
+  .tabs button { background: #322a5c; color: #ded8f5; border: 0; border-radius: 8px;
+                 padding: 9px 16px; font-size: 14px; cursor: pointer; }
+  .tabs button[aria-selected="true"] { background: #6c5ce7; color: #fff; font-weight: 600; }
+  .note { background: #fff4d6; border-bottom: 1px solid #f0e0b0; color: #5a4a10;
+          padding: 10px 20px; font-size: 13px; line-height: 1.5; }
+  .note code { background: #ffe9ae; padding: 1px 5px; border-radius: 4px; }
+  #swagger-ui { max-width: 1200px; margin: 0 auto; }
+</style>
+</head>
+<body>
+
+<div class="bar">
+  <b>EduGain API</b>
+  <span>the client talks to two services</span>
+  <div class="tabs" role="tablist">
+    <button id="t-ai" role="tab" aria-selected="true">AI service</button>
+    <button id="t-core" role="tab" aria-selected="false">Accounts &amp; billing</button>
+  </div>
+</div>
+
+<div class="note">
+  Every route but sign-in expects <code>Authorization: Bearer &lt;access token&gt;</code>.
+  The app runs as a Telegram Mini App, so a token is obtained by posting Telegram's
+  signed <code>initData</code> to <code>/api/v1/auth/telegram/webapp</code>.
+  Use <b>Authorize</b> below to try calls with a real token.
+</div>
+
+<div id="swagger-ui"></div>
+
+<script src="https://unpkg.com/swagger-ui-dist@5.17.14/swagger-ui-bundle.js" crossorigin></script>
+<script>
+  // Same-origin, so nginx routes each one to the service that generated it:
+  // `/api/ai/*` to FastAPI, everything else to Django.
+  var SPECS = {
+    ai:   { url: '/api/ai/openapi.json', tab: 't-ai' },
+    core: { url: '/api/v1/schema',       tab: 't-core' }
+  };
+
+  var ui = null;
+  function show(which) {
+    Object.keys(SPECS).forEach(function (k) {
+      document.getElementById(SPECS[k].tab)
+              .setAttribute('aria-selected', String(k === which));
+    });
+    ui = SwaggerUIBundle({
+      url: SPECS[which].url,
+      dom_id: '#swagger-ui',
+      presets: [SwaggerUIBundle.presets.apis],
+      layout: 'BaseLayout',
+      // Alphabetical, so an endpoint can be found without knowing which file it
+      // was declared in.
+      operationsSorter: 'alpha',
+      tagsSorter: 'alpha',
+      docExpansion: 'list',
+      persistAuthorization: true,
+      tryItOutEnabled: true
+    });
+    location.hash = which;
+  }
+
+  document.getElementById('t-ai').onclick = function () { show('ai'); };
+  document.getElementById('t-core').onclick = function () { show('core'); };
+  show(location.hash.replace('#', '') === 'core' ? 'core' : 'ai');
+</script>
+</body>
+</html>

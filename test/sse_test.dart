@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:edugain/features/speaking/data/sse.dart';
 import 'package:edugain/features/speaking/domain/models.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -57,6 +59,39 @@ void main() {
       );
       expect(event, isA<StreamErrorEvent>());
       expect((event! as StreamErrorEvent).code, 'AI_UNAVAILABLE');
+    });
+
+    test('parses an audio event carrying the rendered sentence', () {
+      // "Hi" as bytes, base64 — the tutor's voice arriving with its words
+      // instead of costing a request of its own.
+      final event = parseSseEvent(
+        'event: audio\ndata: {"seq": 1, "text": "Hi there.", '
+        '"mime": "audio/wav", "b64": "SGk="}',
+      );
+      expect(event, isA<AudioEvent>());
+      final audio = event! as AudioEvent;
+      expect(audio.seq, 1);
+      expect(audio.text, 'Hi there.');
+      expect(audio.bytes, utf8.encode('Hi'));
+    });
+
+    test('an audio event with no bytes still names its sentence', () {
+      // The server could not render it. The sentence must still arrive, or the
+      // client has no way to ask for it and the line is simply never spoken.
+      final event = parseSseEvent(
+        'event: audio\ndata: {"seq": 2, "text": "Go on."}',
+      );
+      final audio = event! as AudioEvent;
+      expect(audio.text, 'Go on.');
+      expect(audio.bytes, isNull);
+    });
+
+    test('unusable audio degrades to no audio, not a dropped event', () {
+      final event = parseSseEvent(
+        'event: audio\ndata: {"seq": 3, "text": "Again?", "b64": "!!not-b64!!"}',
+      );
+      expect(event, isA<AudioEvent>());
+      expect((event! as AudioEvent).bytes, isNull);
     });
 
     test('returns null for unknown or malformed blocks', () {

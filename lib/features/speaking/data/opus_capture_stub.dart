@@ -1,3 +1,5 @@
+export 'upload_codec.dart';
+
 import 'dart:typed_data';
 
 /// Opus capture is a browser feature. Off the web there is nothing to do —
@@ -15,7 +17,16 @@ class OpusCapture {
   /// conditional import have to agree on the surface.
   String get mimeType => '';
 
-  Future<Uint8List?> stop() async => null;
+  Future<Uint8List?> stop({void Function(String stage)? onStage}) async => null;
+
+  /// Mid-recording extraction is a browser capability. Native records to a
+  /// file and cannot be read from until it is closed, so there is nothing to
+  /// speculate on here and the caller keeps its ordinary path.
+  Future<Uint8List?> snapshot() async => null;
 
   void cancel() {}
 }
+
+/// Native has no MediaRecorder and does not need one — it records to a file.
+String lastCodecFailure = '';
+

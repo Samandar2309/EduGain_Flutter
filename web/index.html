@@ -25,6 +25,35 @@
        works standalone too. Loaded before Flutter's own bootstrap so
        `window.Telegram.WebApp` exists by the time Dart code checks for it. -->
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script>
+    // Refuse fullscreen HERE, not in Dart.
+    //
+    // Telegram remembers the mode a Mini App was last opened in and re-applies
+    // it the instant the WebView appears. Dart cannot answer that in time: it
+    // runs after the Flutter engine has downloaded and booted, which is
+    // seconds — and those seconds are the whole complaint. The app opened with
+    // no Telegram header, its close button over the greeting, and only then
+    // snapped back to a window.
+    //
+    // This runs on the line after the SDK is defined, before Flutter is even
+    // fetched, so there is no window in which the app is fullscreen.
+    (function () {
+      var app = window.Telegram && window.Telegram.WebApp;
+      if (!app || typeof app.exitFullscreen !== 'function') return;
+      // Unconditional: asking to leave a mode we are not in costs nothing,
+      // and `isFullscreen` is not reliably populated this early — reading it
+      // was exactly what let the mode through.
+      var off = function () { try { app.exitFullscreen(); } catch (e) {} };
+      off();
+      // Telegram can grant the remembered mode a beat after the WebView opens,
+      // and not every client fires `fullscreenChanged` when it does. A few
+      // repeats over the first moments cover that; they stop on their own.
+      [60, 150, 300, 600, 1200, 2000].forEach(function (ms) {
+        setTimeout(off, ms);
+      });
+      try { app.onEvent('fullscreenChanged', off); } catch (e) {}
+    })();
+  </script>
 
   <!-- iOS meta tags & icons -->
   <meta name="mobile-web-app-capable" content="yes">

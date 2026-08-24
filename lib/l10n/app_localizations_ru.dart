@@ -548,6 +548,36 @@ class AppLocalizationsRu extends AppLocalizations {
   String get voicePreview => 'Прослушать';
 
   @override
+  String get voiceAddMore => 'Добавить голоса';
+
+  @override
+  String get voiceAddMoreIntro =>
+      'Приложение может использовать только те голоса, которые уже есть на устройстве. Установите новые в настройках устройства, затем вернитесь и обновите список.';
+
+  @override
+  String get voiceStepsAndroid =>
+      'Настройки → Система → Языки и ввод → Синтез речи → Google Text-to-Speech → Установить голосовые данные → English. Выбирайте голоса «Enhanced» — они звучат гораздо естественнее.';
+
+  @override
+  String get voiceStepsIos =>
+      'Настройки → Универсальный доступ → Устный контент → Голоса → English. Загрузите голос «Premium» или «Enhanced», например Evan или Nathan.';
+
+  @override
+  String get voiceStepsWindows =>
+      'Параметры → Время и язык → Речь → Управление голосами → Добавить голоса → English (United States).';
+
+  @override
+  String get voiceStepsMac =>
+      'Системные настройки → Универсальный доступ → Устный контент → Системный голос → Управление голосами → English.';
+
+  @override
+  String get voiceStepsGeneric =>
+      'Откройте настройки устройства, найдите синтез речи или устный контент и установите английский голос.';
+
+  @override
+  String get voiceRefresh => 'Обновить список';
+
+  @override
   String get voicePreviewError => 'Не удалось воспроизвести голос.';
 
   @override
@@ -937,6 +967,15 @@ class AppLocalizationsRu extends AppLocalizations {
 
   @override
   String get xpSourceStreak => 'Бонус за серию';
+
+  @override
+  String get coachWhy => 'Почему';
+
+  @override
+  String get coachMore => 'Почему и естественный вариант';
+
+  @override
+  String get coachLess => 'Скрыть пояснение';
 
   @override
   String get coachCorrection => 'Исправление';
@@ -2291,5 +2330,36 @@ class AppLocalizationsRu extends AppLocalizations {
   @override
   String homeLessonsAt(int done, int total) {
     return '$done из $total';
+  }
+
+  @override
+  String get referralTitle => 'Пригласите друга';
+
+  @override
+  String referralBody(int minutes) {
+    return '$minutes минут разговора за каждого друга. Эти минуты не сгорают.';
+  }
+
+  @override
+  String get referralCta => 'Пригласить друга';
+
+  @override
+  String referralFriends(int count) {
+    return 'Друзей присоединилось: $count';
+  }
+
+  @override
+  String referralShareText(String link) {
+    return 'Практикуйте разговорный английский в EduGain — общайтесь с ИИ-собеседником и ведите живые разговоры с другими учениками.\n\n$link';
+  }
+
+  @override
+  String referralEarned(int minutes) {
+    return 'Всего $minutes минут';
+  }
+
+  @override
+  String referralLeft(int minutes) {
+    return 'Осталось $minutes минут';
   }
 }

@@ -49,6 +49,10 @@ class TelegramWebApp {
   /// from the chat list. Not asking is not the same as saying no.
   static void exitFullscreen() => TelegramWebAppPlatform.exitFullscreen();
 
+  /// Refuse fullscreen for the first moments of a session, not just once —
+  /// Telegram can grant its remembered mode after the app has booted.
+  static void keepWindowed() => TelegramWebAppPlatform.keepWindowed();
+
   /// Stop Telegram closing the app when somebody scrolls (Bot API 7.7).
   ///
   /// Its dismiss gesture is a downward drag, which is also how a list is

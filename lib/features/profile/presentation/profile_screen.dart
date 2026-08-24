@@ -16,10 +16,10 @@ import '../../../core/ui/user_photo.dart';
 import '../../../l10n/app_localizations.dart';
 import '../../gamification/application/providers.dart';
 import '../../gamification/domain/models.dart';
-import '../../speaking/application/providers.dart'
-    show aiUnlockedProvider, learnerProfileProvider;
 import '../../speaking/domain/models.dart' show AbilityTrend, LearnerProfile;
 import '../../subscriptions/application/providers.dart';
+import '../application/referral.dart';
+import 'referral_card.dart';
 
 // Product-name XP sources stay as-is; 'streak' / 'daily_goal' are localized in
 // [_XpTile] (they have a translatable label).
@@ -66,8 +66,6 @@ class ProfileScreen extends ConsumerWidget {
     final gamification = ref.watch(gamificationProfileProvider);
     final history = ref.watch(xpHistoryProvider);
     final subscription = ref.watch(mySubscriptionProvider);
-    final profile = ref.watch(learnerProfileProvider);
-    final aiUnlocked = ref.watch(aiUnlockedProvider);
     final l = AppLocalizations.of(context);
 
     if (user == null) {
@@ -80,8 +78,8 @@ class ProfileScreen extends ConsumerWidget {
         onRefresh: () async {
           ref.invalidate(gamificationProfileProvider);
           ref.invalidate(xpHistoryProvider);
-          ref.invalidate(learnerProfileProvider);
           ref.invalidate(mySubscriptionProvider);
+          ref.invalidate(referralStatusProvider);
         },
         child: ListView(
           padding: EdgeInsets.zero,
@@ -105,37 +103,6 @@ class ProfileScreen extends ConsumerWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // ── Communication Profile ────────────────────────────────
-                  //
-                  // Hidden entirely while the AI tutor is locked, rather than
-                  // blurred like the two cards that offer it. There is nothing
-                  // behind this one to look forward to: every number in it —
-                  // the ability scores, the speaking rate, the minutes and
-                  // words — is measured from AI conversations. With those
-                  // closed it would show zeroes under a confident heading, and
-                  // zeroes read as broken, not as coming.
-                  if (aiUnlocked) ...[
-                    SectionHeader(title: l.commProfileTitle),
-                    profile.when(
-                      loading: () => const AppCard(
-                        child: SizedBox(
-                          height: 72,
-                          child: Center(
-                            child: CircularProgressIndicator(
-                              color: AppColors.brand,
-                              strokeWidth: 2.6,
-                            ),
-                          ),
-                        ),
-                      ),
-                      error: (_, _) =>
-                          _EmptyProfileCard(text: l.commProfileEmpty),
-                      data: (p) => p.isEmpty
-                          ? _EmptyProfileCard(text: l.commProfileEmpty)
-                          : CommunicationProfileCard(profile: p),
-                    ),
-                    const SizedBox(height: AppSpace.xxl),
-                  ],
 
                   // ── daily goal ──────────────────────────────────────────
                   gamification.when(
@@ -154,6 +121,23 @@ class ProfileScreen extends ConsumerWidget {
                       ],
                     ),
                   ),
+
+                  // ── invite a friend ─────────────────────────────────────
+                  // Silent unless the server opens it for this learner, and
+                  // silent while it loads: a card that flickers in and out of a
+                  // settings list is worse than one that appears a moment late.
+                  ref.watch(referralStatusProvider).maybeWhen(
+                        data: (r) => r.isOpen
+                            ? Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ReferralCard(status: r),
+                                  const SizedBox(height: AppSpace.xxl),
+                                ],
+                              )
+                            : const SizedBox.shrink(),
+                        orElse: () => const SizedBox.shrink(),
+                      ),
 
                   // ── settings ────────────────────────────────────────────
                   SectionHeader(title: l.settingsTitle),
@@ -714,36 +698,19 @@ class _TierChip extends StatelessWidget {
 }
 
 // ── Communication Profile ────────────────────────────────────────────────────
-class _EmptyProfileCard extends StatelessWidget {
-  const _EmptyProfileCard({required this.text});
-  final String text;
 
-  @override
-  Widget build(BuildContext context) {
-    return AppCard(
-      child: Row(
-        children: [
-          const IconChip(
-            icon: Icons.record_voice_over_rounded,
-            color: AppColors.speaking,
-          ),
-          const SizedBox(width: AppSpace.lg),
-          Expanded(
-            child: Text(
-              text,
-              style: const TextStyle(
-                color: AppColors.inkSoft,
-                fontSize: 13.5,
-                height: 1.4,
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
+/// NOT ON ANY SCREEN since 2026-08-17, and kept rather than deleted.
+///
+/// The Communication Profile was coaching apparatus: ability scores, a speaking
+/// rate and a "we're working on this" list of weak-point tags. The AI is a
+/// conversation partner now (`SPEAKING_COACHING=0`), so nothing feeds those
+/// tags any more — the card would have shown a heading over numbers that had
+/// stopped moving, which reads as broken rather than as absent.
+///
+/// Left in place because the measurement behind it still runs and the decision
+/// may be taken back; its own tests still cover it. If the teaching mode never
+/// returns, this and `comm_profile_*_test.dart` are the things to delete.
+///
 /// The learner's communication profile: where they are, which way it is
 /// moving, and what the tutor is watching for next.
 class CommunicationProfileCard extends StatelessWidget {
@@ -1258,7 +1225,7 @@ class _XpTile extends StatelessWidget {
             '+${event.amount}',
             style: const TextStyle(
               fontWeight: FontWeight.w800,
-              color: AppColors.success,
+              color: AppColors.brandDark,
               fontSize: 14,
             ),
           ),

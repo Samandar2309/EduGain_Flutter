@@ -63,7 +63,7 @@ Widget _app(
     ProviderScope(
       overrides: [
         ttsServiceProvider.overrideWithValue(
-          TtsService(
+          TtsService(serverSpeech: true, 
             synthesize: (t, v) async {
               renderedVoices.add(v);
               return Uint8List(0);
@@ -226,36 +226,41 @@ void main() {
         reason: "the first word must already be in the voice they chose");
   });
 
-  testWidgets('tapping the bubble hides the line, tapping again brings it back',
+  testWidgets('a first conversation opens hidden, and says how to look',
       (tester) async {
-    // The bubble is the switch: no separate control, and the hidden state says
-    // how to undo itself.
+    // Hidden is the default because a feature nobody notices is a feature
+    // nobody uses: with the line on screen there is nothing to make anyone
+    // wonder whether it could be taken away. Hidden, the placeholder explains
+    // itself and one tap undoes it.
     SharedPreferences.setMockInitialValues({});
     await tester.pumpWidget(_app(null));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 50));
 
-    expect(find.text(_openingLine), findsOneWidget, reason: 'visible by default');
-
-    await tester.tap(find.text(_openingLine));
-    await tester.pump();
-    expect(find.text(_openingLine), findsNothing, reason: 'a tap hides it');
+    expect(find.text(_openingLine), findsNothing, reason: 'hidden by default');
     expect(find.text('Ko\u2018rsatish uchun bosing'), findsOneWidget);
 
     await tester.tap(find.text('Ko\u2018rsatish uchun bosing'));
     await tester.pump();
-    expect(find.text(_openingLine), findsOneWidget, reason: 'tapping again shows it');
+    expect(find.text(_openingLine), findsOneWidget, reason: 'a tap reveals it');
+
+    await tester.tap(find.text(_openingLine));
+    await tester.pump();
+    expect(find.text(_openingLine), findsNothing, reason: 'tapping again hides it');
   });
 
-  testWidgets('the preference is remembered, so the line opens hidden',
+  testWidgets('a learner who asked to see the text keeps seeing it',
       (tester) async {
-    SharedPreferences.setMockInitialValues({'speaking.listen_mode': true});
+    // The direction that broke when the default flipped. The old guard decided
+    // "untouched" by comparing the state against `false`; once `false` was a
+    // real saved choice rather than the starting value, that choice was
+    // discarded on every launch.
+    SharedPreferences.setMockInitialValues({'speaking.listen_mode': false});
     await tester.pumpWidget(_app(null));
     await tester.pump();
     await tester.pump(const Duration(milliseconds: 50));
 
-    expect(find.text(_openingLine), findsNothing);
-    expect(find.text('Ko\u2018rsatish uchun bosing'), findsOneWidget);
+    expect(find.text(_openingLine), findsOneWidget);
   });
 }
 

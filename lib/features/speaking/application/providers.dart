@@ -6,9 +6,11 @@ import '../../../core/live_data.dart';
 import '../../../core/providers.dart';
 import '../data/audio_playback.dart';
 import '../data/audio_recorder.dart';
+import '../data/device_tts.dart';
 import '../data/speaking_repository.dart';
 import '../data/tts_service.dart';
 import '../domain/models.dart';
+import 'correction_panel_controller.dart';
 import 'listen_mode_controller.dart';
 import 'voice_controller.dart';
 
@@ -112,9 +114,29 @@ final sessionFeedbackProvider =
 
 /// Server-curated TTS voice catalogue (kept alive: small, reused by the picker
 /// and the chat screen across a session).
-final voicesProvider = FutureProvider<List<Voice>>(
-  (ref) => ref.read(speakingRepositoryProvider).listVoices(),
-);
+/// The voices the picker offers.
+///
+/// The device's own when it is the one speaking — the server catalogue names
+/// provider voices that would never be heard, and a picker whose entries change
+/// nothing is worse than no picker. Every handset has a different roster, which
+/// is exactly why this is read from the device rather than assumed.
+///
+/// Falls back to the server catalogue when the browser has no speech engine, so
+/// the picker is never empty on a build that still fetches its audio.
+final voicesProvider = FutureProvider<List<Voice>>((ref) async {
+  if (DeviceTtsPlatform.supported) {
+    final device = DeviceTtsPlatform.voices();
+    if (device.isNotEmpty) {
+      return [
+        for (final v in device)
+          Voice(id: v.id, name: v.name, gender: v.gender, accent: v.lang),
+      ];
+    }
+    // Supported but nothing installed: a real handset state, and the reason
+    // the server list is still worth reaching for.
+  }
+  return ref.read(speakingRepositoryProvider).listVoices();
+});
 
 /// The learner's chosen voice, plus whether persistence has answered yet.
 /// Both halves matter — see [VoiceSelection].
@@ -127,6 +149,13 @@ final selectedVoiceProvider =
 /// (persisted — see [ListenModeController]).
 final listenModeProvider = StateNotifierProvider<ListenModeController, bool>(
   (ref) => ListenModeController(),
+);
+
+/// True while the correction panel is folded down to just the fix, leaving the
+/// tutor's face visible (persisted — see [CorrectionPanelController]).
+final correctionPanelProvider =
+    StateNotifierProvider<CorrectionPanelController, bool>(
+  (ref) => CorrectionPanelController(),
 );
 
 /// Text-to-speech for spoken AI replies (app-scoped: one player reused across
