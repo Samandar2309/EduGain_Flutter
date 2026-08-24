@@ -92,18 +92,30 @@ For development, get a token from the documented sandbox endpoint and put it
 where `TokenStorage` reads from:
 
 ```
-POST /api/v1/auth/docs-token     header: X-Docs-Secret: <ask the team>
+POST https://64-226-109-240.sslip.io/api/v1/auth/docs-token
+Header:  X-Docs-Secret: <the documentation secret>
 ```
+
+The secret is **not in this repository** and is sent to you separately — see
+[docs/ACCESS.md](docs/ACCESS.md) for where to keep it.
 
 It returns a real JWT pair for a sandbox learner — real quotas, real data,
 separate from anybody using the app.
 
 ## The API
 
-Both services, one page: **`/app/api-docs.html`** on the server above.
+Both services on one page, live:
+
+**https://64-226-109-240.sslip.io/app/api-docs.html**
 
 Raw specs: `/api/ai/openapi.json` (AI service) and `/api/v1/schema` (accounts,
-billing, course, games).
+billing, course, games). Both are generated from the running code, so they
+cannot drift from what the server actually accepts.
+
+To make **Try it out** work, open `POST /api/v1/auth/docs-token`, put the
+documentation secret in the `X-Docs-Secret` field, and paste the `access_token`
+it returns into **Authorize** at the top of the page. Every route below then
+becomes callable.
 
 **The envelope is the same everywhere:**
 
